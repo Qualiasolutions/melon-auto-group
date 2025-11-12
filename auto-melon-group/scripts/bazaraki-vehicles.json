@@ -1,0 +1,449 @@
+[
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6075356_daf-2016-7-5t/",
+    "make": "DAF",
+    "model": "LF 45-150",
+    "year": 2016,
+    "mileage": 245000,
+    "price": 18000,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "box-truck",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 150,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "DAF-2016-7.5T-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/6c/87/6c879ac1e5a914956777dc74cb567120.webp"
+    ],
+    "specifications": {
+      "gvw": 7500,
+      "emissionStandard": "Euro 5"
+    },
+    "features": [
+      "6 speed manual",
+      "20ft box"
+    ],
+    "description": "Daf Lf 45-150 hp low mileage 245k KLM's runs and drives really nice 6 speed manual. 20ft box",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6075341_2016-isuzu-grafter-3-5t/",
+    "make": "Isuzu",
+    "model": "Grafter 3.5T",
+    "year": 2016,
+    "mileage": 347000,
+    "price": 14000,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "box-truck",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 0,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "ISUZU-2016-GRAFTER-3.5T-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/34/2a/342a8e2dc99cd79b7c0e55a4be5ef5bc.webp"
+    ],
+    "specifications": {
+      "gvw": 3500
+    },
+    "features": [
+      "20ft box",
+      "Tail lift"
+    ],
+    "description": "2016 ISUZU GRAFTER 3.5T 347K KLM'S 20FT BOX WITH LIFT RUNS AND DRIVES REALLY WELL",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6073536_isuzu-d-max-2-5l-2015/",
+    "make": "Isuzu",
+    "model": "D-Max 2.5L",
+    "year": 2015,
+    "mileage": 310000,
+    "price": 13000,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "flatbed",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 0,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "ISUZU-2015-DMAX-2.5L-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/bc/66/bc66e4ff0e9b4adc0e5f1a8bae089bbb.webp"
+    ],
+    "specifications": {
+      "engineCapacity": 2.5
+    },
+    "features": [
+      "4x4"
+    ],
+    "description": "Isuzu 2.5 D-Max 4x4 2015 Only 310,000 klms Starts runs and drives lovely Very reliable Strong truck",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6071111_toyota-hilux-2-2l-2015/",
+    "make": "Toyota",
+    "model": "Hilux 2.2L",
+    "year": 2015,
+    "mileage": 285000,
+    "price": 17000,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "flatbed",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 0,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "TOYOTA-2015-HILUX-2.2L-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/95/e1/95e141be9abcc8e7c19f11f3743f6bcc.webp"
+    ],
+    "specifications": {
+      "engineCapacity": 2.2
+    },
+    "features": [
+      "4x4"
+    ],
+    "description": "Toyota Hilux 2.2 4x4 285k klms Clean truck runs and drives lovely",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6071109_nissan-navara-2-2l-2013/",
+    "make": "Nissan",
+    "model": "Navara 2.2L",
+    "year": 2013,
+    "mileage": 278000,
+    "price": 10500,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "flatbed",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 0,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "NISSAN-2013-NAVARA-2.2L-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/d9/49/d94960485c959bf31cce4b0cd8ed1fcd.webp"
+    ],
+    "specifications": {
+      "engineCapacity": 2.2
+    },
+    "features": [
+      "4x4"
+    ],
+    "description": "Nissan Navara 2.2 4x4 278k klms Starts runs and drives lovely",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6071107_isuzu-rodeo-2-2l-2011/",
+    "make": "Isuzu",
+    "model": "Rodeo 2.2L",
+    "year": 2011,
+    "mileage": 182000,
+    "price": 12500,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "flatbed",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 0,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "ISUZU-2011-RODEO-2.2L-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/3f/ef/3fefd9e006caa35df6f98c91ef0cd72a.webp"
+    ],
+    "specifications": {
+      "engineCapacity": 2.2
+    },
+    "features": [
+      "4x4",
+      "Lift kit",
+      "Roof rack",
+      "New tires",
+      "Bash plates",
+      "Chassis protection"
+    ],
+    "description": "Isuzu rodeo 2.2 4x4 182k klm and ful service history. Has been maintained nice. Starts runs and drives brilliant. Has lift kit, roof rack, new tires all round, bash plates and plenty of under body and chassis protection.",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6063516_mitsubishi-l200-2-3l-2020/",
+    "make": "Mitsubishi",
+    "model": "L200 2.3L",
+    "year": 2020,
+    "mileage": 166000,
+    "price": 23500,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "flatbed",
+    "engineType": "diesel",
+    "transmission": "automatic",
+    "horsepower": 0,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "MITSUBISHI-2020-L200-2.3L-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/f0/b9/f0b9aaf2dae134f66e850f1c95e33b16.webp"
+    ],
+    "specifications": {
+      "engineCapacity": 2.3
+    },
+    "features": [
+      "4x4",
+      "Automatic"
+    ],
+    "description": "Mitsubishi l200 2.3 4x4 automatic with only 166k klms Starts runs and drives lovely",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6066453_isuzu-d-max-2-2l-2018/",
+    "make": "Isuzu",
+    "model": "D-Max 2.2L",
+    "year": 2018,
+    "mileage": 224000,
+    "price": 14000,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "flatbed",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 0,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "ISUZU-2018-DMAX-2.2L-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/5f/a6/5fa6f3bb0a95b71bce8e79c88e831742.webp"
+    ],
+    "specifications": {
+      "engineCapacity": 2.2
+    },
+    "features": [
+      "King cab",
+      "Service history"
+    ],
+    "description": "Isuzu Dmax 2.2 King cab 2018 with only 224k klms Has a service history and has been well maintained Clean truck runs and drives lovely",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6070583_daf-7-5-tonne-2018/",
+    "make": "DAF",
+    "model": "LF 180",
+    "year": 2018,
+    "mileage": 274000,
+    "price": 16500,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "box-truck",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 180,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "DAF-2018-7.5T-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/52/8f/528f9063e3a48af8e6f9e91c4d4d1ad9.webp"
+    ],
+    "specifications": {
+      "gvw": 7500
+    },
+    "features": [
+      "Tail lift",
+      "7.5 tonne"
+    ],
+    "description": "Daf lf 180 7.5 tonne 2018 with 274k klms. Tail lift works. Runs and drives really nice. Strong truck.",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6067385_isuzu-7-5-tonne-2016/",
+    "make": "Isuzu",
+    "model": "Forward 7.5T",
+    "year": 2015,
+    "mileage": 200000,
+    "price": 15000,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "box-truck",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 0,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "ISUZU-2016-FORWARD-7.5T-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/1b/3c/1b3cd99da0eed5d90bfacc6835b60c5a.webp"
+    ],
+    "specifications": {
+      "gvw": 7500
+    },
+    "features": [
+      "20ft box",
+      "Tail lift"
+    ],
+    "description": "Isuzu 7.5 tonne 2015 with only 200k klms 20ft box Runs and drives brilliant Tail lift works",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6063230_2011-man-with-crane-flat-back/",
+    "make": "MAN",
+    "model": "TGL 7.5T",
+    "year": 2011,
+    "mileage": 300000,
+    "price": 21500,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "flatbed",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 0,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "MAN-2011-TGL-CRANE-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/aa/59/aa59e8f56fd7fc1de4b21e61a65f2a8a.webp"
+    ],
+    "specifications": {
+      "gvw": 7500
+    },
+    "features": [
+      "Crane",
+      "Flatback"
+    ],
+    "description": "2011 MAN 7.5 Tonne Flat back with crane Strong truck runs drives lovely",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6055003_daf-box-2016/",
+    "make": "DAF",
+    "model": "LF280",
+    "year": 2016,
+    "mileage": 235000,
+    "price": 27000,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "box-truck",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 280,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "DAF-2016-BOX-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/c7/ba/c7ba8dd70834d5c28b9ac30bc34de7fe.webp"
+    ],
+    "specifications": {
+      "gvw": 18000
+    },
+    "features": [
+      "18 tonne",
+      "Sleeper cab"
+    ],
+    "description": "Daf lf280 18 tonne sleeper cab 2016 with only 235k klms Runs and drives lovely Strong truck",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6048844_ford-transit-tipper-2016/",
+    "make": "Ford",
+    "model": "Transit Tipper",
+    "year": 2016,
+    "mileage": 150000,
+    "price": 15000,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "dump-truck",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 0,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "FORD-2016-TRANSIT-TIPPER-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/88/dc/88dc06c13e9f5129c01a9729b8d0a1a6.webp"
+    ],
+    "specifications": {},
+    "features": [
+      "Tipper",
+      "Curtain sider"
+    ],
+    "description": "Ford transit 2016 Tipper curtain sider £15,000 Runs and drives lovely",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6048846_iveco-with-crane-6-5-tonne/",
+    "make": "Iveco",
+    "model": "Daily 6.5T",
+    "year": 2009,
+    "mileage": 103000,
+    "price": 22500,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "flatbed",
+    "engineType": "diesel",
+    "transmission": "manual",
+    "horsepower": 0,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "IVECO-2015-EUROCARGO-CRANE-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/61/e3/61e347a7a5e0815fbbe0cfc67c12f61d.webp"
+    ],
+    "specifications": {
+      "gvw": 6500
+    },
+    "features": [
+      "Crane",
+      "Low mileage"
+    ],
+    "description": "Iveco 6.5 tonne with crane 2009 with only 64k miles Runs and drives brilliant",
+    "available": true,
+    "featured": false
+  },
+  {
+    "bazarakiUrl": "https://www.bazaraki.com/adv/6047893_isuzu-forward-n75-190-auto/",
+    "make": "Isuzu",
+    "model": "Forward N75 190",
+    "year": 2016,
+    "mileage": 278000,
+    "price": 14300,
+    "currency": "EUR",
+    "condition": "used",
+    "category": "box-truck",
+    "engineType": "diesel",
+    "transmission": "automatic",
+    "horsepower": 190,
+    "location": "Cyprus",
+    "country": "Cyprus",
+    "vin": "ISUZU-FORWARD-N75-190-AUTO-001",
+    "images": [
+      "https://cdn1.bazaraki.com/media/cache1/0c/7d/0c7da78ab9e0ccb6c12d8adbe2b38154.webp"
+    ],
+    "specifications": {},
+    "features": [
+      "Automatic"
+    ],
+    "description": "Isuzu forward n75 190 automatic 2016 with 278k klms Runs and drives brilliant",
+    "available": true,
+    "featured": false
+  }
+]
