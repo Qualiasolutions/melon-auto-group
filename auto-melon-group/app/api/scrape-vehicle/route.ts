@@ -43,8 +43,6 @@ export async function POST(request: NextRequest) {
         formats: ['markdown', 'html'],
         onlyMainContent: false, // Get full content including metadata
         waitFor: 3000, // Wait longer for dynamic content
-        includeRawHtml: true,
-        screenshot: false,
         removeBase64Images: true,
         actions: [
           {

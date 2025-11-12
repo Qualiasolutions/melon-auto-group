@@ -74,26 +74,26 @@ export default function VehiclesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Vehicle Management</h1>
-          <p className="text-slate-600 mt-1">{vehicles.length} total vehicles</p>
+          <h1 className="text-2xl font-semibold text-gray-900">Vehicle Management</h1>
+          <p className="text-gray-600 mt-1">{vehicles.length} total vehicles</p>
         </div>
-        <Button asChild className="bg-gradient-to-r from-brand-red to-orange-600 hover:from-brand-red-dark hover:to-orange-700 shadow-lg">
+        <Button asChild className="bg-red-600 hover:bg-red-700 text-white">
           <Link href="/admin/vehicles/new">
             <Plus className="h-4 w-4 mr-2" />
-            Add New Vehicle
+            Add Vehicle
           </Link>
         </Button>
       </div>
 
       {/* Search */}
-      <Card className="border-2 border-slate-200">
+      <Card className="border border-gray-200">
         <CardContent className="pt-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <Input
               type="text"
               placeholder="Search by make, model, or category..."
-              className="pl-10 h-12"
+              className="pl-10 h-10"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -102,59 +102,59 @@ export default function VehiclesPage() {
       </Card>
 
       {/* Vehicles Table */}
-      <Card className="border-2 border-slate-200 shadow-lg">
+      <Card className="border border-gray-200">
         <CardHeader>
-          <CardTitle>All Vehicles ({filteredVehicles.length})</CardTitle>
+          <CardTitle className="text-lg">All Vehicles ({filteredVehicles.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brand-red"></div>
-              <p className="mt-2 text-slate-600">Loading vehicles...</p>
+              <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-red-600"></div>
+              <p className="mt-2 text-gray-600">Loading vehicles...</p>
             </div>
           ) : filteredVehicles.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Vehicle</TableHead>
-                    <TableHead>Year</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead className="text-gray-700">Vehicle</TableHead>
+                    <TableHead className="text-gray-700">Year</TableHead>
+                    <TableHead className="text-gray-700">Price</TableHead>
+                    <TableHead className="text-gray-700">Category</TableHead>
+                    <TableHead className="text-gray-700">Status</TableHead>
+                    <TableHead className="text-gray-700">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredVehicles.map((vehicle) => (
-                    <TableRow key={vehicle.id} className="hover:bg-slate-50">
+                    <TableRow key={vehicle.id} className="hover:bg-gray-50">
                       <TableCell>
                         <div>
-                          <p className="font-semibold text-slate-900">{vehicle.make} {vehicle.model}</p>
-                          <p className="text-sm text-slate-600">{vehicle.vin?.substring(0, 10)}...</p>
+                          <p className="font-medium text-gray-900">{vehicle.make} {vehicle.model}</p>
+                          <p className="text-sm text-gray-500">{vehicle.vin?.substring(0, 10)}...</p>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="font-medium">{vehicle.year}</span>
+                        <span className="text-gray-900">{vehicle.year}</span>
                       </TableCell>
                       <TableCell>
-                        <span className="font-bold text-brand-red">€{vehicle.price?.toLocaleString()}</span>
+                        <span className="font-semibold text-red-600">€{vehicle.price?.toLocaleString()}</span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="capitalize">
+                        <Badge variant="outline" className="capitalize text-gray-600 border-gray-300">
                           {vehicle.category?.replace('-', ' ')}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col gap-1">
                           <Badge
-                            className={`cursor-pointer ${vehicle.available ? 'bg-slate-700 hover:bg-slate-800 text-white' : 'bg-slate-400 hover:bg-slate-500 text-white'}`}
+                            className={`cursor-pointer ${vehicle.available ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                             onClick={() => toggleAvailability(vehicle.id, vehicle.available)}
                           >
                             {vehicle.available ? 'Available' : 'Sold'}
                           </Badge>
                           {vehicle.featured && (
-                            <Badge className="bg-brand-red hover:bg-red-700 text-white">Featured</Badge>
+                            <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Featured</Badge>
                           )}
                         </div>
                       </TableCell>
@@ -164,6 +164,7 @@ export default function VehiclesPage() {
                             variant="outline"
                             size="sm"
                             asChild
+                            className="border-gray-200"
                           >
                             <Link href={`/inventory/${vehicle.id}`} target="_blank">
                               <Eye className="h-4 w-4" />
@@ -173,6 +174,7 @@ export default function VehiclesPage() {
                             variant="outline"
                             size="sm"
                             asChild
+                            className="border-gray-200"
                           >
                             <Link href={`/admin/vehicles/${vehicle.id}/edit`}>
                               <Edit className="h-4 w-4" />
@@ -182,7 +184,7 @@ export default function VehiclesPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleDelete(vehicle.id)}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            className="border-red-200 text-red-600 hover:bg-red-50"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -195,7 +197,7 @@ export default function VehiclesPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-slate-600">No vehicles found</p>
+              <p className="text-gray-600">No vehicles found</p>
               <Button asChild className="mt-4" variant="outline">
                 <Link href="/admin/vehicles/new">Add your first vehicle</Link>
               </Button>
