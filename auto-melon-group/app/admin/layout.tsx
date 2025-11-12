@@ -34,14 +34,14 @@ export default function AdminLayout({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="min-h-screen bg-gray-50">
       {/* Mobile menu button */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <Button
           variant="outline"
           size="icon"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="bg-white shadow-lg"
+          className="bg-white border-gray-200 shadow-sm"
         >
           {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
@@ -49,25 +49,25 @@ export default function AdminLayout({
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-40 w-72 transform transition-transform duration-300 ease-in-out lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0",
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700 shadow-2xl">
+        <div className="h-full bg-white border-r border-gray-200 shadow-sm">
           {/* Logo */}
-          <div className="h-20 flex items-center justify-center border-b border-slate-700 bg-slate-900/50">
+          <div className="h-16 flex items-center px-6 border-b border-gray-200">
             <Link href="/admin/dashboard" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-red to-orange-600 flex items-center justify-center shadow-lg">
-                <Truck className="h-6 w-6 text-white" />
+              <div className="w-8 h-8 bg-red-600 flex items-center justify-center">
+                <Truck className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white tracking-tight">Admin Panel</h1>
-                <p className="text-xs text-slate-400">Truck Management</p>
+                <h1 className="text-lg font-semibold text-gray-900">Admin Panel</h1>
+                <p className="text-xs text-gray-500">Auto Melon Group</p>
               </div>
             </Link>
           </div>
 
           {/* Navigation */}
-          <nav className="p-4 space-y-2">
+          <nav className="p-4 space-y-1">
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
               return (
@@ -76,13 +76,13 @@ export default function AdminLayout({
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
+                    "flex items-center gap-3 px-3 py-2 rounded-sm text-sm font-medium transition-colors duration-150",
                     isActive
-                      ? "bg-gradient-to-r from-brand-red to-orange-600 text-white shadow-lg shadow-brand-red/30"
-                      : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                      ? "bg-red-50 text-red-700 border-l-2 border-red-600"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                   )}
                 >
-                  <item.icon className="h-5 w-5" />
+                  <item.icon className="h-4 w-4" />
                   {item.name}
                 </Link>
               )
@@ -90,19 +90,19 @@ export default function AdminLayout({
           </nav>
 
           {/* User section */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700 bg-slate-900/50">
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-800/50">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-brand-red to-red-700 flex items-center justify-center text-white font-bold shadow-lg">
+          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-8 bg-gray-100 flex items-center justify-center text-gray-600 font-medium text-sm">
                 A
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-white">Admin User</p>
-                <p className="text-xs text-slate-400">admin@automelon.com</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">Admin User</p>
+                <p className="text-xs text-gray-500 truncate">admin@automelon.com</p>
               </div>
             </div>
             <Button
               variant="ghost"
-              className="w-full mt-2 text-slate-300 hover:text-white hover:bg-slate-800"
+              className="w-full justify-start text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               asChild
             >
               <Link href="/">
@@ -115,18 +115,18 @@ export default function AdminLayout({
       </aside>
 
       {/* Main content */}
-      <main className="lg:pl-72">
+      <main className="lg:pl-64">
         <div className="min-h-screen">
           {/* Top bar */}
-          <div className="h-20 border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-30 shadow-sm">
-            <div className="h-full px-8 flex items-center justify-between">
+          <div className="h-16 border-b border-gray-200 bg-white">
+            <div className="h-full px-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900">
+                <h2 className="text-xl font-semibold text-gray-900">
                   {navigation.find(item => pathname === item.href)?.name || 'Admin Panel'}
                 </h2>
-                <p className="text-sm text-slate-600">Manage your truck inventory</p>
+                <p className="text-sm text-gray-500">Vehicle Management System</p>
               </div>
-              <Button className="bg-gradient-to-r from-brand-red to-orange-600 hover:from-brand-red-dark hover:to-orange-700 shadow-lg" asChild>
+              <Button variant="outline" className="border-red-600 text-red-600 hover:bg-red-50" asChild>
                 <Link href="/">
                   View Website
                 </Link>
@@ -135,7 +135,7 @@ export default function AdminLayout({
           </div>
 
           {/* Page content */}
-          <div className="p-8">
+          <div className="p-6">
             {children}
           </div>
         </div>
