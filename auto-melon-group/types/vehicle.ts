@@ -7,14 +7,14 @@ export interface Vehicle {
   price: number // base price in EUR
   currency: "EUR" | "USD"
   condition: "new" | "used" | "certified"
-  category: "tractor-unit" | "tipper" | "box-truck" | "flatbed" | "refrigerated" | "tanker" | "curtainside" | "dropside" | "crane-truck" | "recovery" | "concrete-mixer" | "low-loader" | "trailer" | "pickup" | "van" | "construction" | "logging" | "double-deck" | "insulated" | "specialty" | "semi-truck" | "dump-truck" | "other"
+  category: "tractor-unit" | "tipper" | "box-truck" | "flatbed" | "refrigerated" | "tanker" | "curtainside" | "dropside" | "crane-truck" | "recovery" | "concrete-mixer" | "low-loader" | "trailer" | "pickup" | "van" | "construction" | "logging" | "double-deck" | "insulated" | "specialty" | "semi-truck" | "dump-truck" | "4x4" | "other"
   engineType: "diesel" | "electric" | "hybrid" | "gas"
   transmission: "manual" | "automatic" | "automated-manual"
   horsepower: number
+  engineSize?: number // in liters
   location: string
   country: string
   vin: string
-  reference_url?: string // Original listing URL
   images: string[] // Array of image URLs
   specifications: VehicleSpecifications
   features: string[]
@@ -128,6 +128,7 @@ export const vehicleCategories = [
   { value: "trailer", label: "Trailer" },
   { value: "pickup", label: "Pickup" },
   { value: "van", label: "Van" },
+  { value: "4x4", label: "4x4" },
   { value: "construction", label: "Construction Equipment" },
   { value: "logging", label: "Logging Truck" },
   { value: "double-deck", label: "Double Deck" },

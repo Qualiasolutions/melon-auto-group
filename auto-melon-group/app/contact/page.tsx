@@ -28,13 +28,19 @@ function ContactForm() {
     setIsSubmitting(true)
 
     try {
-      // TODO: Implement contact form submission
-      // Option 1: Create inquiries table in Supabase (run lib/supabase/migrations/create_inquiries_table.sql)
-      // Option 2: Use email service (SendGrid, Resend, etc.)
-      // Option 3: Use form service (Formspree, Form submit, etc.)
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
 
-      // Simulate submission for now
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to submit inquiry')
+      }
 
       setSubmitted(true)
       setFormData({ name: '', email: '', phone: '', message: '' })

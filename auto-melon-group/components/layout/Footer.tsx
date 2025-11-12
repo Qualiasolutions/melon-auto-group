@@ -65,9 +65,22 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-white/10 mt-8 pt-6 text-sm text-white/60 text-center">
-          <p>&copy; {new Date().getFullYear()} Auto Melon Group. All rights reserved.</p>
+        {/* Copyright & Powered By */}
+        <div className="border-t border-white/10 mt-8 pt-6 text-sm text-white/60">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>&copy; {new Date().getFullYear()} Auto Melon Group. All rights reserved.</p>
+            <p>
+              Powered by{" "}
+              <a
+                href="https://www.qualiasolutions.cy"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-red hover:text-orange-500 font-semibold transition-colors"
+              >
+                Qualia Solutions
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

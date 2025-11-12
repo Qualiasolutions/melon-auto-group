@@ -135,14 +135,53 @@ export default function CustomOrderPage() {
         status: 'pending',
       }
 
+      // Save to Supabase database
       // @ts-expect-error - Supabase types don't perfectly match our form data
-      const { error } = await supabase
+      const { error: dbError } = await supabase
         .from('custom_orders')
         .insert([orderData])
 
-      if (error) {
-        console.error('Supabase error:', error)
-        throw new Error(error.message || 'Failed to submit order')
+      if (dbError) {
+        console.error('Supabase error:', dbError)
+        // Continue even if database save fails - we still want to send the email
+      }
+
+      // Send email notification
+      const emailResponse = await fetch('/api/custom-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          company: data.company,
+          truckType: data.truckType,
+          preferredMake: data.preferredMake,
+          budgetRange: data.budgetRange,
+          engineType: data.engineType,
+          transmission: data.transmission,
+          axleConfiguration: data.axleConfiguration,
+          horsepowerMin: data.horsepowerMin,
+          gvwMin: data.gvwMin,
+          cabType: data.cabType,
+          emissionStandard: data.emissionStandard,
+          specialFeatures: selectedFeatures,
+          customRequirements: data.customRequirements,
+          desiredDelivery: data.desiredDelivery,
+          intendedUse: data.intendedUse,
+          currentFleetSize: data.currentFleetSize,
+          tradeInAvailable: data.tradeInAvailable,
+          tradeInDetails: data.tradeInDetails,
+          financingNeeded: data.financingNeeded,
+        }),
+      })
+
+      if (!emailResponse.ok) {
+        const emailError = await emailResponse.json()
+        console.error('Email error:', emailError)
+        throw new Error('Failed to send notification email')
       }
 
       toast.success("Order submitted successfully!", {

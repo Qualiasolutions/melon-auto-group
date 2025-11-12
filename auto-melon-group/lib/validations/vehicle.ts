@@ -9,10 +9,7 @@ export const vehicleFormSchema = z.object({
     .int("Year must be a whole number")
     .min(1900, "Year must be after 1900")
     .max(new Date().getFullYear() + 2, "Year cannot be more than 2 years in the future"),
-  vin: z.string()
-    .min(1, "VIN is required")
-    .max(100, "VIN must be less than 100 characters"),
-  reference_url: z.string(),
+  vin: z.string().max(100, "VIN must be less than 100 characters").optional(),
   category: z.string().min(1, "Category is required"),
   condition: z.enum(["new", "used", "certified"]),
 
@@ -27,6 +24,9 @@ export const vehicleFormSchema = z.object({
   horsepower: z.number()
     .int("Horsepower must be a whole number")
     .positive("Horsepower must be greater than 0"),
+  engineSize: z.number()
+    .positive("Engine size must be greater than 0")
+    .optional(),
   engineType: z.enum(["diesel", "electric", "hybrid", "gas"]),
   transmission: z.enum(["manual", "automatic", "automated-manual"]),
 

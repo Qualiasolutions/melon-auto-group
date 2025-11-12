@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -46,11 +46,11 @@ export default function NewVehiclePage() {
       engineType: 'diesel',
       transmission: 'manual',
       horsepower: 0,
+      engineSize: 0,
       location: '',
       country: 'Cyprus',
       vin: '',
       description: '',
-      reference_url: '',
       available: true,
       featured: false,
       images: [],
@@ -58,6 +58,54 @@ export default function NewVehiclePage() {
       features: [],
     },
   })
+
+  // Load imported data from sessionStorage
+  React.useEffect(() => {
+    const importedData = sessionStorage.getItem('importedVehicleData')
+    if (importedData) {
+      try {
+        const data = JSON.parse(importedData)
+
+        // Set form values
+        if (data.make) setValue('make', data.make)
+        if (data.model) setValue('model', data.model)
+        if (data.year) setValue('year', data.year)
+        if (data.mileage) setValue('mileage', data.mileage)
+        if (data.price) setValue('price', data.price)
+        if (data.currency) setValue('currency', data.currency)
+        if (data.condition) setValue('condition', data.condition)
+        if (data.category) setValue('category', data.category)
+        if (data.engineType) setValue('engineType', data.engineType)
+        if (data.transmission) setValue('transmission', data.transmission)
+        if (data.horsepower) setValue('horsepower', data.horsepower)
+        if (data.engineSize) setValue('engineSize', data.engineSize)
+        if (data.location) setValue('location', data.location)
+        if (data.country) setValue('country', data.country)
+        if (data.description) setValue('description', data.description)
+        if (data.vin) setValue('vin', data.vin)
+
+        // Set arrays and objects
+        if (data.images && Array.isArray(data.images)) {
+          setImageUrls(data.images)
+        }
+        if (data.features && Array.isArray(data.features)) {
+          setFeatures(data.features)
+        }
+        if (data.specifications && typeof data.specifications === 'object') {
+          setSpecifications(data.specifications)
+        }
+
+        // Clear sessionStorage after loading
+        sessionStorage.removeItem('importedVehicleData')
+
+        toast.success("Imported data loaded!", {
+          description: "Review and adjust the vehicle information before saving",
+        })
+      } catch (error) {
+        console.error('Error loading imported data:', error)
+      }
+    }
+  }, [])
 
   const make = watch('make')
   const category = watch('category')
@@ -141,10 +189,10 @@ export default function NewVehiclePage() {
         engine_type: data.engineType,
         transmission: data.transmission,
         horsepower: data.horsepower,
+        engine_size: data.engineSize || null,
         location: data.location,
         country: data.country,
-        vin: data.vin,
-        reference_url: data.reference_url || null,
+        vin: data.vin || null,
         images: imageUrls,
         specifications: specifications,
         features: features,
@@ -266,25 +314,6 @@ export default function NewVehiclePage() {
                 )}
               </div>
 
-              {/* VIN */}
-              <div className="space-y-2">
-                <Label htmlFor="vin">
-                  VIN <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="vin"
-                  {...register('vin')}
-                  placeholder="Vehicle Identification Number"
-                  className={errors.vin ? "border-red-500" : ""}
-                />
-                {errors.vin && (
-                  <p className="text-sm text-red-500 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {errors.vin.message}
-                  </p>
-                )}
-              </div>
-
               {/* Category */}
               <div className="space-y-2">
                 <Label htmlFor="category">
@@ -327,25 +356,6 @@ export default function NewVehiclePage() {
                   <p className="text-sm text-red-500 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
                     {errors.condition.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Reference URL */}
-              <div className="space-y-2 md:col-span-2 lg:col-span-3">
-                <Label htmlFor="reference_url">Reference URL (Optional)</Label>
-                <Input
-                  id="reference_url"
-                  type="url"
-                  {...register('reference_url')}
-                  placeholder="https://example.com/listing"
-                  className={errors.reference_url ? "border-red-500" : ""}
-                />
-                <p className="text-xs text-slate-500">Original listing URL for reference</p>
-                {errors.reference_url && (
-                  <p className="text-sm text-red-500 flex items-center gap-1">
-                    <AlertCircle className="h-3 w-3" />
-                    {errors.reference_url.message}
                   </p>
                 )}
               </div>
@@ -411,7 +421,7 @@ export default function NewVehiclePage() {
                   id="horsepower"
                   type="number"
                   {...register('horsepower', { valueAsNumber: true })}
-                  placeholder="0"
+                  placeholder="e.g., 450"
                   className={errors.horsepower ? "border-red-500" : ""}
                 />
                 {errors.horsepower && (
@@ -420,6 +430,28 @@ export default function NewVehiclePage() {
                     {errors.horsepower.message}
                   </p>
                 )}
+              </div>
+
+              {/* Engine Size */}
+              <div className="space-y-2">
+                <Label htmlFor="engineSize">
+                  Engine Size (L)
+                </Label>
+                <Input
+                  id="engineSize"
+                  type="number"
+                  step="0.1"
+                  {...register('engineSize', { valueAsNumber: true })}
+                  placeholder="e.g., 2.0"
+                  className={errors.engineSize ? "border-red-500" : ""}
+                />
+                {errors.engineSize && (
+                  <p className="text-sm text-red-500 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {errors.engineSize.message}
+                  </p>
+                )}
+                <p className="text-xs text-slate-500">Engine displacement in liters</p>
               </div>
 
               {/* Engine Type */}

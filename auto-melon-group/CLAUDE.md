@@ -107,22 +107,38 @@ app/                    # Next.js App Router pages
 ├── layout.tsx          # Root layout with Header/Footer
 ├── page.tsx            # Homepage (server component)
 ├── inventory/
-│   ├── page.tsx        # Inventory listing (client component)
+│   ├── page.tsx        # Inventory listing (client component with Suspense)
 │   └── [id]/page.tsx   # Vehicle detail page
 ├── contact/page.tsx    # Contact page
-└── about/page.tsx      # About page
+├── about/page.tsx      # About page
+├── faq/page.tsx        # FAQ page
+├── custom-order/page.tsx # Custom order request page
+├── loading.tsx         # Global loading state
+├── not-found.tsx       # 404 page
+└── admin/              # Admin dashboard (protected routes)
+    ├── layout.tsx      # Admin layout wrapper
+    ├── dashboard/page.tsx    # Admin overview
+    ├── vehicles/
+    │   ├── page.tsx          # Vehicle management list
+    │   ├── new/page.tsx      # Add new vehicle form
+    │   ├── [id]/edit/page.tsx # Edit vehicle form
+    │   └── import/page.tsx   # Bulk import interface
+    └── settings/page.tsx     # Admin settings
 
 components/
 ├── ui/                 # shadcn/ui primitives (button, card, dialog, etc.)
 ├── layout/             # Layout components (Header, Footer)
-├── sections/           # Page sections (Hero, VehicleCard)
-└── filters/            # Filter components (FilterSidebar, ActiveFilters)
+├── sections/           # Page sections (Hero, VehicleCard, VehicleGallery, SearchHeader)
+└── filters/            # Filter components (FilterSidebar, ActiveFilters, ViewOptions, QuickFilters)
 
 lib/
 ├── utils.ts            # Utility functions (cn for class merging)
-└── supabase/
-    ├── client.ts       # Supabase client initialization
-    └── schema.sql      # Database schema
+├── supabase/
+│   ├── client.ts       # Supabase client initialization
+│   └── schema.sql      # Database schema
+└── validations/        # Zod validation schemas
+    ├── vehicle.ts      # Vehicle form validation
+    └── custom-order.ts # Custom order form validation
 
 types/
 ├── vehicle.ts          # Vehicle types and filter definitions
@@ -130,19 +146,32 @@ types/
 
 config/
 └── site.ts             # Site-wide configuration (contact, links, metadata)
+
+scripts/                # Data management and utility scripts
+├── check-setup.ts           # Environment verification
+├── scrape-bazaraki.ts       # Web scraping
+├── transform-scraped-data.ts # Data normalization
+├── import-vehicles.ts       # Bulk vehicle import
+├── list-vehicles.ts         # List database vehicles
+├── remove-vehicles.ts       # Remove vehicles
+└── [image scripts]          # Image processing utilities
 ```
 
 ### Key Architectural Patterns
 
 **1. Server/Client Component Split**
 - Homepage (`app/page.tsx`): Server Component - fetches featured vehicles at build/request time
-- Inventory Page (`app/inventory/page.tsx`): Client Component - handles interactive filtering, search, and real-time state
+- Inventory Page (`app/inventory/page.tsx`): Client Component wrapped in Suspense - handles interactive filtering, search, and real-time state
 - Use `"use client"` directive when components need useState, useEffect, or event handlers
+- Wrap client components with searchParams in `<Suspense>` to prevent static generation errors
+- Pattern: Export default wrapper component with Suspense, implement main logic in separate component
 
 **2. Database Interaction**
 - All database queries use Supabase client (`lib/supabase/client.ts`)
 - Type-safe queries with `Database` type from `types/database.ts`
 - RLS (Row Level Security) enabled - public read access to available vehicles
+- **IMPORTANT: Database uses snake_case columns** (`created_at`, `engine_type`), TypeScript interfaces use camelCase (`createdAt`, `engineType`)
+- Supabase automatically handles the conversion for top-level columns
 - Server-side fetching pattern:
   ```typescript
   const { data, error } = await supabase
@@ -150,14 +179,21 @@ config/
     .select('*')
     .eq('available', true)
   ```
+- Filtering with `in()` for arrays: `.in('make', ['Mercedes-Benz', 'Scania'])`
+- Range filtering: `.gte('price', min).lte('price', max)`
+- Text search with `or()`: `.or('make.ilike.%term%,model.ilike.%term%')`
 
-**3. Type System**
+**3. Type System & Validation**
 - Central types in `types/vehicle.ts`:
   - `Vehicle`: Complete vehicle entity
   - `VehicleFilters`: Filter state and URL params
   - `VehicleSpecifications`: JSONB specifications field
 - Database types auto-generated in `types/database.ts`
+- Form validation with Zod schemas in `lib/validations/`:
+  - `lib/validations/vehicle.ts`: Vehicle creation/editing forms
+  - `lib/validations/custom-order.ts`: Custom order request forms
 - Strict TypeScript with path aliases (`@/*` maps to root)
+- Use Zod with React Hook Form via `@hookform/resolvers/zod`
 
 **4. Filtering Architecture**
 - Filter state managed in `app/inventory/page.tsx`
@@ -245,21 +281,38 @@ Components are copied into the project (not npm packages) for full customization
 ### Adding a New Page
 1. Create file in `app/` directory (e.g., `app/services/page.tsx`)
 2. Use Server Component by default, add `"use client"` if needed
-3. Update Header navigation in `components/layout/Header.tsx`
-4. Add to sitemap if implementing SEO
+3. If using `useSearchParams`, wrap in Suspense (see `app/inventory/page.tsx` pattern)
+4. Update Header navigation in `components/layout/Header.tsx`
+5. Add to sitemap if implementing SEO
 
 ### Adding a New Filter
 1. Update `VehicleFilters` type in `types/vehicle.ts`
 2. Add filter UI in `components/filters/FilterSidebar.tsx`
 3. Implement query logic in `app/inventory/page.tsx` useEffect
-4. Handle filter removal in `handleFilterRemove` function
-5. Add to `ActiveFilters` display if needed
+4. **IMPORTANT**: Use snake_case for database column names in queries (e.g., `engine_type` not `engineType`)
+5. Create type guard if needed (e.g., `isMultiSelectKey` for array filters)
+6. Handle filter removal in `handleFilterRemove` function
+7. Add to `ActiveFilters` display if needed
 
 ### Modifying Database Schema
 1. Update `lib/supabase/schema.sql` with ALTER/CREATE statements
 2. Run SQL in Supabase dashboard SQL Editor
 3. Update `types/vehicle.ts` and `types/database.ts` to match
 4. Redeploy to Vercel if production database changed
+
+### Adding a New Form with Validation
+1. Create Zod schema in `lib/validations/` (e.g., `inquiry.ts`)
+2. Define form component with `useForm` hook from `react-hook-form`
+3. Use `zodResolver` to connect schema: `resolver: zodResolver(inquirySchema)`
+4. Use shadcn Form components for consistent styling
+5. Handle submission with proper error handling and loading states
+6. Example pattern:
+   ```typescript
+   const form = useForm<z.infer<typeof schema>>({
+     resolver: zodResolver(schema),
+     defaultValues: { /* ... */ }
+   })
+   ```
 
 ### Adding a New shadcn/ui Component
 ```bash
@@ -287,9 +340,9 @@ Edit `config/site.ts` - values used in Header, Footer, and metadata.
 
 ## Important Development Notes
 
-1. **Server vs Client Components**: Default to Server Components unless you need interactivity (useState, event handlers). Inventory page is client-side for real-time filtering; homepage is server-side for better performance.
+1. **Server vs Client Components**: Default to Server Components unless you need interactivity (useState, event handlers). Inventory page is client-side for real-time filtering; homepage is server-side for better performance. Wrap client components using `useSearchParams` in `<Suspense>` to avoid static generation errors.
 
-2. **Database Column Naming**: Supabase uses snake_case (`created_at`), but TypeScript interfaces use camelCase (`createdAt`). Make sure conversions are handled consistently.
+2. **Database Column Naming**: Database uses snake_case (`created_at`, `engine_type`), TypeScript uses camelCase (`createdAt`, `engineType`). Supabase client automatically converts top-level columns. When querying, use snake_case: `.in('engine_type', filters.engineType)`.
 
 3. **Image Handling**: Vehicle images are stored as URL arrays. Use Next.js `<Image>` component with proper sizing for optimization.
 
@@ -297,11 +350,15 @@ Edit `config/site.ts` - values used in Header, Footer, and metadata.
 
 5. **Environment Variables**: Prefix with `NEXT_PUBLIC_` for client-side access. Restart dev server after `.env.local` changes.
 
-6. **Filter State Management**: Filters in inventory page sync with URL params for shareable links. Use `useSearchParams` and `router.push` for URL updates.
+6. **Filter State Management**: Filters in inventory page sync with URL params for shareable links. Use `useSearchParams` and `router.push` for URL updates. Implement type guards for filter keys (see `isMultiSelectKey`, `isPriceKey` pattern in `app/inventory/page.tsx`).
 
-7. **Responsive Design**: Mobile-first approach. Test on small screens first. Use Tailwind breakpoints (`md:`, `lg:`) for larger screens.
+7. **Responsive Design**: Mobile-first approach. Test on small screens first. Use Tailwind breakpoints (`md:`, `lg:`) for larger screens. Filter sidebar is sticky on desktop, Sheet component for mobile.
 
 8. **Type Safety**: All Supabase queries should be typed with `Database` type. Cast results to `Vehicle[]` when needed.
+
+9. **Form Validation**: Use Zod schemas from `lib/validations/` with React Hook Form. Define schema, use `zodResolver`, and handle form submission with proper error handling.
+
+10. **Admin Dashboard**: Admin routes in `app/admin/` are currently unprotected. Implement authentication before deploying. Structure is in place for vehicle management, bulk import, and settings.
 
 ## Debugging and Troubleshooting
 

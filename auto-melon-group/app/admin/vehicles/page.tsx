@@ -122,7 +122,6 @@ export default function VehiclesPage() {
                     <TableHead>Price</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Reference</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -158,21 +157,6 @@ export default function VehiclesPage() {
                             <Badge className="bg-brand-red hover:bg-red-700 text-white">Featured</Badge>
                           )}
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        {vehicle.reference_url ? (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            asChild
-                          >
-                            <a href={vehicle.reference_url} target="_blank" rel="noopener noreferrer">
-                              <ExternalLink className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        ) : (
-                          <span className="text-xs text-slate-400">-</span>
-                        )}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">

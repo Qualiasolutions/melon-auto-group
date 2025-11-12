@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Truck, DollarSign, CheckCircle, TrendingUp, Package, AlertCircle } from "lucide-react"
+import { Truck, DollarSign, CheckCircle, TrendingUp, Package, AlertCircle, Download } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Vehicle } from "@/types/vehicle"
@@ -98,28 +98,51 @@ export default async function AdminDashboard() {
           <CardTitle className="text-2xl">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button asChild className="h-24 bg-gradient-to-r from-brand-red to-red-700 hover:from-red-700 hover:to-red-800 shadow-lg">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Smart Import - Featured */}
+            <Button asChild className="h-28 bg-gradient-to-br from-orange-600 via-brand-red to-red-700 hover:from-orange-700 hover:via-brand-red-dark hover:to-red-800 shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden group">
+              <Link href="/admin/vehicles/import">
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                <div className="flex flex-col items-center gap-2 relative z-10">
+                  <div className="relative">
+                    <Download className="h-9 w-9" />
+                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse" />
+                  </div>
+                  <span className="text-base font-bold">Smart Import</span>
+                  <span className="text-xs opacity-90">AI-Powered</span>
+                </div>
+              </Link>
+            </Button>
+
+            {/* Add New Vehicle */}
+            <Button asChild className="h-28 bg-gradient-to-r from-brand-red to-red-700 hover:from-red-700 hover:to-red-800 shadow-lg hover:shadow-xl transition-all duration-300">
               <Link href="/admin/vehicles/new">
                 <div className="flex flex-col items-center gap-2">
                   <Package className="h-8 w-8" />
-                  <span className="text-base font-semibold">Add New Vehicle</span>
+                  <span className="text-base font-semibold">Add Vehicle</span>
+                  <span className="text-xs opacity-90">Manual Entry</span>
                 </div>
               </Link>
             </Button>
-            <Button asChild className="h-24 bg-gradient-to-r from-red-600 to-brand-red hover:from-red-700 hover:to-red-800 shadow-lg">
+
+            {/* View All Vehicles */}
+            <Button asChild className="h-28 bg-gradient-to-r from-red-600 to-brand-red hover:from-red-700 hover:to-red-800 shadow-lg hover:shadow-xl transition-all duration-300">
               <Link href="/admin/vehicles">
                 <div className="flex flex-col items-center gap-2">
                   <Truck className="h-8 w-8" />
-                  <span className="text-base font-semibold">View All Vehicles</span>
+                  <span className="text-base font-semibold">All Vehicles</span>
+                  <span className="text-xs opacity-90">Manage Inventory</span>
                 </div>
               </Link>
             </Button>
-            <Button asChild variant="outline" className="h-24 border-2 border-brand-red text-brand-red hover:bg-red-50 hover:border-red-700">
+
+            {/* View Website */}
+            <Button asChild variant="outline" className="h-28 border-2 border-brand-red text-brand-red hover:bg-red-50 hover:border-red-700 shadow-lg hover:shadow-xl transition-all duration-300">
               <Link href="/">
                 <div className="flex flex-col items-center gap-2">
                   <AlertCircle className="h-8 w-8" />
                   <span className="text-base font-semibold">View Website</span>
+                  <span className="text-xs opacity-90">Public Site</span>
                 </div>
               </Link>
             </Button>

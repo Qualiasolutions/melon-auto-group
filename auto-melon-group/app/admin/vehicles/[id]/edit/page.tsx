@@ -34,7 +34,6 @@ export default function EditVehiclePage({ params }: { params: { id: string } }) 
     country: 'Cyprus',
     vin: '',
     description: '',
-    reference_url: '',
     available: true,
     featured: false,
   })
@@ -69,7 +68,6 @@ export default function EditVehiclePage({ params }: { params: { id: string } }) 
             country: typedData.country || 'Cyprus',
             vin: typedData.vin || '',
             description: typedData.description || '',
-            reference_url: typedData.reference_url || '',
             available: typedData.available ?? true,
             featured: typedData.featured ?? false,
           })
@@ -216,18 +214,6 @@ export default function EditVehiclePage({ params }: { params: { id: string } }) 
                   onChange={(e) => handleChange('vin', e.target.value)}
                   required
                 />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="reference_url">Reference URL (Optional)</Label>
-                <Input
-                  id="reference_url"
-                  type="url"
-                  value={formData.reference_url}
-                  onChange={(e) => handleChange('reference_url', e.target.value)}
-                  placeholder="https://example.com/listing"
-                />
-                <p className="text-xs text-slate-500">Original listing URL for reference</p>
               </div>
 
               <div className="space-y-2">
