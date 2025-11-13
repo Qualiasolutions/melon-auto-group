@@ -19,7 +19,7 @@ async function getFeaturedVehicles(): Promise<Vehicle[]> {
     .select('*')
     .eq('available', true)
     .order('created_at', { ascending: false })
-    .limit(6)
+    .limit(18)
 
   if (error) {
     // Log error in development only
@@ -291,8 +291,8 @@ export default async function Home() {
               We feature the world's leading commercial vehicle manufacturers
             </p>
           </div>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 max-w-5xl mx-auto">
-            {["Mercedes-Benz", "Scania", "Volvo", "DAF", "MAN", "Iveco"].map((brand) => (
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 max-w-6xl mx-auto">
+            {["Mercedes-Benz", "Scania", "Volvo", "DAF", "MAN", "Iveco", "Renault", "Freightliner", "Peterbilt", "Kenworth", "Mack", "Isuzu"].map((brand) => (
               <Link
                 key={brand}
                 href={`/inventory?make=${brand}`}
@@ -326,7 +326,7 @@ export default async function Home() {
                 <ArrowRight className="ml-3 h-6 w-6" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-3 border-white text-white hover:bg-white hover:text-brand-red shadow-2xl hover:shadow-3xl transition-all text-lg px-10 py-7 font-bold hover:scale-105">
+            <Button asChild size="lg" variant="outline" className="border-3 border-white bg-white text-brand-red hover:bg-slate-100 hover:text-brand-red-dark shadow-2xl hover:shadow-3xl transition-all text-lg px-10 py-7 font-bold hover:scale-105">
               <Link href="/contact">Contact Our Team</Link>
             </Button>
           </div>

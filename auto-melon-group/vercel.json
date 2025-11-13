@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "app/api/scrape-vehicle/route.ts": {
+      "maxDuration": 90
+    }
+  },
+  "installCommand": "npm install",
+  "buildCommand": "npm run build",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "regions": ["iad1"],
+  "env": {
+    "PLAYWRIGHT_BROWSERS_PATH": "/tmp/.ms-playwright",
+    "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "0"
+  }
+}

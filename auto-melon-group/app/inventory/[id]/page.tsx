@@ -147,8 +147,8 @@ export default async function VehicleDetailPage({
                   <p className="font-semibold">{formatMileage(vehicle.mileage)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Horsepower</p>
-                  <p className="font-semibold">{vehicle.horsepower} HP</p>
+                  <p className="text-sm text-muted-foreground">Engine Power</p>
+                  <p className="font-semibold">{vehicle.enginePower} HP</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Engine Type</p>

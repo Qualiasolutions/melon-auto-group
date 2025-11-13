@@ -21,9 +21,10 @@ export const vehicleFormSchema = z.object({
   mileage: z.number()
     .int("Mileage must be a whole number")
     .min(0, "Mileage cannot be negative"),
-  horsepower: z.number()
-    .int("Horsepower must be a whole number")
-    .positive("Horsepower must be greater than 0"),
+  enginePower: z.number()
+    .int("Engine power must be a whole number")
+    .min(0, "Engine power cannot be negative")
+    .optional(),
   engineSize: z.number()
     .positive("Engine size must be greater than 0")
     .optional(),

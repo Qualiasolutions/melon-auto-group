@@ -10,11 +10,12 @@ export interface Vehicle {
   category: "tractor-unit" | "tipper" | "box-truck" | "flatbed" | "refrigerated" | "tanker" | "curtainside" | "dropside" | "crane-truck" | "recovery" | "concrete-mixer" | "low-loader" | "trailer" | "pickup" | "van" | "construction" | "logging" | "double-deck" | "insulated" | "specialty" | "semi-truck" | "dump-truck" | "4x4" | "other"
   engineType: "diesel" | "electric" | "hybrid" | "gas"
   transmission: "manual" | "automatic" | "automated-manual"
-  horsepower: number
+  enginePower: number // in HP
   engineSize?: number // in liters
   location: string
   country: string
   vin: string
+  bazarakiUrl?: string // Original Bazaraki listing URL for reference
   images: string[] // Array of image URLs
   specifications: VehicleSpecifications
   features: string[]
@@ -104,6 +105,10 @@ export const vehicleMakes = [
   "MAN",
   "Iveco",
   "Renault",
+  "Mitsubishi",
+  "Isuzu",
+  "Toyota",
+  "Nissan",
   "Freightliner",
   "Peterbilt",
   "Kenworth",

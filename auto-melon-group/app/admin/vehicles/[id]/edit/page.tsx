@@ -1,8 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,14 +9,17 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Vehicle, vehicleMakes, vehicleCategories, engineTypes, transmissionTypes, conditionTypes } from "@/types/vehicle"
-import { Upload, X, Save, ArrowLeft } from "lucide-react"
+import { Upload, X, Save, ArrowLeft, ExternalLink } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
-export default function EditVehiclePage({ params }: { params: { id: string } }) {
+export default function EditVehiclePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [imageUrls, setImageUrls] = useState<string[]>([])
+  const [bazarakiUrl, setBazarakiUrl] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     make: '',
     model: '',
@@ -29,7 +31,7 @@ export default function EditVehiclePage({ params }: { params: { id: string } }) 
     category: 'tractor-unit',
     engineType: 'diesel',
     transmission: 'manual',
-    horsepower: 0,
+    enginePower: '',
     location: '',
     country: 'Cyprus',
     vin: '',
@@ -42,15 +44,14 @@ export default function EditVehiclePage({ params }: { params: { id: string } }) 
     async function fetchVehicle() {
       setFetching(true)
       try {
-        const { data, error } = await supabase
-          .from('vehicles')
-          .select('*')
-          .eq('id', params.id)
-          .single()
+        const response = await fetch(`/api/admin/vehicles/${id}`)
+        const result = await response.json()
 
-        if (error) throw error
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to fetch vehicle')
+        }
 
-        const typedData = data as Vehicle
+        const typedData = result.data as Vehicle
         if (typedData) {
           setFormData({
             make: typedData.make || '',
@@ -63,7 +64,7 @@ export default function EditVehiclePage({ params }: { params: { id: string } }) 
             category: typedData.category || 'tractor-unit',
             engineType: typedData.engineType || 'diesel',
             transmission: typedData.transmission || 'manual',
-            horsepower: typedData.horsepower || 0,
+            enginePower: typedData.enginePower || '',
             location: typedData.location || '',
             country: typedData.country || 'Cyprus',
             vin: typedData.vin || '',
@@ -72,6 +73,7 @@ export default function EditVehiclePage({ params }: { params: { id: string } }) 
             featured: typedData.featured ?? false,
           })
           setImageUrls(typedData.images || [])
+          setBazarakiUrl(typedData.bazarakiUrl || null)
         }
       } catch (error) {
         console.error('Error fetching vehicle:', error)
@@ -83,9 +85,9 @@ export default function EditVehiclePage({ params }: { params: { id: string } }) 
     }
 
     fetchVehicle()
-  }, [params.id, router])
+  }, [id, router])
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: string, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
@@ -106,21 +108,41 @@ export default function EditVehiclePage({ params }: { params: { id: string } }) 
 
     try {
       const vehicleData = {
-        ...formData,
-        images: imageUrls,
+        make: formData.make,
+        model: formData.model,
         year: parseInt(formData.year.toString()),
         mileage: parseInt(formData.mileage.toString()),
         price: parseFloat(formData.price.toString()),
-        horsepower: parseInt(formData.horsepower.toString()),
+        currency: formData.currency,
+        condition: formData.condition,
+        category: formData.category,
         engine_type: formData.engineType,
+        transmission: formData.transmission,
+        engine_power: formData.enginePower ? parseInt(formData.enginePower.toString()) : null,
+        location: formData.location,
+        country: formData.country,
+        vin: formData.vin || null,
+        images: imageUrls,
         specifications: {},
-        updated_at: new Date().toISOString(),
+        features: [],
+        description: formData.description || '',
+        available: formData.available,
+        featured: formData.featured,
       }
 
-      // @ts-ignore - Supabase type inference issue
-      const { data, error } = await supabase.from('vehicles').update(vehicleData).eq('id', params.id).select()
+      const response = await fetch(`/api/admin/vehicles/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(vehicleData),
+      })
 
-      if (error) throw error
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to update vehicle')
+      }
 
       alert('Vehicle updated successfully!')
       router.push('/admin/vehicles')
@@ -148,17 +170,27 @@ export default function EditVehiclePage({ params }: { params: { id: string } }) 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="outline" asChild>
-          <Link href="/admin/vehicles">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Edit Vehicle</h1>
-          <p className="text-slate-600 mt-1">Update vehicle details</p>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" asChild>
+            <Link href="/admin/vehicles">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">Edit Vehicle</h1>
+            <p className="text-slate-600 mt-1">Update vehicle details</p>
+          </div>
         </div>
+        {bazarakiUrl && (
+          <Button variant="outline" asChild className="border-blue-200 text-blue-600 hover:bg-blue-50">
+            <Link href={bazarakiUrl} target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="h-4 w-4 mr-2" />
+              View Original Listing
+            </Link>
+          </Button>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -279,14 +311,13 @@ export default function EditVehiclePage({ params }: { params: { id: string } }) 
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="horsepower">Horsepower *</Label>
+                <Label htmlFor="enginePower">Engine Power (HP)</Label>
                 <Input
-                  id="horsepower"
+                  id="enginePower"
                   type="number"
                   min="0"
-                  value={formData.horsepower}
-                  onChange={(e) => handleChange('horsepower', e.target.value)}
-                  required
+                  value={formData.enginePower}
+                  onChange={(e) => handleChange('enginePower', e.target.value)}
                 />
               </div>
 
@@ -346,7 +377,13 @@ export default function EditVehiclePage({ params }: { params: { id: string } }) 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {imageUrls.map((url, index) => (
                   <div key={index} className="relative group">
-                    <img src={url} alt={`Vehicle ${index + 1}`} className="w-full h-32 object-cover rounded-lg border-2 border-slate-200" />
+                    <Image
+                      src={url}
+                      alt={`Vehicle ${index + 1}`}
+                      width={300}
+                      height={128}
+                      className="w-full h-32 object-cover rounded-lg border-2 border-slate-200"
+                    />
                     <Button
                       type="button"
                       variant="destructive"

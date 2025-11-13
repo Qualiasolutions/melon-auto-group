@@ -45,7 +45,16 @@ export default function ImportVehiclePage() {
       const data = await response.json()
       setScrapedData(data)
 
-      // Store scraped data in sessionStorage for the form to retrieve
+      // Check if this is fallback/mock data - don't save it to sessionStorage
+      if (data.isFallbackData ||
+          (data.features && data.features.includes('Sample Data - AutoTrader temporarily unavailable')) ||
+          (data.description && data.description.includes('AutoTrader scraping is currently unavailable'))) {
+        console.log('🚫 Not saving fallback data to sessionStorage')
+        setError('AutoTrader scraping temporarily unavailable. Please try again later or use Bazaraki/Facebook Marketplace URLs.')
+        return
+      }
+
+      // Store real scraped data in sessionStorage for the form to retrieve
       sessionStorage.setItem('importedVehicleData', JSON.stringify(data))
 
       // Redirect to new vehicle form
@@ -102,7 +111,7 @@ export default function ImportVehiclePage() {
         <CardContent className="space-y-3 text-sm text-blue-900">
           <div className="flex items-start gap-3">
             <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">1</div>
-            <p>Copy the vehicle listing URL from <strong>Bazaraki.com</strong> or <strong>Facebook Marketplace</strong></p>
+            <p>Copy the vehicle listing URL from <strong>Bazaraki.com</strong>, <strong>Facebook Marketplace</strong>, or <strong>AutoTrader UK</strong> <span className="text-green-600">(All platforms now supported!)</span></p>
           </div>
           <div className="flex items-start gap-3">
             <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">2</div>
@@ -174,6 +183,10 @@ export default function ImportVehiclePage() {
                   <span className="w-2 h-2 rounded-full bg-blue-500"></span>
                   Facebook Marketplace
                 </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                  AutoTrader UK (New!)
+                </span>
               </div>
             </div>
           </div>
@@ -216,19 +229,19 @@ export default function ImportVehiclePage() {
         </Card>
 
         {/* API Status Card */}
-        <Card className="border-2 border-green-200 bg-gradient-to-br from-green-50 to-green-100/50 shadow-xl">
+        <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100/50 shadow-xl">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-green-900">
-              <span className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
+            <CardTitle className="flex items-center gap-2 text-purple-900">
+              <span className="w-3 h-3 rounded-full bg-purple-500 animate-pulse"></span>
               System Status
             </CardTitle>
-            <CardDescription className="text-green-700">
-              Firecrawl API Integration
+            <CardDescription className="text-purple-700">
+              Playwright + Firecrawl Integration
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-green-800">
-              <strong>Ready:</strong> The smart import feature uses Firecrawl API to automatically extract vehicle data from listings. Ensure your API key is configured in environment variables.
+            <p className="text-sm text-purple-800">
+              <strong>Ready:</strong> AutoTrader UK now uses Playwright for direct scraping, while Bazaraki and Facebook use Firecrawl. All platforms are supported!
             </p>
           </CardContent>
         </Card>

@@ -4,7 +4,6 @@ import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { supabase } from "@/lib/supabase/client"
 import { vehicleFormSchema, type VehicleFormData, imageUrlSchema } from "@/lib/validations/vehicle"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { vehicleMakes, vehicleCategories, engineTypes, transmissionTypes, conditionTypes } from "@/types/vehicle"
-import { Upload, X, Save, ArrowLeft, Plus, Loader2, ImageIcon, AlertCircle } from "lucide-react"
+import { X, Save, ArrowLeft, Plus, Loader2, ImageIcon, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
 
@@ -45,8 +44,8 @@ export default function NewVehiclePage() {
       category: 'tractor-unit',
       engineType: 'diesel',
       transmission: 'manual',
-      horsepower: 0,
-      engineSize: 0,
+      enginePower: undefined,
+      engineSize: undefined,
       location: '',
       country: 'Cyprus',
       vin: '',
@@ -66,6 +65,15 @@ export default function NewVehiclePage() {
       try {
         const data = JSON.parse(importedData)
 
+        // Check if this is fallback/mock data and skip loading if so
+        if (data.isFallbackData ||
+            (data.features && data.features.includes('Sample Data - AutoTrader temporarily unavailable')) ||
+            (data.description && data.description.includes('AutoTrader scraping is currently unavailable'))) {
+          console.log('🚫 Skipping fallback/mock data loading')
+          sessionStorage.removeItem('importedVehicleData')
+          return
+        }
+
         // Set form values
         if (data.make) setValue('make', data.make)
         if (data.model) setValue('model', data.model)
@@ -77,7 +85,7 @@ export default function NewVehiclePage() {
         if (data.category) setValue('category', data.category)
         if (data.engineType) setValue('engineType', data.engineType)
         if (data.transmission) setValue('transmission', data.transmission)
-        if (data.horsepower) setValue('horsepower', data.horsepower)
+        if (data.enginePower) setValue('enginePower', data.enginePower)
         if (data.engineSize) setValue('engineSize', data.engineSize)
         if (data.location) setValue('location', data.location)
         if (data.country) setValue('country', data.country)
@@ -188,8 +196,7 @@ export default function NewVehiclePage() {
         category: data.category,
         engine_type: data.engineType,
         transmission: data.transmission,
-        horsepower: data.horsepower,
-        engine_size: data.engineSize || null,
+        engine_power: data.enginePower,
         location: data.location,
         country: data.country,
         vin: data.vin || null,
@@ -201,15 +208,18 @@ export default function NewVehiclePage() {
         featured: data.featured,
       }
 
-      // @ts-expect-error - Supabase types don't perfectly match our form data
-      const { data: insertedData, error } = await supabase
-        .from('vehicles')
-        .insert([vehicleData])
-        .select()
+      const response = await fetch('/api/admin/vehicles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(vehicleData),
+      })
 
-      if (error) {
-        console.error('Supabase error:', error)
-        throw new Error(error.message || 'Failed to add vehicle')
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to add vehicle')
       }
 
       toast.success("Vehicle added successfully!", {
@@ -342,7 +352,7 @@ export default function NewVehiclePage() {
                 <Label htmlFor="condition">
                   Condition <span className="text-red-500">*</span>
                 </Label>
-                <Select value={condition} onValueChange={(value: any) => setValue('condition', value)}>
+                <Select value={condition} onValueChange={(value) => setValue('condition', value as "new" | "used" | "certified")}>
                   <SelectTrigger className={errors.condition ? "border-red-500" : ""}>
                     <SelectValue />
                   </SelectTrigger>
@@ -412,22 +422,22 @@ export default function NewVehiclePage() {
                 )}
               </div>
 
-              {/* Horsepower */}
+              {/* Engine Power */}
               <div className="space-y-2">
-                <Label htmlFor="horsepower">
-                  Horsepower <span className="text-red-500">*</span>
+                <Label htmlFor="enginePower">
+                  Engine Power (HP)
                 </Label>
                 <Input
-                  id="horsepower"
+                  id="enginePower"
                   type="number"
-                  {...register('horsepower', { valueAsNumber: true })}
+                  {...register('enginePower', { valueAsNumber: true })}
                   placeholder="e.g., 450"
-                  className={errors.horsepower ? "border-red-500" : ""}
+                  className={errors.enginePower ? "border-red-500" : ""}
                 />
-                {errors.horsepower && (
+                {errors.enginePower && (
                   <p className="text-sm text-red-500 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
-                    {errors.horsepower.message}
+                    {errors.enginePower.message}
                   </p>
                 )}
               </div>
@@ -459,7 +469,7 @@ export default function NewVehiclePage() {
                 <Label htmlFor="engineType">
                   Engine Type <span className="text-red-500">*</span>
                 </Label>
-                <Select value={engineType} onValueChange={(value: any) => setValue('engineType', value)}>
+                <Select value={engineType} onValueChange={(value) => setValue('engineType', value as "diesel" | "electric" | "hybrid" | "gas")}>
                   <SelectTrigger className={errors.engineType ? "border-red-500" : ""}>
                     <SelectValue />
                   </SelectTrigger>
@@ -482,7 +492,7 @@ export default function NewVehiclePage() {
                 <Label htmlFor="transmission">
                   Transmission <span className="text-red-500">*</span>
                 </Label>
-                <Select value={transmission} onValueChange={(value: any) => setValue('transmission', value)}>
+                <Select value={transmission} onValueChange={(value) => setValue('transmission', value as "manual" | "automatic" | "automated-manual")}>
                   <SelectTrigger className={errors.transmission ? "border-red-500" : ""}>
                     <SelectValue />
                   </SelectTrigger>

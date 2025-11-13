@@ -41,7 +41,6 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
               fill
               className="object-contain p-4 group-hover:scale-105 transition-transform duration-700 ease-out"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              unoptimized
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
@@ -124,7 +123,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
               </div>
               <div>
                 <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Power</p>
-                <p className="text-sm font-semibold text-slate-900">{vehicle.horsepower} HP</p>
+                <p className="text-sm font-semibold text-slate-900">{vehicle.enginePower} HP</p>
               </div>
             </div>
 

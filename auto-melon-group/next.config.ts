@@ -26,6 +26,30 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'cdn3.bazaraki.com',
       },
+      {
+        protocol: 'https',
+        hostname: '**.fbcdn.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'autotrader.co.uk',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.autotrader.co.uk',
+      },
+      {
+        protocol: 'https',
+        hostname: 'atcdn.co.uk',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.atcdn.co.uk',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.ebayimg.com',
+      },
     ],
   },
 };

@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { supabase } from "@/lib/supabase/client"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -17,49 +16,88 @@ import {
 } from "@/components/ui/table"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+interface VehicleData {
+  id: string
+  make: string
+  model: string
+  year: number
+  price: number
+  category: string
+  available: boolean
+  featured: boolean
+  vin?: string
+  bazaraki_url?: string
+}
+
 export default function VehiclesPage() {
-  const [vehicles, setVehicles] = useState<any[]>([])
+  const [vehicles, setVehicles] = useState<VehicleData[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
 
-  useEffect(() => {
-    fetchVehicles()
-  }, [])
-
-  const fetchVehicles = async () => {
+  const fetchVehicles = useCallback(async () => {
     setLoading(true)
-    const { data, error } = await supabase
-      .from('vehicles')
-      .select('*')
-      .order('created_at', { ascending: false })
+    try {
+      const response = await fetch('/api/admin/vehicles')
+      const result = await response.json()
 
-    if (!error && data) {
-      setVehicles(data)
+      if (response.ok && result.data) {
+        setVehicles(result.data)
+      } else {
+        console.error('Error fetching vehicles:', result.error)
+      }
+    } catch (error) {
+      console.error('Error fetching vehicles:', error)
     }
     setLoading(false)
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchVehicles()
+  }, [fetchVehicles])
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this vehicle?')) return
 
-    const { error } = await supabase
-      .from('vehicles')
-      .delete()
-      .eq('id', id)
+    try {
+      const response = await fetch(`/api/admin/vehicles/${id}`, {
+        method: 'DELETE',
+      })
 
-    if (!error) {
-      setVehicles(vehicles.filter(v => v.id !== id))
+      if (response.ok) {
+        setVehicles(vehicles.filter(v => v.id !== id))
+      } else {
+        const result = await response.json()
+        console.error('Error deleting vehicle:', result.error)
+        alert('Failed to delete vehicle')
+      }
+    } catch (error) {
+      console.error('Error deleting vehicle:', error)
+      alert('Failed to delete vehicle')
     }
   }
 
   const toggleAvailability = async (id: string, currentStatus: boolean) => {
-    // @ts-ignore - Supabase type inference issue
-    const { error } = await supabase.from('vehicles').update({ available: !currentStatus }).eq('id', id)
+    try {
+      const response = await fetch(`/api/admin/vehicles/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ available: !currentStatus }),
+      })
 
-    if (!error) {
-      setVehicles(vehicles.map(v =>
-        v.id === id ? { ...v, available: !currentStatus } : v
-      ))
+      if (response.ok) {
+        setVehicles(vehicles.map(v =>
+          v.id === id ? { ...v, available: !currentStatus } : v
+        ))
+      } else {
+        const result = await response.json()
+        console.error('Error updating vehicle:', result.error)
+        alert('Failed to update vehicle status')
+      }
+    } catch (error) {
+      console.error('Error updating vehicle:', error)
+      alert('Failed to update vehicle status')
     }
   }
 
@@ -160,6 +198,19 @@ export default function VehiclesPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
+                          {vehicle.bazaraki_url && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              asChild
+                              className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                              title="View original Bazaraki listing"
+                            >
+                              <Link href={vehicle.bazaraki_url} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                          )}
                           <Button
                             variant="outline"
                             size="sm"

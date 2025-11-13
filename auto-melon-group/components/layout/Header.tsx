@@ -88,11 +88,11 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-md shadow-lg">
+    <header className="w-full border-b bg-white shadow-lg">
       {/* Top Bar - Contact Info */}
       <div className="border-b border-slate-200 bg-gradient-to-r from-slate-50 via-white to-slate-50">
         <div className="container">
-          <div className="flex h-12 items-center justify-between text-sm">
+          <div className="flex h-10 items-center justify-between text-sm">
             <div className="hidden md:flex items-center gap-8">
               <a
                 href={`mailto:${siteConfig.contact.email}`}
@@ -119,16 +119,16 @@ export function Header() {
 
       {/* Main Navigation */}
       <div className="container">
-        <div className="flex h-24 items-center justify-between gap-6">
+        <div className="flex h-36 items-center justify-between gap-6">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-6 group -ml-2">
-            <div className="relative h-20 w-20">
+            <div className="relative h-28 w-28">
               <Image
                 src="/melon-logo.png"
                 alt="Auto Melon Group"
-                width={80}
-                height={80}
-                className="h-20 w-20 object-contain group-hover:scale-105 transition-transform"
+                width={112}
+                height={112}
+                className="h-28 w-28 object-contain group-hover:scale-105 transition-transform"
                 priority
               />
             </div>

@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
   category VARCHAR(50) NOT NULL CHECK (category IN ('semi-truck', 'dump-truck', 'box-truck', 'flatbed', 'tanker', 'refrigerated', 'other')),
   engine_type VARCHAR(20) NOT NULL CHECK (engine_type IN ('diesel', 'electric', 'hybrid', 'gas')),
   transmission VARCHAR(30) NOT NULL CHECK (transmission IN ('manual', 'automatic', 'automated-manual')),
-  horsepower INTEGER CHECK (horsepower > 0),
+  engine_power INTEGER CHECK (engine_power > 0),
   location VARCHAR(200) NOT NULL,
   country VARCHAR(100) NOT NULL,
   vin VARCHAR(100) UNIQUE NOT NULL,
