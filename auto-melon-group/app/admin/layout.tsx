@@ -100,44 +100,42 @@ export default function AdminLayout({
                 <p className="text-xs text-gray-500 truncate">admin@automelon.com</p>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-              asChild
-            >
-              <Link href="/">
+            <form action="/auth/signout" method="post" className="w-full">
+              <Button
+                type="submit"
+                variant="ghost"
+                className="w-full justify-start text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+              >
                 <LogOut className="h-4 w-4 mr-2" />
-                Exit Admin
-              </Link>
-            </Button>
+                Sign Out
+              </Button>
+            </form>
           </div>
         </div>
       </aside>
 
       {/* Main content */}
-      <main className="lg:pl-64">
-        <div className="min-h-screen">
-          {/* Top bar */}
-          <div className="h-16 border-b border-gray-200 bg-white">
-            <div className="h-full px-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">
-                  {navigation.find(item => pathname === item.href)?.name || 'Admin Panel'}
-                </h2>
-                <p className="text-sm text-gray-500">Vehicle Management System</p>
-              </div>
-              <Button variant="outline" className="border-red-600 text-red-600 hover:bg-red-50" asChild>
-                <Link href="/">
-                  View Website
-                </Link>
-              </Button>
+      <main className="lg:pl-64 min-h-screen">
+        {/* Top bar */}
+        <div className="h-16 border-b border-gray-200 bg-white flex-shrink-0 lg:px-6 px-4">
+          <div className="h-full flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                {navigation.find(item => pathname === item.href)?.name || 'Admin Panel'}
+              </h2>
+              <p className="text-sm text-gray-500">Vehicle Management System</p>
             </div>
+            <Button variant="outline" className="border-red-600 text-red-600 hover:bg-red-50" asChild>
+              <Link href="/">
+                View Website
+              </Link>
+            </Button>
           </div>
+        </div>
 
-          {/* Page content */}
-          <div className="p-6">
-            {children}
-          </div>
+        {/* Page content */}
+        <div className="flex-1 lg:p-6 p-4">
+          {children}
         </div>
       </main>
 
