@@ -9,9 +9,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Vehicle, vehicleMakes, vehicleCategories, engineTypes, transmissionTypes, conditionTypes, cabinTypes, tonsTypes } from "@/types/vehicle"
-import { Upload, X, Save, ArrowLeft, ExternalLink } from "lucide-react"
+import { Upload, X, Save, ArrowLeft, ExternalLink, Loader2 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { getAllVehicleMakes, addCustomMake } from "@/lib/custom-makes"
 
 export default function EditVehiclePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -21,23 +22,8 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
   const [imageUrls, setImageUrls] = useState<string[]>([])
   const [bazarakiUrl, setBazarakiUrl] = useState<string | null>(null)
   const [customMake, setCustomMake] = useState<string>("")
-
-  // Load custom makes from localStorage on component mount
-  const [vehicleMakesList, setVehicleMakesList] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      const savedCustomMakes = localStorage.getItem('customVehicleMakes')
-      if (savedCustomMakes) {
-        try {
-          const parsed = JSON.parse(savedCustomMakes)
-          return [...vehicleMakes, ...parsed]
-        } catch (error) {
-          console.error('Error parsing saved makes:', error)
-          return vehicleMakes as string[]
-        }
-      }
-    }
-    return vehicleMakes as string[]
-  })
+  const [vehicleMakesList, setVehicleMakesList] = useState<string[]>(vehicleMakes as string[])
+  const [isLoadingMakes, setIsLoadingMakes] = useState(false)
   const [formData, setFormData] = useState({
     make: '',
     model: '',
@@ -62,98 +48,101 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
     featured: false,
   })
 
-  // Add to localStorage function
-  const handleAddCustomMakeToList = () => {
+  // Add to Supabase function
+  const handleAddCustomMakeToList = async () => {
     if (!customMake.trim()) {
       alert('Please enter a custom make name')
       return
     }
 
-    if (vehicleMakesList.includes(customMake.trim())) {
-      alert('This make already exists in the list')
-      return
-    }
+    try {
+      setIsLoadingMakes(true)
+      const result = await addCustomMake(customMake.trim())
 
-    // Get current custom makes from localStorage
-    let currentCustomMakes: string[] = []
-    if (typeof window !== 'undefined') {
-      const savedCustomMakes = localStorage.getItem('customVehicleMakes')
-      if (savedCustomMakes) {
-        try {
-          currentCustomMakes = JSON.parse(savedCustomMakes)
-        } catch (error) {
-          console.error('Error parsing saved makes:', error)
-        }
+      if (result.success) {
+        // Refresh the makes list
+        const allMakes = await getAllVehicleMakes()
+        setVehicleMakesList(allMakes)
+
+        // Set the form value to the new make
+        setFormData(prev => ({ ...prev, make: customMake.trim() }))
+        setCustomMake("")
+
+        alert(result.message)
+      } else {
+        alert(result.message)
       }
+    } catch (error) {
+      console.error('Error adding custom make:', error)
+      alert('Failed to add custom make. Please try again.')
+    } finally {
+      setIsLoadingMakes(false)
     }
-
-    // Add new custom make if it doesn't already exist
-    if (!currentCustomMakes.includes(customMake.trim())) {
-      const updatedCustomMakes = [...currentCustomMakes, customMake.trim()]
-
-      // Save to localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('customVehicleMakes', JSON.stringify(updatedCustomMakes))
-      }
-
-      // Update the vehicle makes list
-      setVehicleMakesList([...vehicleMakes, ...updatedCustomMakes])
-    }
-
-    alert(`"${customMake.trim()}" has been added to the makes list!`)
-    setCustomMake("")
   }
 
   useEffect(() => {
-    async function fetchVehicle() {
-      setFetching(true)
+    async function loadData() {
+      // Load custom makes from Supabase
       try {
-        const response = await fetch(`/api/admin/vehicles/${id}`)
-        const result = await response.json()
-
-        if (!response.ok) {
-          throw new Error(result.error || 'Failed to fetch vehicle')
-        }
-
-        const typedData = result.data as Vehicle
-        if (typedData) {
-          setFormData({
-            make: typedData.make || '',
-            model: typedData.model || '',
-            year: typedData.year || new Date().getFullYear(),
-            mileage: typedData.mileage || 0,
-            price: typedData.price || 0,
-            currency: typedData.currency || 'EUR',
-            condition: typedData.condition || 'used',
-            category: typedData.category || 'tractor-unit',
-            engineType: typedData.engineType || 'diesel',
-            transmission: typedData.transmission || 'manual',
-            enginePower: typedData.enginePower || '',
-            engineSize: typedData.engineSize || '',
-            cabin: typedData.cabin || '',
-            tons: typedData.tons || '',
-            location: typedData.location || '',
-            country: typedData.country || 'Cyprus',
-            vin: typedData.vin || '',
-            sourceUrl: typedData.sourceUrl || '',
-            description: typedData.description || '',
-            available: typedData.available ?? true,
-            featured: typedData.featured ?? false,
-          })
-          setImageUrls(typedData.images || [])
-          setBazarakiUrl(typedData.bazarakiUrl || null)
-        }
+        const allMakes = await getAllVehicleMakes()
+        setVehicleMakesList(allMakes)
       } catch (error) {
-        console.error('Error fetching vehicle:', error)
-        alert('Error loading vehicle data')
-        router.push('/admin/vehicles')
-      } finally {
-        setFetching(false)
+        console.error('Error loading custom makes:', error)
       }
+
+      // Load vehicle data
+      await fetchVehicle()
     }
 
-    fetchVehicle()
+    loadData()
   }, [id, router])
+
+  async function fetchVehicle() {
+    setFetching(true)
+    try {
+      const response = await fetch(`/api/admin/vehicles/${id}`)
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to fetch vehicle')
+      }
+
+      const typedData = result.data as Vehicle
+      if (typedData) {
+        setFormData({
+          make: typedData.make || '',
+          model: typedData.model || '',
+          year: typedData.year || new Date().getFullYear(),
+          mileage: typedData.mileage || 0,
+          price: typedData.price || 0,
+          currency: typedData.currency || 'EUR',
+          condition: typedData.condition || 'used',
+          category: typedData.category || 'tractor-unit',
+          engineType: typedData.engineType || 'diesel',
+          transmission: typedData.transmission || 'manual',
+          enginePower: typedData.enginePower || '',
+          engineSize: typedData.engineSize || '',
+          cabin: typedData.cabin || '',
+          tons: typedData.tons || '',
+          location: typedData.location || '',
+          country: typedData.country || 'Cyprus',
+          vin: typedData.vin || '',
+          sourceUrl: typedData.sourceUrl || '',
+          description: typedData.description || '',
+          available: typedData.available ?? true,
+          featured: typedData.featured ?? false,
+        })
+        setImageUrls(typedData.images || [])
+        setBazarakiUrl(typedData.bazarakiUrl || null)
+      }
+    } catch (error) {
+      console.error('Error fetching vehicle:', error)
+      alert('Error loading vehicle data')
+      router.push('/admin/vehicles')
+    } finally {
+      setFetching(false)
+    }
+  }
 
   const handleChange = (field: string, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -313,7 +302,11 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
                         variant="outline"
                         size="sm"
                         className="whitespace-nowrap"
+                        disabled={!customMake.trim() || isLoadingMakes}
                       >
+                        {isLoadingMakes ? (
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        ) : null}
                         Add to List
                       </Button>
                     </div>

@@ -15,6 +15,7 @@ import { vehicleMakes, vehicleCategories, engineTypes, transmissionTypes, condit
 import { X, Save, ArrowLeft, Plus, Loader2, ImageIcon, AlertCircle, PlusCircle } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
+import { getAllVehicleMakes, addCustomMake } from "@/lib/custom-makes"
 
 export default function NewVehiclePage() {
   const router = useRouter()
@@ -25,23 +26,8 @@ export default function NewVehiclePage() {
   const [features, setFeatures] = useState<string[]>([])
   const [featureInput, setFeatureInput] = useState("")
   const [customMake, setCustomMake] = useState("")
-
-  // Load custom makes from localStorage on component mount
-  const [vehicleMakesList, setVehicleMakesList] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      const savedCustomMakes = localStorage.getItem('customVehicleMakes')
-      if (savedCustomMakes) {
-        try {
-          const parsed = JSON.parse(savedCustomMakes)
-          return [...vehicleMakes, ...parsed]
-        } catch (error) {
-          console.error('Error parsing saved makes:', error)
-          return vehicleMakes as string[]
-        }
-      }
-    }
-    return vehicleMakes as string[]
-  })
+  const [vehicleMakesList, setVehicleMakesList] = useState<string[]>(vehicleMakes as string[])
+  const [isLoadingMakes, setIsLoadingMakes] = useState(false)
 
   const {
     register,
@@ -79,61 +65,77 @@ export default function NewVehiclePage() {
     },
   })
 
-  // Load imported data from sessionStorage
+  // Load custom makes from Supabase and imported data from sessionStorage
   React.useEffect(() => {
-    const importedData = sessionStorage.getItem('importedVehicleData')
-    if (importedData) {
+    const loadData = async () => {
+      // Load custom makes from Supabase
+      setIsLoadingMakes(true)
       try {
-        const data = JSON.parse(importedData)
-
-        // Check if this is fallback/mock data and skip loading if so
-        if (data.isFallbackData ||
-            (data.features && data.features.includes('Sample Data - AutoTrader temporarily unavailable')) ||
-            (data.description && data.description.includes('AutoTrader scraping is currently unavailable'))) {
-          console.log('🚫 Skipping fallback/mock data loading')
-          sessionStorage.removeItem('importedVehicleData')
-          return
-        }
-
-        // Set form values
-        if (data.make) setValue('make', data.make)
-        if (data.model) setValue('model', data.model)
-        if (data.year) setValue('year', data.year)
-        if (data.mileage) setValue('mileage', data.mileage)
-        if (data.price) setValue('price', data.price)
-        if (data.currency) setValue('currency', data.currency)
-        if (data.condition) setValue('condition', data.condition)
-        if (data.category) setValue('category', data.category)
-        if (data.engineType) setValue('engineType', data.engineType)
-        if (data.transmission) setValue('transmission', data.transmission)
-        if (data.enginePower) setValue('enginePower', data.enginePower)
-        if (data.engineSize) setValue('engineSize', data.engineSize)
-        if (data.location) setValue('location', data.location)
-        if (data.country) setValue('country', data.country)
-        if (data.description) setValue('description', data.description)
-        if (data.vin) setValue('vin', data.vin)
-
-        // Set arrays and objects
-        if (data.images && Array.isArray(data.images)) {
-          setImageUrls(data.images)
-        }
-        if (data.features && Array.isArray(data.features)) {
-          setFeatures(data.features)
-        }
-        if (data.specifications && typeof data.specifications === 'object') {
-          setSpecifications(data.specifications)
-        }
-
-        // Clear sessionStorage after loading
-        sessionStorage.removeItem('importedVehicleData')
-
-        toast.success("Imported data loaded!", {
-          description: "Review and adjust the vehicle information before saving",
-        })
+        const allMakes = await getAllVehicleMakes()
+        setVehicleMakesList(allMakes)
       } catch (error) {
-        console.error('Error loading imported data:', error)
+        console.error('Error loading custom makes:', error)
+      } finally {
+        setIsLoadingMakes(false)
+      }
+
+      // Load imported data from sessionStorage
+      const importedData = sessionStorage.getItem('importedVehicleData')
+      if (importedData) {
+        try {
+          const data = JSON.parse(importedData)
+
+          // Check if this is fallback/mock data and skip loading if so
+          if (data.isFallbackData ||
+              (data.features && data.features.includes('Sample Data - AutoTrader temporarily unavailable')) ||
+              (data.description && data.description.includes('AutoTrader scraping is currently unavailable'))) {
+            console.log('🚫 Skipping fallback/mock data loading')
+            sessionStorage.removeItem('importedVehicleData')
+            return
+          }
+
+          // Set form values
+          if (data.make) setValue('make', data.make)
+          if (data.model) setValue('model', data.model)
+          if (data.year) setValue('year', data.year)
+          if (data.mileage) setValue('mileage', data.mileage)
+          if (data.price) setValue('price', data.price)
+          if (data.currency) setValue('currency', data.currency)
+          if (data.condition) setValue('condition', data.condition)
+          if (data.category) setValue('category', data.category)
+          if (data.engineType) setValue('engineType', data.engineType)
+          if (data.transmission) setValue('transmission', data.transmission)
+          if (data.enginePower) setValue('enginePower', data.enginePower)
+          if (data.engineSize) setValue('engineSize', data.engineSize)
+          if (data.location) setValue('location', data.location)
+          if (data.country) setValue('country', data.country)
+          if (data.description) setValue('description', data.description)
+          if (data.vin) setValue('vin', data.vin)
+
+          // Set arrays and objects
+          if (data.images && Array.isArray(data.images)) {
+            setImageUrls(data.images)
+          }
+          if (data.features && Array.isArray(data.features)) {
+            setFeatures(data.features)
+          }
+          if (data.specifications && typeof data.specifications === 'object') {
+            setSpecifications(data.specifications)
+          }
+
+          // Clear sessionStorage after loading
+          sessionStorage.removeItem('importedVehicleData')
+
+          toast.success("Imported data loaded!", {
+            description: "Review and adjust the vehicle information before saving",
+          })
+        } catch (error) {
+          console.error('Error loading imported data:', error)
+        }
       }
     }
+
+    loadData()
   }, [])
 
   const make = watch('make')
@@ -206,47 +208,36 @@ export default function NewVehiclePage() {
     })
   }
 
-  const handleAddCustomMakeToList = () => {
-    if (customMake && !vehicleMakesList.includes(customMake)) {
-      // Check if it's already in the original vehicleMakes array
-      const isOriginalMake = (vehicleMakes as string[]).includes(customMake)
+  const handleAddCustomMakeToList = async () => {
+    if (!customMake.trim()) {
+      toast.error("Please enter a custom make name")
+      return
+    }
 
-      if (!isOriginalMake) {
-        // Get current custom makes from localStorage
-        let currentCustomMakes: string[] = []
-        if (typeof window !== 'undefined') {
-          const savedCustomMakes = localStorage.getItem('customVehicleMakes')
-          if (savedCustomMakes) {
-            try {
-              currentCustomMakes = JSON.parse(savedCustomMakes)
-            } catch (error) {
-              console.error('Error parsing saved makes:', error)
-            }
-          }
-        }
+    try {
+      setIsLoadingMakes(true)
+      const result = await addCustomMake(customMake.trim())
 
-        // Add the new custom make
-        currentCustomMakes.push(customMake)
+      if (result.success) {
+        // Refresh the makes list
+        const allMakes = await getAllVehicleMakes()
+        setVehicleMakesList(allMakes)
 
-        // Save to localStorage
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('customVehicleMakes', JSON.stringify(currentCustomMakes))
-        }
+        // Set the form value to the new make
+        setValue('make', customMake.trim())
+        setCustomMake("")
 
-        // Update the state
-        const updatedMakes = [...vehicleMakesList, customMake]
-        setVehicleMakesList(updatedMakes)
+        toast.success(result.message)
+      } else {
+        toast.error(result.message)
       }
-
-      setValue('make', customMake)
-      setCustomMake("")
-      toast.success("Make added permanently to list!", {
-        description: `${customMake} has been saved to the vehicle makes list`,
+    } catch (error) {
+      console.error('Error adding custom make:', error)
+      toast.error("Failed to add custom make", {
+        description: "An unexpected error occurred. Please try again.",
       })
-    } else if (vehicleMakesList.includes(customMake)) {
-      toast.error("Make already exists", {
-        description: `${customMake} is already in the vehicle makes list`,
-      })
+    } finally {
+      setIsLoadingMakes(false)
     }
   }
 
@@ -357,6 +348,7 @@ export default function NewVehiclePage() {
                     {vehicleMakesList.map(make => (
                       <SelectItem key={make} value={make}>{make}</SelectItem>
                     ))}
+                    <SelectItem value="Other">Other (Add new make)</SelectItem>
                   </SelectContent>
                 </Select>
                 {make === 'Other' && (
@@ -376,9 +368,13 @@ export default function NewVehiclePage() {
                       }}
                       variant="outline"
                       className="whitespace-nowrap"
-                      disabled={!customMake || vehicleMakesList.includes(customMake)}
+                      disabled={!customMake.trim() || isLoadingMakes}
                     >
-                      <PlusCircle className="h-4 w-4 mr-2" />
+                      {isLoadingMakes ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <PlusCircle className="h-4 w-4 mr-2" />
+                      )}
                       Add to List
                     </Button>
                   </div>

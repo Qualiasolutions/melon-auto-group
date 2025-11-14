@@ -38,6 +38,23 @@ export interface Database {
           status: 'new' | 'contacted' | 'qualified' | 'closed' | 'spam'
         }>
       }
+      custom_makes: {
+        Row: {
+          id: string
+          make_name: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          make_name: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: Partial<{
+          make_name: string
+          updated_at?: string
+        }>
+      }
     }
   }
 }
