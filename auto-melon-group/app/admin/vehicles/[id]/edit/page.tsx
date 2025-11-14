@@ -32,6 +32,7 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
     engineType: 'diesel',
     transmission: 'manual',
     enginePower: '',
+    engineSize: '',
     location: '',
     country: 'Cyprus',
     vin: '',
@@ -65,6 +66,7 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
             engineType: typedData.engineType || 'diesel',
             transmission: typedData.transmission || 'manual',
             enginePower: typedData.enginePower || '',
+            engineSize: typedData.engineSize || '',
             location: typedData.location || '',
             country: typedData.country || 'Cyprus',
             vin: typedData.vin || '',
@@ -118,7 +120,8 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
         category: formData.category,
         engine_type: formData.engineType,
         transmission: formData.transmission,
-        engine_power: formData.enginePower ? parseInt(formData.enginePower.toString()) : null,
+        engine_power: formData.enginePower && !isNaN(parseInt(formData.enginePower.toString())) ? parseInt(formData.enginePower.toString()) : null,
+        engine_size: formData.engineSize && !isNaN(parseFloat(formData.engineSize.toString())) ? parseFloat(formData.engineSize.toString()) : null,
         location: formData.location,
         country: formData.country,
         vin: formData.vin || null,
@@ -318,6 +321,19 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
                   min="0"
                   value={formData.enginePower}
                   onChange={(e) => handleChange('enginePower', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="engineSize">Engine Size (L)</Label>
+                <Input
+                  id="engineSize"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  value={formData.engineSize}
+                  onChange={(e) => handleChange('engineSize', e.target.value)}
+                  placeholder="e.g., 2.0"
                 />
               </div>
 

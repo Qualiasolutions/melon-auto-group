@@ -13,10 +13,12 @@
     "scrape-images": "tsx scripts/scrape-truck-images.ts",
     "process-images": "tsx scripts/process-images.ts",
     "import-processed-images": "tsx scripts/import-processed-images.ts",
-    "playwright:install": "npx playwright install chromium"
+    "playwright:install": "npx playwright install chromium",
+    "scrape-autotrader": "tsx scripts/scrape-autotrader.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@mendable/firecrawl-js": "^4.5.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-checkbox": "^1.3.3",
     "@radix-ui/react-dialog": "^1.1.15",
