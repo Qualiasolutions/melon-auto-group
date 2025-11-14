@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { vehicleMakes, vehicleCategories, engineTypes, transmissionTypes, conditionTypes } from "@/types/vehicle"
-import { X, Save, ArrowLeft, Plus, Loader2, ImageIcon, AlertCircle } from "lucide-react"
+import { vehicleMakes, vehicleCategories, engineTypes, transmissionTypes, conditionTypes, cabinTypes, tonsTypes } from "@/types/vehicle"
+import { X, Save, ArrowLeft, Plus, Loader2, ImageIcon, AlertCircle, PlusCircle } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
 
@@ -24,6 +24,24 @@ export default function NewVehiclePage() {
   const [specifications, setSpecifications] = useState<Record<string, string | number>>({})
   const [features, setFeatures] = useState<string[]>([])
   const [featureInput, setFeatureInput] = useState("")
+  const [customMake, setCustomMake] = useState("")
+
+  // Load custom makes from localStorage on component mount
+  const [vehicleMakesList, setVehicleMakesList] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedCustomMakes = localStorage.getItem('customVehicleMakes')
+      if (savedCustomMakes) {
+        try {
+          const parsed = JSON.parse(savedCustomMakes)
+          return [...vehicleMakes, ...parsed]
+        } catch (error) {
+          console.error('Error parsing saved makes:', error)
+          return vehicleMakes as string[]
+        }
+      }
+    }
+    return vehicleMakes as string[]
+  })
 
   const {
     register,
@@ -46,9 +64,12 @@ export default function NewVehiclePage() {
       transmission: 'manual',
       enginePower: undefined,
       engineSize: undefined,
+      cabin: undefined,
+      tons: undefined,
       location: '',
       country: 'Cyprus',
       vin: '',
+      sourceUrl: '',
       description: '',
       available: true,
       featured: false,
@@ -120,6 +141,8 @@ export default function NewVehiclePage() {
   const condition = watch('condition')
   const engineType = watch('engineType')
   const transmission = watch('transmission')
+  const cabin = watch('cabin')
+  const tons = watch('tons')
 
   const handleImageUrlAdd = () => {
     try {
@@ -183,10 +206,57 @@ export default function NewVehiclePage() {
     })
   }
 
+  const handleAddCustomMakeToList = () => {
+    if (customMake && !vehicleMakesList.includes(customMake)) {
+      // Check if it's already in the original vehicleMakes array
+      const isOriginalMake = (vehicleMakes as string[]).includes(customMake)
+
+      if (!isOriginalMake) {
+        // Get current custom makes from localStorage
+        let currentCustomMakes: string[] = []
+        if (typeof window !== 'undefined') {
+          const savedCustomMakes = localStorage.getItem('customVehicleMakes')
+          if (savedCustomMakes) {
+            try {
+              currentCustomMakes = JSON.parse(savedCustomMakes)
+            } catch (error) {
+              console.error('Error parsing saved makes:', error)
+            }
+          }
+        }
+
+        // Add the new custom make
+        currentCustomMakes.push(customMake)
+
+        // Save to localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('customVehicleMakes', JSON.stringify(currentCustomMakes))
+        }
+
+        // Update the state
+        const updatedMakes = [...vehicleMakesList, customMake]
+        setVehicleMakesList(updatedMakes)
+      }
+
+      setValue('make', customMake)
+      setCustomMake("")
+      toast.success("Make added permanently to list!", {
+        description: `${customMake} has been saved to the vehicle makes list`,
+      })
+    } else if (vehicleMakesList.includes(customMake)) {
+      toast.error("Make already exists", {
+        description: `${customMake} is already in the vehicle makes list`,
+      })
+    }
+  }
+
   const onSubmit = async (data: VehicleFormData) => {
     try {
+      // Use custom make if "Other" is selected and custom make is provided
+      const finalMake = data.make === 'Other' && customMake ? customMake : data.make
+
       const vehicleData = {
-        make: data.make,
+        make: finalMake,
         model: data.model,
         year: data.year,
         mileage: data.mileage,
@@ -198,9 +268,12 @@ export default function NewVehiclePage() {
         transmission: data.transmission,
         engine_power: data.enginePower && !isNaN(data.enginePower) ? data.enginePower : null,
         engine_size: data.engineSize && !isNaN(data.engineSize) ? data.engineSize : null,
+        cabin: data.cabin || null,
+        tons: data.tons || null,
         location: data.location,
         country: data.country,
         vin: data.vin || null,
+        source_url: data.sourceUrl,
         images: imageUrls,
         specifications: specifications,
         features: features,
@@ -224,7 +297,7 @@ export default function NewVehiclePage() {
       }
 
       toast.success("Vehicle added successfully!", {
-        description: `${data.make} ${data.model} has been added to inventory`,
+        description: `${finalMake} ${data.model} has been added to inventory`,
       })
 
       // Redirect after short delay to show toast
@@ -240,7 +313,7 @@ export default function NewVehiclePage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="w-full max-w-7xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="outline" size="sm" asChild>
@@ -255,30 +328,61 @@ export default function NewVehiclePage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Basic Information */}
-        <Card className="border-2 border-slate-200 shadow-lg">
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-            <CardDescription>Core vehicle identification details</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card className="border-2 border-slate-200/60 shadow-xl rounded-2xl overflow-hidden bg-white/95 backdrop-blur-sm">
+          <div className="bg-gradient-to-r from-red-50 to-orange-50 px-8 py-6 border-b border-slate-200/60">
+            <CardHeader className="px-0 py-0">
+              <CardTitle className="text-2xl font-bold text-slate-900">Basic Information</CardTitle>
+              <CardDescription className="text-slate-600 mt-1">Core vehicle identification details</CardDescription>
+            </CardHeader>
+          </div>
+          <CardContent className="p-8 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Make */}
               <div className="space-y-2">
                 <Label htmlFor="make">
                   Make <span className="text-red-500">*</span>
                 </Label>
-                <Select value={make} onValueChange={(value) => setValue('make', value)}>
+                <Select value={make} onValueChange={(value) => {
+                  setValue('make', value)
+                  if (value !== 'Other') {
+                    setCustomMake("")
+                  }
+                }}>
                   <SelectTrigger className={errors.make ? "border-red-500" : ""}>
                     <SelectValue placeholder="Select make" />
                   </SelectTrigger>
                   <SelectContent>
-                    {vehicleMakes.map(make => (
+                    {vehicleMakesList.map(make => (
                       <SelectItem key={make} value={make}>{make}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {make === 'Other' && (
+                  <div className="flex gap-2 mt-2">
+                    <Input
+                      placeholder="Enter custom make..."
+                      value={customMake}
+                      onChange={(e) => setCustomMake(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleAddCustomMakeToList()
+                      }}
+                      variant="outline"
+                      className="whitespace-nowrap"
+                      disabled={!customMake || vehicleMakesList.includes(customMake)}
+                    >
+                      <PlusCircle className="h-4 w-4 mr-2" />
+                      Add to List
+                    </Button>
+                  </div>
+                )}
                 {errors.make && (
                   <p className="text-sm text-red-500 flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
@@ -375,13 +479,15 @@ export default function NewVehiclePage() {
         </Card>
 
         {/* Pricing & Technical Specifications */}
-        <Card className="border-2 border-slate-200 shadow-lg">
-          <CardHeader>
-            <CardTitle>Pricing & Technical Specifications</CardTitle>
-            <CardDescription>Performance and pricing information</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card className="border-2 border-slate-200/60 shadow-xl rounded-2xl overflow-hidden bg-white/95 backdrop-blur-sm">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-8 py-6 border-b border-slate-200/60">
+            <CardHeader className="px-0 py-0">
+              <CardTitle className="text-2xl font-bold text-slate-900">Pricing & Technical Specifications</CardTitle>
+              <CardDescription className="text-slate-600 mt-1">Performance and pricing information</CardDescription>
+            </CardHeader>
+          </div>
+          <CardContent className="p-8 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Price */}
               <div className="space-y-2">
                 <Label htmlFor="price">
@@ -511,6 +617,52 @@ export default function NewVehiclePage() {
                 )}
               </div>
 
+              {/* Cabin */}
+              <div className="space-y-2">
+                <Label htmlFor="cabin">
+                  Cabin Type
+                </Label>
+                <Select value={cabin || ""} onValueChange={(value) => setValue('cabin', value as "1" | "1.5" | "2" | undefined)}>
+                  <SelectTrigger className={errors.cabin ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Select cabin type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cabinTypes.map(cab => (
+                      <SelectItem key={cab.value} value={cab.value}>{cab.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.cabin && (
+                  <p className="text-sm text-red-500 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {errors.cabin.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Tons */}
+              <div className="space-y-2">
+                <Label htmlFor="tons">
+                  Weight Capacity (Tonnes)
+                </Label>
+                <Select value={tons || ""} onValueChange={(value) => setValue('tons', value as "3.5" | "7.5" | "12" | "18" | undefined)}>
+                  <SelectTrigger className={errors.tons ? "border-red-500" : ""}>
+                    <SelectValue placeholder="Select weight capacity" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tonsTypes.map(ton => (
+                      <SelectItem key={ton.value} value={ton.value}>{ton.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.tons && (
+                  <p className="text-sm text-red-500 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {errors.tons.message}
+                  </p>
+                )}
+              </div>
+
               {/* Location */}
               <div className="space-y-2">
                 <Label htmlFor="location">
@@ -529,20 +681,44 @@ export default function NewVehiclePage() {
                   </p>
                 )}
               </div>
+
+              {/* Source URL */}
+              <div className="space-y-2 md:col-span-2 lg:col-span-3">
+                <Label htmlFor="sourceUrl">
+                  Source URL <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="sourceUrl"
+                  {...register('sourceUrl')}
+                  placeholder="https://example.com/vehicle-listing"
+                  className={errors.sourceUrl ? "border-red-500" : ""}
+                />
+                {errors.sourceUrl && (
+                  <p className="text-sm text-red-500 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {errors.sourceUrl.message}
+                  </p>
+                )}
+                <p className="text-xs text-slate-500">Main source link where this vehicle was found (for internal reference)</p>
+              </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Images */}
-        <Card className="border-2 border-slate-200 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ImageIcon className="h-5 w-5" />
-              Images
-            </CardTitle>
-            <CardDescription>Add vehicle images via URLs</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <Card className="border-2 border-slate-200/60 shadow-xl rounded-2xl overflow-hidden bg-white/95 backdrop-blur-sm">
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 px-8 py-6 border-b border-slate-200/60">
+            <CardHeader className="px-0 py-0">
+              <CardTitle className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                  <ImageIcon className="h-5 w-5 text-white" />
+                </div>
+                Images
+              </CardTitle>
+              <CardDescription className="text-slate-600 mt-1">Add vehicle images via URLs</CardDescription>
+            </CardHeader>
+          </div>
+          <CardContent className="p-8 space-y-6">
             <div className="flex gap-2">
               <Input
                 value={imageInput}
@@ -598,12 +774,14 @@ export default function NewVehiclePage() {
         </Card>
 
         {/* Features */}
-        <Card className="border-2 border-slate-200 shadow-lg">
-          <CardHeader>
-            <CardTitle>Features</CardTitle>
-            <CardDescription>Special features and equipment</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <Card className="border-2 border-slate-200/60 shadow-xl rounded-2xl overflow-hidden bg-white/95 backdrop-blur-sm">
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-8 py-6 border-b border-slate-200/60">
+            <CardHeader className="px-0 py-0">
+              <CardTitle className="text-2xl font-bold text-slate-900">Features</CardTitle>
+              <CardDescription className="text-slate-600 mt-1">Special features and equipment</CardDescription>
+            </CardHeader>
+          </div>
+          <CardContent className="p-8 space-y-6">
             <div className="flex gap-2">
               <Input
                 value={featureInput}
@@ -639,12 +817,14 @@ export default function NewVehiclePage() {
         </Card>
 
         {/* Description */}
-        <Card className="border-2 border-slate-200 shadow-lg">
-          <CardHeader>
-            <CardTitle>Description</CardTitle>
-            <CardDescription>Detailed vehicle description</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <Card className="border-2 border-slate-200/60 shadow-xl rounded-2xl overflow-hidden bg-white/95 backdrop-blur-sm">
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 px-8 py-6 border-b border-slate-200/60">
+            <CardHeader className="px-0 py-0">
+              <CardTitle className="text-2xl font-bold text-slate-900">Description</CardTitle>
+              <CardDescription className="text-slate-600 mt-1">Detailed vehicle description</CardDescription>
+            </CardHeader>
+          </div>
+          <CardContent className="p-8">
             <Textarea
               {...register('description')}
               rows={6}
@@ -654,13 +834,15 @@ export default function NewVehiclePage() {
           </CardContent>
         </Card>
 
-        {/* Availability & Features */}
-        <Card className="border-2 border-slate-200 shadow-lg">
-          <CardHeader>
-            <CardTitle>Availability & Display Options</CardTitle>
-            <CardDescription>Control how this vehicle appears on the site</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        {/* Availability & Display Options */}
+        <Card className="border-2 border-slate-200/60 shadow-xl rounded-2xl overflow-hidden bg-white/95 backdrop-blur-sm">
+          <div className="bg-gradient-to-r from-teal-50 to-cyan-50 px-8 py-6 border-b border-slate-200/60">
+            <CardHeader className="px-0 py-0">
+              <CardTitle className="text-2xl font-bold text-slate-900">Availability & Display Options</CardTitle>
+              <CardDescription className="text-slate-600 mt-1">Control how this vehicle appears on the site</CardDescription>
+            </CardHeader>
+          </div>
+          <CardContent className="p-8 space-y-6">
             <div className="flex flex-col sm:flex-row gap-4">
               <label className="flex items-center gap-3 cursor-pointer p-4 border-2 border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
                 <input

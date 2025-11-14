@@ -127,16 +127,46 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
               </div>
             </div>
 
+            {/* Cabin */}
+            {vehicle.cabin && (
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center">
+                  <Icon name="weekend" className="h-4 w-4 text-slate-600" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Cabin</p>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {vehicle.cabin === "1" ? "Single" : vehicle.cabin === "1.5" ? "1.5" : "Double"}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Tons */}
+            {vehicle.tons && (
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center">
+                  <Icon name="local_shipping" className="h-4 w-4 text-slate-600" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Capacity</p>
+                  <p className="text-sm font-semibold text-slate-900">{vehicle.tons}t</p>
+                </div>
+              </div>
+            )}
+
             {/* Location */}
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center">
-                <Icon name="location_on" className="h-4 w-4 text-slate-600" />
+            {(!vehicle.cabin && !vehicle.tons) && (
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center">
+                  <Icon name="location_on" className="h-4 w-4 text-slate-600" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Location</p>
+                  <p className="text-sm font-semibold text-slate-900">{vehicle.location}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Location</p>
-                <p className="text-sm font-semibold text-slate-900">{vehicle.location}</p>
-              </div>
-            </div>
+            )}
 
             {/* Transmission */}
             <div className="flex items-center gap-2.5">

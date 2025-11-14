@@ -49,10 +49,10 @@ export default function AdminLayout({
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0",
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="h-full bg-white border-r border-gray-200 shadow-sm">
+        <div className="h-full bg-white border-r border-gray-200 shadow-xl">
           {/* Logo */}
           <div className="h-16 flex items-center px-6 border-b border-gray-200">
             <Link href="/admin/dashboard" className="flex items-center gap-3">
@@ -142,7 +142,7 @@ export default function AdminLayout({
       {/* Mobile menu overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}

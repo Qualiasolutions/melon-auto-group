@@ -26,7 +26,7 @@ interface VehicleData {
   available: boolean
   featured: boolean
   vin?: string
-  bazaraki_url?: string
+  source_url?: string
 }
 
 export default function VehiclesPage() {
@@ -198,15 +198,15 @@ export default function VehiclesPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {vehicle.bazaraki_url && (
+                          {vehicle.source_url && (
                             <Button
                               variant="outline"
                               size="sm"
                               asChild
-                              className="border-blue-200 text-blue-600 hover:bg-blue-50"
-                              title="View original Bazaraki listing"
+                              className="border-green-200 text-green-600 hover:bg-green-50"
+                              title="View source listing"
                             >
-                              <Link href={vehicle.bazaraki_url} target="_blank" rel="noopener noreferrer">
+                              <Link href={vehicle.source_url} target="_blank" rel="noopener noreferrer">
                                 <ExternalLink className="h-4 w-4" />
                               </Link>
                             </Button>

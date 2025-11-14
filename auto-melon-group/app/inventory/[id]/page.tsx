@@ -166,10 +166,26 @@ export default async function VehicleDetailPage({
                   <p className="text-sm text-muted-foreground">Location</p>
                   <p className="font-semibold">{vehicle.location}, {vehicle.country}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">VIN</p>
-                  <p className="font-mono text-sm">{vehicle.vin}</p>
-                </div>
+                {vehicle.cabin && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Cabin</p>
+                    <p className="font-semibold">
+                      {vehicle.cabin === "1" ? "Single Cabin" : vehicle.cabin === "1.5" ? "1.5 Cabin" : "Double Cabin"}
+                    </p>
+                  </div>
+                )}
+                {vehicle.tons && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Weight Capacity</p>
+                    <p className="font-semibold">{vehicle.tons} Tonnes</p>
+                  </div>
+                )}
+                {vehicle.engineSize && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Engine Size</p>
+                    <p className="font-semibold">{vehicle.engineSize}L</p>
+                  </div>
+                )}
 
                 {/* Additional Specs from JSON */}
                 {vehicle.specifications && Object.entries(vehicle.specifications).map(([key, value]) => (

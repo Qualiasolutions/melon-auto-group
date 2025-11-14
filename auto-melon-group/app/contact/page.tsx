@@ -216,20 +216,7 @@ function ContactForm() {
           </CardContent>
         </Card>
 
-        <Separator className="my-8" />
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-start space-x-4">
-              <Icon name="location_on" className="h-6 w-6 text-brand-red mt-1" />
-              <div>
-                <h3 className="font-semibold mb-2">Our Location</h3>
-                <p className="text-muted-foreground">{siteConfig.contact.address}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+        </div>
     </div>
   )
 }

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Vehicle, vehicleMakes, vehicleCategories, engineTypes, transmissionTypes, conditionTypes } from "@/types/vehicle"
+import { Vehicle, vehicleMakes, vehicleCategories, engineTypes, transmissionTypes, conditionTypes, cabinTypes, tonsTypes } from "@/types/vehicle"
 import { Upload, X, Save, ArrowLeft, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -20,6 +20,24 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
   const [fetching, setFetching] = useState(true)
   const [imageUrls, setImageUrls] = useState<string[]>([])
   const [bazarakiUrl, setBazarakiUrl] = useState<string | null>(null)
+  const [customMake, setCustomMake] = useState<string>("")
+
+  // Load custom makes from localStorage on component mount
+  const [vehicleMakesList, setVehicleMakesList] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedCustomMakes = localStorage.getItem('customVehicleMakes')
+      if (savedCustomMakes) {
+        try {
+          const parsed = JSON.parse(savedCustomMakes)
+          return [...vehicleMakes, ...parsed]
+        } catch (error) {
+          console.error('Error parsing saved makes:', error)
+          return vehicleMakes as string[]
+        }
+      }
+    }
+    return vehicleMakes as string[]
+  })
   const [formData, setFormData] = useState({
     make: '',
     model: '',
@@ -33,13 +51,58 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
     transmission: 'manual',
     enginePower: '',
     engineSize: '',
+    cabin: '',
+    tons: '',
     location: '',
     country: 'Cyprus',
     vin: '',
+    sourceUrl: '',
     description: '',
     available: true,
     featured: false,
   })
+
+  // Add to localStorage function
+  const handleAddCustomMakeToList = () => {
+    if (!customMake.trim()) {
+      alert('Please enter a custom make name')
+      return
+    }
+
+    if (vehicleMakesList.includes(customMake.trim())) {
+      alert('This make already exists in the list')
+      return
+    }
+
+    // Get current custom makes from localStorage
+    let currentCustomMakes: string[] = []
+    if (typeof window !== 'undefined') {
+      const savedCustomMakes = localStorage.getItem('customVehicleMakes')
+      if (savedCustomMakes) {
+        try {
+          currentCustomMakes = JSON.parse(savedCustomMakes)
+        } catch (error) {
+          console.error('Error parsing saved makes:', error)
+        }
+      }
+    }
+
+    // Add new custom make if it doesn't already exist
+    if (!currentCustomMakes.includes(customMake.trim())) {
+      const updatedCustomMakes = [...currentCustomMakes, customMake.trim()]
+
+      // Save to localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('customVehicleMakes', JSON.stringify(updatedCustomMakes))
+      }
+
+      // Update the vehicle makes list
+      setVehicleMakesList([...vehicleMakes, ...updatedCustomMakes])
+    }
+
+    alert(`"${customMake.trim()}" has been added to the makes list!`)
+    setCustomMake("")
+  }
 
   useEffect(() => {
     async function fetchVehicle() {
@@ -67,9 +130,12 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
             transmission: typedData.transmission || 'manual',
             enginePower: typedData.enginePower || '',
             engineSize: typedData.engineSize || '',
+            cabin: typedData.cabin || '',
+            tons: typedData.tons || '',
             location: typedData.location || '',
             country: typedData.country || 'Cyprus',
             vin: typedData.vin || '',
+            sourceUrl: typedData.sourceUrl || '',
             description: typedData.description || '',
             available: typedData.available ?? true,
             featured: typedData.featured ?? false,
@@ -109,8 +175,11 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
     setLoading(true)
 
     try {
+      // Use custom make if "Other" is selected and custom make is provided
+      const finalMake = formData.make === 'Other' && customMake ? customMake : formData.make
+
       const vehicleData = {
-        make: formData.make,
+        make: finalMake,
         model: formData.model,
         year: parseInt(formData.year.toString()),
         mileage: parseInt(formData.mileage.toString()),
@@ -122,9 +191,12 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
         transmission: formData.transmission,
         engine_power: formData.enginePower && !isNaN(parseInt(formData.enginePower.toString())) ? parseInt(formData.enginePower.toString()) : null,
         engine_size: formData.engineSize && !isNaN(parseFloat(formData.engineSize.toString())) ? parseFloat(formData.engineSize.toString()) : null,
+        cabin: formData.cabin || null,
+        tons: formData.tons || null,
         location: formData.location,
         country: formData.country,
         vin: formData.vin || null,
+        source_url: formData.sourceUrl || '',
         images: imageUrls,
         specifications: {},
         features: [],
@@ -206,16 +278,48 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="make">Make *</Label>
-                <Select value={formData.make} onValueChange={(value) => handleChange('make', value)} required>
+                <Select value={formData.make} onValueChange={(value) => {
+                  handleChange('make', value)
+                  if (value !== 'Other') {
+                    setCustomMake("")
+                  }
+                }} required>
                   <SelectTrigger>
                     <SelectValue placeholder="Select make" />
                   </SelectTrigger>
                   <SelectContent>
-                    {vehicleMakes.map(make => (
+                    {vehicleMakesList.map(make => (
                       <SelectItem key={make} value={make}>{make}</SelectItem>
                     ))}
+                    <SelectItem value="Other">Other (Add new make)</SelectItem>
                   </SelectContent>
                 </Select>
+                {formData.make === 'Other' && (
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter custom make..."
+                        value={customMake}
+                        onChange={(e) => setCustomMake(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          handleAddCustomMakeToList()
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="whitespace-nowrap"
+                      >
+                        Add to List
+                      </Button>
+                    </div>
+                    <p className="text-xs text-slate-500">Add your custom make to the dropdown list permanently</p>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -242,11 +346,22 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="vin">VIN *</Label>
+                <Label htmlFor="vin">VIN</Label>
                 <Input
                   id="vin"
                   value={formData.vin}
                   onChange={(e) => handleChange('vin', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="sourceUrl">Source URL *</Label>
+                <Input
+                  id="sourceUrl"
+                  type="url"
+                  value={formData.sourceUrl}
+                  onChange={(e) => handleChange('sourceUrl', e.target.value)}
+                  placeholder="https://example.com/vehicle-listing"
                   required
                 />
               </div>
@@ -360,6 +475,34 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
                   <SelectContent>
                     {transmissionTypes.map(trans => (
                       <SelectItem key={trans.value} value={trans.value}>{trans.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cabin">Cabin Type</Label>
+                <Select value={formData.cabin || ""} onValueChange={(value) => handleChange('cabin', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select cabin type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cabinTypes.map(cab => (
+                      <SelectItem key={cab.value} value={cab.value}>{cab.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="tons">Weight Capacity (Tonnes)</Label>
+                <Select value={formData.tons || ""} onValueChange={(value) => handleChange('tons', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select weight capacity" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tonsTypes.map(ton => (
+                      <SelectItem key={ton.value} value={ton.value}>{ton.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

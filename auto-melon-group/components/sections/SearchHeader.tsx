@@ -53,7 +53,7 @@ export function SearchHeader() {
       case 'type':
         setSelectedCategory(value)
         break
-      case 'pricerange':
+      case 'price range':
         setSelectedPriceRange(value)
         break
       case 'year':
@@ -251,7 +251,7 @@ export function SearchHeader() {
                   Price Range
                 </label>
                 <FilterDropdown
-                  label="PriceRange"
+                  label="Price Range"
                   value={selectedPriceRange}
                   options={priceRanges.slice(1)}
                   onChange={handleFilterChange}

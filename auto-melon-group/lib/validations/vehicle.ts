@@ -28,12 +28,17 @@ export const vehicleFormSchema = z.object({
   engineSize: z.number()
     .positive("Engine size must be greater than 0")
     .optional(),
+  cabin: z.enum(["1", "1.5", "2"]).optional(),
+  tons: z.enum(["3.5", "7.5", "12", "18"]).optional(),
   engineType: z.enum(["diesel", "electric", "hybrid", "gas"]),
   transmission: z.enum(["manual", "automatic", "automated-manual"]),
 
   // Location
   location: z.string().min(1, "Location is required"),
   country: z.string(),
+
+  // Source URL (required)
+  sourceUrl: z.string().url("Source URL must be a valid URL").min(1, "Source URL is required"),
 
   // Media
   images: z.array(z.string().url("Image must be a valid URL")),

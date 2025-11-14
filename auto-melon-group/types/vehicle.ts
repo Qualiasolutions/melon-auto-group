@@ -12,9 +12,12 @@ export interface Vehicle {
   transmission: "manual" | "automatic" | "automated-manual"
   enginePower: number // in HP
   engineSize?: number // in liters
+  cabin?: "1" | "1.5" | "2" // cabin configuration
+  tons?: "3.5" | "7.5" | "12" | "18" // weight capacity in tonnes
   location: string
   country: string
   vin: string
+  sourceUrl: string // Main source link for the vehicle
   bazarakiUrl?: string // Original Bazaraki listing URL for reference
   images: string[] // Array of image URLs
   specifications: VehicleSpecifications
@@ -91,6 +94,19 @@ export const conditionTypes = [
   { value: "certified", label: "Certified Pre-Owned" },
 ] as const
 
+export const cabinTypes = [
+  { value: "1", label: "Single Cabin" },
+  { value: "1.5", label: "Extended Cabin" },
+  { value: "2", label: "Double/Crew Cabin" },
+] as const
+
+export const tonsTypes = [
+  { value: "3.5", label: "3.5 Tonnes" },
+  { value: "7.5", label: "7.5 Tonnes" },
+  { value: "12", label: "12 Tonnes" },
+  { value: "18", label: "18 Tonnes" },
+] as const
+
 export const europeanCountries = [
   "Germany", "France", "Italy", "Spain", "Netherlands",
   "Belgium", "Poland", "Sweden", "Austria", "Czech Republic",
@@ -113,6 +129,7 @@ export const vehicleMakes = [
   "Peterbilt",
   "Kenworth",
   "Mack",
+  "Other",
 ] as const
 
 export const vehicleCategories = [
