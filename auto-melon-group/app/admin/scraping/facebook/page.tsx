@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ArrowLeft, Search, Loader2, Facebook, CheckCircle2, XCircle, Download } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import { supabase } from "@/lib/supabase/client"
 
 interface ScrapedVehicle {
   title: string
@@ -30,7 +30,6 @@ interface ScrapedVehicle {
 
 export default function FacebookMarketplaceScraper() {
   const router = useRouter()
-  const supabase = createClient()
 
   const [searchQuery, setSearchQuery] = useState("truck")
   const [location, setLocation] = useState("Cyprus")
