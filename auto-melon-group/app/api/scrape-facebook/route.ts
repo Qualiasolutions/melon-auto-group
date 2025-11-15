@@ -9,36 +9,34 @@ const client = new ApifyClient({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { searchQuery, location, minPrice, maxPrice, maxResults = 20 } = body
+    const { url } = body
 
-    if (!searchQuery) {
+    if (!url) {
       return NextResponse.json(
-        { error: 'Search query is required' },
+        { error: 'Facebook Marketplace URL is required' },
+        { status: 400 }
+      )
+    }
+
+    // Validate Facebook Marketplace URL
+    if (!url.includes('facebook.com/marketplace')) {
+      return NextResponse.json(
+        { error: 'Invalid Facebook Marketplace URL' },
         { status: 400 }
       )
     }
 
     console.log('🔍 Starting Facebook Marketplace scrape...')
-    console.log('Search query:', searchQuery)
-    console.log('Location:', location)
-    console.log('Price range:', minPrice, '-', maxPrice)
-
-    // Build the Facebook Marketplace search URL
-    const locationSlug = location ? location.toLowerCase().replace(/\s+/g, '-') : 'cyprus'
-    let searchUrl = `https://www.facebook.com/marketplace/${locationSlug}/search/?query=${encodeURIComponent(searchQuery)}`
-
-    // Add price filters if provided
-    if (minPrice) searchUrl += `&minPrice=${minPrice}`
-    if (maxPrice) searchUrl += `&maxPrice=${maxPrice}`
+    console.log('URL:', url)
 
     // Prepare input for the Facebook Marketplace scraper
     const input = {
       startUrls: [
         {
-          url: searchUrl
+          url: url
         }
       ],
-      resultsLimit: maxResults,
+      resultsLimit: 1, // Just get this one item
     }
 
     console.log('📋 Actor input:', input)
@@ -54,33 +52,41 @@ export async function POST(request: NextRequest) {
 
     console.log(`📦 Found ${items.length} items`)
 
+    if (items.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'No data found for this URL. The listing may not exist or is no longer available.',
+        },
+        { status: 404 }
+      )
+    }
+
+    // Get the first (and should be only) item
+    const item = items[0]
+
     // Transform the scraped data to match your vehicle schema
-    const vehicles = items.map((item: any) => {
-      // Extract relevant fields - adjust based on the actual structure
-      // returned by the Facebook Marketplace scraper
-      return {
-        title: item.title || item.name || '',
-        price: parseFloat(item.price?.replace(/[^0-9.]/g, '') || '0'),
-        currency: item.currency || 'EUR',
-        make: extractMake(item.title || ''),
-        model: extractModel(item.title || ''),
-        year: extractYear(item.title || item.description || ''),
-        mileage: extractMileage(item.description || ''),
-        location: item.location || location || 'Cyprus',
-        description: item.description || '',
-        images: item.images || [],
-        url: item.url || '',
-        source: 'Facebook Marketplace',
-        scrapedAt: new Date().toISOString(),
-        // Add any additional fields from the scraper output
-        rawData: item, // Keep the original data for reference
-      }
-    })
+    const vehicle = {
+      title: item.title || item.name || '',
+      price: parseFloat(item.price?.replace(/[^0-9.]/g, '') || '0'),
+      currency: item.currency || 'EUR',
+      make: extractMake(item.title || ''),
+      model: extractModel(item.title || ''),
+      year: extractYear(item.title || item.description || ''),
+      mileage: extractMileage(item.description || ''),
+      location: item.location || 'Cyprus',
+      description: item.description || '',
+      images: item.images || item.image ? [item.image] : [],
+      url: item.url || url,
+      source: 'Facebook Marketplace',
+      scrapedAt: new Date().toISOString(),
+      // Add any additional fields from the scraper output
+      rawData: item, // Keep the original data for reference
+    }
 
     return NextResponse.json({
       success: true,
-      count: vehicles.length,
-      vehicles,
+      vehicle,
       runId: run.id,
     })
 

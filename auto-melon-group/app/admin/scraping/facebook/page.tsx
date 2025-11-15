@@ -31,29 +31,28 @@ interface ScrapedVehicle {
 export default function FacebookMarketplaceScraper() {
   const router = useRouter()
 
-  const [searchQuery, setSearchQuery] = useState("truck")
-  const [location, setLocation] = useState("Cyprus")
-  const [minPrice, setMinPrice] = useState("")
-  const [maxPrice, setMaxPrice] = useState("")
-  const [maxResults, setMaxResults] = useState("20")
-
+  const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
-  const [importing, setImporting] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
-  const [vehicles, setVehicles] = useState<ScrapedVehicle[]>([])
+  const [vehicle, setVehicle] = useState<ScrapedVehicle | null>(null)
   const [runId, setRunId] = useState("")
 
   const handleScrape = async () => {
-    if (!searchQuery.trim()) {
-      setError("Please enter a search query")
+    if (!url.trim()) {
+      setError("Please enter a Facebook Marketplace URL")
+      return
+    }
+
+    if (!url.includes('facebook.com/marketplace')) {
+      setError("Please enter a valid Facebook Marketplace URL")
       return
     }
 
     setLoading(true)
     setError("")
     setSuccess("")
-    setVehicles([])
+    setVehicle(null)
 
     try {
       const response = await fetch('/api/scrape-facebook', {
@@ -61,13 +60,7 @@ export default function FacebookMarketplaceScraper() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          searchQuery,
-          location: location || undefined,
-          minPrice: minPrice ? parseInt(minPrice) : undefined,
-          maxPrice: maxPrice ? parseInt(maxPrice) : undefined,
-          maxResults: parseInt(maxResults) || 20,
-        }),
+        body: JSON.stringify({ url }),
       })
 
       const data = await response.json()
@@ -76,9 +69,9 @@ export default function FacebookMarketplaceScraper() {
         throw new Error(data.error || 'Failed to scrape Facebook Marketplace')
       }
 
-      setVehicles(data.vehicles || [])
+      setVehicle(data.vehicle || null)
       setRunId(data.runId || '')
-      setSuccess(`Successfully scraped ${data.count} vehicles from Facebook Marketplace!`)
+      setSuccess(`Successfully scraped vehicle from Facebook Marketplace!`)
 
     } catch (err: any) {
       console.error('Error scraping:', err)
@@ -89,90 +82,32 @@ export default function FacebookMarketplaceScraper() {
   }
 
   const handleImportToDatabase = async () => {
-    if (vehicles.length === 0) {
-      setError("No vehicles to import")
+    if (!vehicle) {
+      setError("No vehicle data to import")
       return
     }
 
-    setImporting(true)
-    setError("")
-    setSuccess("")
-
-    try {
-      let imported = 0
-      let skipped = 0
-
-      for (const vehicle of vehicles) {
-        // Transform to database format
-        const dbVehicle = {
-          make: vehicle.make,
-          model: vehicle.model,
-          year: vehicle.year,
-          mileage: vehicle.mileage,
-          price: vehicle.price,
-          currency: vehicle.currency || 'EUR',
-          condition: 'used' as const,
-          category: 'truck' as const, // Could be improved with better categorization
-          engine_type: 'diesel' as const,
-          transmission: 'manual' as const,
-          location: vehicle.location,
-          country: 'Cyprus',
-          vin: `FB-${Date.now()}-${imported}`,
-          images: vehicle.images,
-          specifications: {
-            source: vehicle.source,
-            scrapedAt: vehicle.scrapedAt,
-            originalUrl: vehicle.url,
-            apifyRunId: runId,
-            rawData: vehicle.rawData,
-          },
-          features: [],
-          description: vehicle.description || `${vehicle.title} - Imported from Facebook Marketplace`,
-          available: true,
-          featured: false,
-        }
-
-        // Check for duplicates based on title and price
-        const { data: existing } = await supabase
-          .from('vehicles')
-          .select('id')
-          .eq('make', dbVehicle.make)
-          .eq('model', dbVehicle.model)
-          .eq('price', dbVehicle.price)
-          .single()
-
-        if (existing) {
-          console.log(`Skipping duplicate: ${vehicle.title}`)
-          skipped++
-          continue
-        }
-
-        // Insert vehicle
-        const { error: insertError } = await supabase
-          .from('vehicles')
-          .insert(dbVehicle)
-
-        if (insertError) {
-          console.error(`Error importing ${vehicle.title}:`, insertError)
-        } else {
-          imported++
-        }
+    // Store in sessionStorage and redirect to new vehicle form
+    sessionStorage.setItem('importedVehicleData', JSON.stringify({
+      make: vehicle.make,
+      model: vehicle.model,
+      year: vehicle.year,
+      mileage: vehicle.mileage,
+      price: vehicle.price,
+      currency: vehicle.currency,
+      location: vehicle.location,
+      description: vehicle.description,
+      images: vehicle.images,
+      specifications: {
+        source: vehicle.source,
+        scrapedAt: vehicle.scrapedAt,
+        originalUrl: vehicle.url,
+        apifyRunId: runId,
       }
+    }))
 
-      setSuccess(`Successfully imported ${imported} vehicles! (${skipped} skipped as duplicates)`)
-
-      // Clear the scraped results
-      setTimeout(() => {
-        setVehicles([])
-        router.push('/admin/vehicles')
-      }, 3000)
-
-    } catch (err: any) {
-      console.error('Error importing vehicles:', err)
-      setError(err.message || 'Failed to import vehicles to database')
-    } finally {
-      setImporting(false)
-    }
+    // Redirect to new vehicle form
+    router.push(`/admin/vehicles/new?imported=true`)
   }
 
   return (
@@ -206,141 +141,51 @@ export default function FacebookMarketplaceScraper() {
         </div>
       </div>
 
-      {/* Search Configuration */}
+      {/* URL Input */}
       <Card className="border-2 border-slate-200 shadow-2xl">
         <CardHeader className="bg-gradient-to-r from-slate-50 to-white">
           <CardTitle className="text-2xl flex items-center gap-2">
-            <Search className="h-6 w-6 text-blue-600" />
-            Search Configuration
+            <Facebook className="h-6 w-6 text-blue-600" />
+            Import from Facebook Marketplace
           </CardTitle>
           <CardDescription className="text-base">
-            Configure your Facebook Marketplace search parameters
+            Paste a Facebook Marketplace item URL to extract vehicle details
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Search Query */}
-            <div className="space-y-2">
-              <Label htmlFor="query" className="text-base font-semibold text-slate-700">
-                Search Query *
-              </Label>
+          <div className="space-y-3">
+            <Label htmlFor="url" className="text-base font-semibold text-slate-700">
+              Facebook Marketplace URL *
+            </Label>
+            <div className="flex gap-3">
               <Input
-                id="query"
-                type="text"
-                placeholder="e.g., truck, commercial vehicle, lorry"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-12 text-base border-2"
+                id="url"
+                type="url"
+                placeholder="https://www.facebook.com/marketplace/item/..."
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !loading && url.trim() && handleScrape()}
+                className="flex-1 h-14 text-base border-2 border-slate-200 focus:border-blue-600 focus:ring-blue-600 rounded-xl"
                 disabled={loading}
               />
-            </div>
-
-            {/* Location */}
-            <div className="space-y-2">
-              <Label htmlFor="location" className="text-base font-semibold text-slate-700">
-                Location
-              </Label>
-              <Input
-                id="location"
-                type="text"
-                placeholder="e.g., Cyprus, Nicosia"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="h-12 text-base border-2"
-                disabled={loading}
-              />
-            </div>
-
-            {/* Min Price */}
-            <div className="space-y-2">
-              <Label htmlFor="minPrice" className="text-base font-semibold text-slate-700">
-                Minimum Price (€)
-              </Label>
-              <Input
-                id="minPrice"
-                type="number"
-                placeholder="e.g., 5000"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                className="h-12 text-base border-2"
-                disabled={loading}
-              />
-            </div>
-
-            {/* Max Price */}
-            <div className="space-y-2">
-              <Label htmlFor="maxPrice" className="text-base font-semibold text-slate-700">
-                Maximum Price (€)
-              </Label>
-              <Input
-                id="maxPrice"
-                type="number"
-                placeholder="e.g., 50000"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                className="h-12 text-base border-2"
-                disabled={loading}
-              />
-            </div>
-
-            {/* Max Results */}
-            <div className="space-y-2">
-              <Label htmlFor="maxResults" className="text-base font-semibold text-slate-700">
-                Maximum Results
-              </Label>
-              <Input
-                id="maxResults"
-                type="number"
-                placeholder="20"
-                value={maxResults}
-                onChange={(e) => setMaxResults(e.target.value)}
-                className="h-12 text-base border-2"
-                disabled={loading}
-                min="1"
-                max="100"
-              />
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-4 pt-4">
-            <Button
-              onClick={handleScrape}
-              disabled={loading || !searchQuery.trim()}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl flex-1 h-14 text-base font-semibold rounded-xl"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  Scraping Facebook Marketplace...
-                </>
-              ) : (
-                <>
-                  <Search className="h-5 w-5 mr-2" />
-                  Start Scraping
-                </>
-              )}
-            </Button>
-
-            {vehicles.length > 0 && (
               <Button
-                onClick={handleImportToDatabase}
-                disabled={importing}
-                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl min-w-[200px] h-14 text-base font-semibold rounded-xl"
+                onClick={handleScrape}
+                disabled={loading || !url.trim()}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl min-w-[160px] h-14 text-base font-semibold rounded-xl"
               >
-                {importing ? (
+                {loading ? (
                   <>
                     <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    Importing...
+                    Scraping...
                   </>
                 ) : (
                   <>
                     <Download className="h-5 w-5 mr-2" />
-                    Import to Database
+                    Scrape Data
                   </>
                 )}
               </Button>
-            )}
+            </div>
           </div>
 
           {/* Alerts */}
@@ -361,81 +206,108 @@ export default function FacebookMarketplaceScraper() {
       </Card>
 
       {/* Results */}
-      {vehicles.length > 0 && (
-        <Card className="border-2 border-blue-200 shadow-2xl">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
-            <CardTitle className="text-2xl">
-              Scraped Vehicles ({vehicles.length})
-            </CardTitle>
-            <CardDescription className="text-base">
-              Review the vehicles before importing to your database
-            </CardDescription>
+      {vehicle && (
+        <Card className="border-2 border-green-200 shadow-2xl">
+          <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <CheckCircle2 className="h-6 w-6 text-green-600" />
+                  Vehicle Data Extracted
+                </CardTitle>
+                <CardDescription className="text-base">
+                  Review the details before importing
+                </CardDescription>
+              </div>
+              <Button
+                onClick={handleImportToDatabase}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Import to Form
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="pt-6">
-            <div className="space-y-4">
-              {vehicles.map((vehicle, index) => (
-                <div
-                  key={index}
-                  className="border-2 border-slate-200 rounded-xl p-4 hover:border-blue-300 transition-all"
-                >
-                  <div className="flex gap-4">
-                    {/* Image */}
-                    {vehicle.images && vehicle.images.length > 0 ? (
-                      <div className="w-32 h-24 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
-                        <img
-                          src={vehicle.images[0]}
-                          alt={vehicle.title}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none'
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-32 h-24 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Facebook className="h-8 w-8 text-slate-400" />
-                      </div>
-                    )}
-
-                    {/* Details */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-lg text-slate-900 truncate">
-                        {vehicle.title}
-                      </h3>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-sm text-slate-600">
-                        <div>
-                          <span className="font-medium">Make:</span> {vehicle.make}
-                        </div>
-                        <div>
-                          <span className="font-medium">Model:</span> {vehicle.model}
-                        </div>
-                        <div>
-                          <span className="font-medium">Year:</span> {vehicle.year}
-                        </div>
-                        <div>
-                          <span className="font-medium">Price:</span> {vehicle.currency} {vehicle.price.toLocaleString()}
-                        </div>
-                        <div>
-                          <span className="font-medium">Mileage:</span> {vehicle.mileage.toLocaleString()} km
-                        </div>
-                        <div className="col-span-2">
-                          <span className="font-medium">Location:</span> {vehicle.location}
-                        </div>
-                      </div>
-                      {vehicle.url && (
-                        <a
-                          href={vehicle.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline text-sm mt-2 inline-block"
-                        >
-                          View on Facebook →
-                        </a>
-                      )}
+            <div className="border-2 border-slate-200 rounded-xl p-6 space-y-6">
+              {/* Images */}
+              {vehicle.images && vehicle.images.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {vehicle.images.map((img, idx) => (
+                    <div key={idx} className="aspect-video bg-slate-100 rounded-lg overflow-hidden">
+                      <img
+                        src={img}
+                        alt={`${vehicle.title} - ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none'
+                        }}
+                      />
                     </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
+              )}
+
+              {/* Title */}
+              <div>
+                <h3 className="font-bold text-2xl text-slate-900">
+                  {vehicle.title}
+                </h3>
+              </div>
+
+              {/* Price */}
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-700 font-medium">Price</p>
+                <p className="text-3xl font-bold text-blue-900">
+                  {vehicle.currency} {vehicle.price.toLocaleString()}
+                </p>
+              </div>
+
+              {/* Details Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="border border-slate-200 rounded-lg p-4">
+                  <p className="text-sm text-slate-600 font-medium">Make</p>
+                  <p className="text-lg font-semibold text-slate-900">{vehicle.make}</p>
+                </div>
+                <div className="border border-slate-200 rounded-lg p-4">
+                  <p className="text-sm text-slate-600 font-medium">Model</p>
+                  <p className="text-lg font-semibold text-slate-900">{vehicle.model}</p>
+                </div>
+                <div className="border border-slate-200 rounded-lg p-4">
+                  <p className="text-sm text-slate-600 font-medium">Year</p>
+                  <p className="text-lg font-semibold text-slate-900">{vehicle.year}</p>
+                </div>
+                <div className="border border-slate-200 rounded-lg p-4">
+                  <p className="text-sm text-slate-600 font-medium">Mileage</p>
+                  <p className="text-lg font-semibold text-slate-900">{vehicle.mileage.toLocaleString()} km</p>
+                </div>
+                <div className="border border-slate-200 rounded-lg p-4 col-span-2">
+                  <p className="text-sm text-slate-600 font-medium">Location</p>
+                  <p className="text-lg font-semibold text-slate-900">{vehicle.location}</p>
+                </div>
+              </div>
+
+              {/* Description */}
+              {vehicle.description && (
+                <div>
+                  <p className="text-sm text-slate-600 font-medium mb-2">Description</p>
+                  <p className="text-slate-700 leading-relaxed">{vehicle.description}</p>
+                </div>
+              )}
+
+              {/* Original URL */}
+              {vehicle.url && (
+                <div>
+                  <a
+                    href={vehicle.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline font-medium"
+                  >
+                    View Original Listing on Facebook →
+                  </a>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -451,19 +323,19 @@ export default function FacebookMarketplaceScraper() {
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-purple-800">
           <p>
-            <strong>1. Configure Search:</strong> Enter your search criteria including keywords, location, and price range.
+            <strong>1. Find a Listing:</strong> Browse Facebook Marketplace and find a vehicle you want to import.
           </p>
           <p>
-            <strong>2. Start Scraping:</strong> Our Apify-powered scraper will search Facebook Marketplace and extract vehicle listings.
+            <strong>2. Copy URL:</strong> Copy the item's URL from your browser (e.g., https://www.facebook.com/marketplace/item/123...).
           </p>
           <p>
-            <strong>3. Review Results:</strong> Check the scraped vehicles and their details before importing.
+            <strong>3. Paste & Scrape:</strong> Paste the URL above and click "Scrape Data" - our Apify-powered scraper will extract all vehicle details.
           </p>
           <p>
-            <strong>4. Import to Database:</strong> Click "Import to Database" to add the vehicles to your inventory.
+            <strong>4. Review & Import:</strong> Check the extracted information and click "Import to Form" to add it to your inventory.
           </p>
           <p className="text-xs text-purple-600 mt-4">
-            <strong>Note:</strong> Scraping may take 30-60 seconds depending on the number of results. The scraper will automatically filter duplicates during import.
+            <strong>Note:</strong> Scraping takes 20-40 seconds per listing. The data will be pre-filled in the vehicle form where you can review and adjust before saving.
           </p>
         </CardContent>
       </Card>
