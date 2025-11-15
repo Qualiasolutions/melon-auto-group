@@ -23,20 +23,28 @@ export async function POST(request: NextRequest) {
     console.log('Location:', location)
     console.log('Price range:', minPrice, '-', maxPrice)
 
+    // Build the Facebook Marketplace search URL
+    const locationSlug = location ? location.toLowerCase().replace(/\s+/g, '-') : 'cyprus'
+    let searchUrl = `https://www.facebook.com/marketplace/${locationSlug}/search/?query=${encodeURIComponent(searchQuery)}`
+
+    // Add price filters if provided
+    if (minPrice) searchUrl += `&minPrice=${minPrice}`
+    if (maxPrice) searchUrl += `&maxPrice=${maxPrice}`
+
     // Prepare input for the Facebook Marketplace scraper
     const input = {
-      query: searchQuery,
-      location: location || 'Cyprus',
-      minPrice: minPrice || undefined,
-      maxPrice: maxPrice || undefined,
-      maxItems: maxResults,
-      // Add any additional parameters supported by the actor
+      startUrls: [
+        {
+          url: searchUrl
+        }
+      ],
+      resultsLimit: maxResults,
     }
 
     console.log('📋 Actor input:', input)
 
-    // Run the actor (U5DUNxhH3qKt5PnCf is your Facebook Marketplace scraper)
-    const run = await client.actor('U5DUNxhH3qKt5PnCf').call(input)
+    // Run the actor (apify/facebook-marketplace-scraper)
+    const run = await client.actor('apify/facebook-marketplace-scraper').call(input)
 
     console.log('✅ Actor run completed:', run.id)
     console.log('Status:', run.status)
