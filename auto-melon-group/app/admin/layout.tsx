@@ -11,7 +11,8 @@ import {
   LogOut,
   Menu,
   X,
-  Download
+  Download,
+  Facebook
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Toaster } from "@/components/ui/sonner"
@@ -22,6 +23,7 @@ const navigation = [
   { name: 'Vehicles', href: '/admin/vehicles', icon: Truck },
   { name: 'Add Vehicle', href: '/admin/vehicles/new', icon: Plus },
   { name: 'Import Vehicle', href: '/admin/vehicles/import', icon: Download },
+  { name: 'Facebook Scraper', href: '/admin/scraping/facebook', icon: Facebook },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
