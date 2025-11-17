@@ -1,15 +1,18 @@
 import { supabase } from "@/lib/supabase/client"
-import { Vehicle } from "@/types/vehicle"
+import { Vehicle, vehicleCategories } from "@/types/vehicle"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { VehicleCard } from "@/components/sections/VehicleCard"
+import { StructuredData } from "@/components/StructuredData"
 import Link from "next/link"
 import { Calendar, Gauge, MapPin, Phone, Mail, MessageCircle } from "lucide-react"
 import { notFound } from "next/navigation"
 import { siteConfig } from "@/config/site"
 import { VehicleGallery } from "@/components/sections/VehicleGallery"
+import { Metadata } from "next"
+import { getVehicleSchema, getBreadcrumbSchema } from "@/config/metadata"
 
 async function getVehicle(id: string): Promise<Vehicle | null> {
   const { data: vehicle, error } = await supabase
@@ -42,6 +45,77 @@ async function getSimilarVehicles(make: string, currentId: string) {
   return vehicles || []
 }
 
+// Generate dynamic metadata for each vehicle page
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}): Promise<Metadata> {
+  const { id } = await params
+  const vehicle = await getVehicle(id)
+
+  if (!vehicle) {
+    return {
+      title: "Vehicle Not Found",
+      description: "The requested vehicle is no longer available.",
+    }
+  }
+
+  const title = `${vehicle.make} ${vehicle.model} ${vehicle.year} - ${vehicle.condition.charAt(0).toUpperCase() + vehicle.condition.slice(1)} Truck for Sale`
+  const description = `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.category} for sale. ${vehicle.mileage.toLocaleString()} km, ${vehicle.engineType}, ${vehicle.transmission}. ${vehicle.horsepower}HP. Located in ${vehicle.country}. Price: ${vehicle.currency} ${vehicle.price.toLocaleString()}. ${vehicle.description?.slice(0, 100) || ''}`
+
+  const imageUrl = vehicle.images && vehicle.images.length > 0
+    ? vehicle.images[0]
+    : `${siteConfig.url}/og-image.jpg`
+
+  return {
+    title,
+    description,
+    keywords: [
+      vehicle.make,
+      vehicle.model,
+      vehicle.year.toString(),
+      vehicle.category,
+      vehicle.engineType,
+      vehicle.condition,
+      `${vehicle.make} ${vehicle.model}`,
+      `${vehicle.year} ${vehicle.make}`,
+      `used ${vehicle.category}`,
+      `${vehicle.make} trucks`,
+      vehicle.country,
+    ],
+    openGraph: {
+      title,
+      description,
+      url: `${siteConfig.url}/inventory/${vehicle.id}`,
+      type: "website",
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: `${vehicle.make} ${vehicle.model} ${vehicle.year}`,
+        },
+      ],
+      locale: "en_US",
+      alternateLocale: ["el_GR", "el_CY"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
+    alternates: {
+      canonical: `${siteConfig.url}/inventory/${vehicle.id}`,
+      languages: {
+        en: `${siteConfig.url}/inventory/${vehicle.id}`,
+        el: `${siteConfig.url}/el/inventory/${vehicle.id}`,
+      },
+    },
+  }
+}
+
 export default async function VehicleDetailPage({
   params,
 }: {
@@ -68,8 +142,19 @@ export default async function VehicleDetailPage({
     return new Intl.NumberFormat('en-US').format(mileage) + ' km'
   }
 
+  // Generate structured data for this vehicle
+  const vehicleSchema = getVehicleSchema(vehicle)
+  const breadcrumbSchema = getBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: "Inventory", url: "/inventory" },
+    { name: `${vehicle.make} ${vehicle.model}`, url: `/inventory/${vehicle.id}` },
+  ])
+
   return (
     <div className="container py-8 max-w-7xl">
+      {/* Structured Data */}
+      <StructuredData data={[vehicleSchema, breadcrumbSchema]} />
+
       {/* Premium Breadcrumb */}
       <div className="text-sm text-slate-500 mb-8 flex items-center gap-3">
         <Link href="/" className="hover:text-brand-red transition-colors font-medium">Home</Link>
@@ -163,6 +248,12 @@ export default async function VehicleDetailPage({
                   <p className="font-semibold capitalize">{vehicle.condition}</p>
                 </div>
                 <div>
+                  <p className="text-sm text-muted-foreground">Category</p>
+                  <p className="font-semibold capitalize">
+                    {vehicleCategories.find(cat => cat.value === vehicle.category)?.label || vehicle.category}
+                  </p>
+                </div>
+                <div>
                   <p className="text-sm text-muted-foreground">Location</p>
                   <p className="font-semibold">{vehicle.location}, {vehicle.country}</p>
                 </div>
@@ -187,15 +278,37 @@ export default async function VehicleDetailPage({
                   </div>
                 )}
 
-                {/* Additional Specs from JSON */}
-                {vehicle.specifications && Object.entries(vehicle.specifications).map(([key, value]) => (
-                  value && (
+                {/* Additional Specs from JSON with better formatting */}
+                {vehicle.specifications && Object.entries(vehicle.specifications).map(([key, value]) => {
+                  if (!value) return null
+
+                  // Format the key nicely
+                  const formattedKey = key.replace(/([A-Z])/g, ' $1').trim()
+                  const displayKey = formattedKey.charAt(0).toUpperCase() + formattedKey.slice(1)
+
+                  // Format special values
+                  let displayValue = value
+                  if (typeof value === 'boolean') {
+                    displayValue = value ? 'Yes' : 'No'
+                  } else if (key.includes('angle') || key.includes('Angle')) {
+                    displayValue = `${value}°`
+                  } else if (key.includes('Clearance') || key.includes('Depth')) {
+                    displayValue = `${value} mm`
+                  } else if (key.includes('Capacity') && typeof value === 'number') {
+                    displayValue = key.includes('fuel') ? `${value} liters` : `${value} kg`
+                  } else if (key.includes('Torque')) {
+                    displayValue = `${value} Nm`
+                  } else if (key.includes('Speed')) {
+                    displayValue = `${value} km/h`
+                  }
+
+                  return (
                     <div key={key}>
-                      <p className="text-sm text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                      <p className="font-semibold">{value}</p>
+                      <p className="text-sm text-muted-foreground">{displayKey}</p>
+                      <p className="font-semibold">{displayValue}</p>
                     </div>
                   )
-                ))}
+                })}
               </div>
             </CardContent>
           </Card>

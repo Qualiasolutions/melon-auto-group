@@ -1,0 +1,39 @@
+{
+  "name": "Auto Melon Group - Premium Trucks & Commercial Vehicles",
+  "short_name": "Auto Melon",
+  "description": "Premium Used Trucks & Commercial Vehicles Worldwide | Mercedes, Scania, Volvo, DAF & More",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ea580c",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["business", "automotive"],
+  "lang": "en",
+  "dir": "ltr"
+}

@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "Auto Melon Group",
   description: "Premium Used Trucks & Commercial Vehicles Worldwide | Mercedes, Scania, Volvo, DAF & More",
   url: "https://automelongroup.com",
-  ogImage: "https://automelongroup.com/og.jpg",
+  ogImage: "https://automelongroup.com/og-image.jpg",
   links: {
     facebook: "https://facebook.com/automelongroup",
     instagram: "https://instagram.com/automelongroup",
