@@ -1,13 +1,7 @@
-import { Inter } from 'next/font/google'
 import type { Metadata } from 'next'
 import type { Locale } from '@/types/i18n'
 import { englishMetadata, greekMetadata } from '@/config/metadata'
 import { siteConfig } from '@/config/site'
-import { Header } from '@/components/layout/Header'
-import { Footer } from '@/components/layout/Footer'
-import '@/app/globals.css'
-
-const inter = Inter({ subsets: ['latin', 'greek'] })
 
 export async function generateMetadata({
   params,
@@ -56,24 +50,11 @@ export async function generateMetadata({
 
 export default async function LocaleLayout({
   children,
-  params,
 }: {
   children: React.ReactNode
   params: Promise<{ locale: Locale }>
 }) {
-  const { locale } = await params
-
-  return (
-    <html lang={locale} suppressHydrationWarning>
-      <body className={inter.className}>
-        <div className="flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
-      </body>
-    </html>
-  )
+  return <>{children}</>
 }
 
 export async function generateStaticParams() {
