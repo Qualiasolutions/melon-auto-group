@@ -19,8 +19,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Icon } from "@/components/ui/icon"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import { useState } from "react"
 import { siteConfig } from "@/config/site"
+import { usePathname } from "next/navigation"
+import type { Locale } from "@/types/i18n"
 import {
   Phone,
   Mail,
@@ -86,6 +89,10 @@ const topBrands = ["Mercedes-Benz", "Scania", "Volvo", "DAF", "MAN", "Iveco"]
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
+
+  // Detect current locale from pathname
+  const currentLocale: Locale = pathname.startsWith('/el') ? 'el' : 'en'
 
   return (
     <header className="w-full border-b bg-white shadow-lg">
@@ -109,9 +116,10 @@ export function Header() {
                 <span>{siteConfig.contact.phone}</span>
               </a>
             </div>
-            <div className="ml-auto flex items-center gap-3">
+            <div className="ml-auto flex items-center gap-4">
               <span className="hidden sm:inline text-slate-600 font-medium">Export Desk Available</span>
               <span className="text-brand-green font-bold px-3 py-1 bg-green-50 rounded-full">Mon-Fri 8AM-6PM</span>
+              <LanguageSwitcher currentLocale={currentLocale} />
             </div>
           </div>
         </div>

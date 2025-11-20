@@ -5,8 +5,6 @@ import type { Vehicle } from '@/types/vehicle'
 import Link from 'next/link'
 import { ArrowRight, Search, ShieldCheck, Truck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { LocalizedHeader } from '@/components/layout/LocalizedHeader'
-import { LocalizedFooter } from '@/components/layout/LocalizedFooter'
 
 async function getFeaturedVehicles(): Promise<Vehicle[]> {
   const { data: vehicles, error } = await supabase
@@ -36,9 +34,7 @@ export default async function HomePage({
   const featuredVehicles = await getFeaturedVehicles()
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <LocalizedHeader locale={locale} dict={dict} />
-
+    <>
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-b from-white to-slate-50">
         <div className="container mx-auto px-4">
@@ -176,7 +172,6 @@ export default async function HomePage({
         </div>
       </section>
 
-      <LocalizedFooter locale={locale} dict={dict} />
-    </div>
+    </>
   )
 }

@@ -10,8 +10,6 @@ import { Calendar, Gauge, MapPin, Phone, Mail, MessageCircle, ArrowLeft } from "
 import { notFound } from "next/navigation"
 import { siteConfig } from "@/config/site"
 import { Metadata } from "next"
-import { LocalizedHeader } from "@/components/layout/LocalizedHeader"
-import { LocalizedFooter } from "@/components/layout/LocalizedFooter"
 
 async function getVehicle(id: string): Promise<Vehicle | null> {
   const { data: vehicle, error } = await supabase
@@ -81,10 +79,7 @@ export default async function VehicleDetailPage({
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
-      <LocalizedHeader locale={locale} dict={dict} />
-
-      <div className="container py-8 max-w-7xl flex-1">
+    <>      <div className="container py-8 max-w-7xl flex-1">
         {/* Breadcrumb */}
         <div className="mb-6">
           <Link
@@ -296,8 +291,6 @@ export default async function VehicleDetailPage({
           </div>
         </div>
       </div>
-
-      <LocalizedFooter locale={locale} dict={dict} />
-    </div>
+    </>
   )
 }

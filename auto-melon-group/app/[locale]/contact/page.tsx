@@ -10,8 +10,6 @@ import type { Locale } from "@/types/i18n"
 import { useState, Suspense, use } from "react"
 import { useSearchParams } from "next/navigation"
 import { Phone, Mail, MessageCircle } from "lucide-react"
-import { LocalizedHeader } from "@/components/layout/LocalizedHeader"
-import { LocalizedFooter } from "@/components/layout/LocalizedFooter"
 
 function ContactForm({
   dict,
@@ -62,9 +60,7 @@ function ContactForm({
   }
 
   return (
-    <>
-      <LocalizedHeader locale={locale} dict={dict} />
-      <div className="container py-8 max-w-4xl mx-auto flex-1">
+    <>      <div className="container py-8 max-w-4xl mx-auto flex-1">
         <h1 className="text-4xl font-bold tracking-tight mb-2">{dict.contact.title}</h1>
       <p className="text-muted-foreground mb-8">{dict.contact.subtitle}</p>
 
@@ -237,7 +233,7 @@ export default function ContactPage({
   const dict = use(dictPromise)
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
       <Suspense
         fallback={
           <div className="container py-8 max-w-4xl mx-auto flex-1">
@@ -247,6 +243,6 @@ export default function ContactPage({
       >
         <ContactForm dict={dict} locale={locale} />
       </Suspense>
-    </div>
+    </>
   )
 }

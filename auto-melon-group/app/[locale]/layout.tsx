@@ -1,9 +1,10 @@
 import { Inter } from 'next/font/google'
 import type { Metadata } from 'next'
 import type { Locale } from '@/types/i18n'
-import { getDictionary } from '@/lib/i18n/get-dictionary'
 import { englishMetadata, greekMetadata } from '@/config/metadata'
 import { siteConfig } from '@/config/site'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
 import '@/app/globals.css'
 
 const inter = Inter({ subsets: ['latin', 'greek'] })
@@ -61,13 +62,14 @@ export default async function LocaleLayout({
   params: Promise<{ locale: Locale }>
 }) {
   const { locale } = await params
-  const dict = await getDictionary(locale)
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={inter.className}>
         <div className="flex min-h-screen flex-col">
-          {children}
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
         </div>
       </body>
     </html>

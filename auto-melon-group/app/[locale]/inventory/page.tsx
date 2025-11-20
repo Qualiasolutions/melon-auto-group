@@ -9,8 +9,6 @@ import type { Vehicle } from "@/types/vehicle"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
-import { LocalizedHeader } from "@/components/layout/LocalizedHeader"
-import { LocalizedFooter } from "@/components/layout/LocalizedFooter"
 
 export default function InventoryPage({
   params,
@@ -75,10 +73,7 @@ export default function InventoryPage({
   }, [searchQuery, vehicles])
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
-      <LocalizedHeader locale={locale} dict={dict} />
-
-      {/* Header Section */}
+    <>      {/* Header Section */}
       <section className="bg-white border-b">
         <div className="container py-8">
           <h1 className="text-4xl font-bold mb-2">{dict.inventory.title}</h1>
@@ -198,8 +193,6 @@ export default function InventoryPage({
           </div>
         )}
       </section>
-
-      <LocalizedFooter locale={locale} dict={dict} />
-    </div>
+    </>
   )
 }
