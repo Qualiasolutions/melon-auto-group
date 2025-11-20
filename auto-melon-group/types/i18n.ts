@@ -52,6 +52,18 @@ export interface Dictionary {
       contactTeam: string
     }
   }
+  inventory: {
+    title: string
+    subtitle: string
+    searchPlaceholder: string
+    vehiclesFound: string
+    noResults: string
+    sortBy: string
+    filters: string
+    clearAll: string
+    viewGrid: string
+    viewList: string
+  }
   search: {
     placeholder: string
     advancedFilters: string
@@ -145,6 +157,7 @@ export interface Dictionary {
     phone: string
     email: string
     whatsapp: string
+    chatWithUs: string
     sendMessage: {
       title: string
       description: string
@@ -158,6 +171,10 @@ export interface Dictionary {
       messagePlaceholder: string
       submit: string
       sending: string
+      successTitle: string
+      successMessage: string
+      sendAnother: string
+      interestedInVehicle: string
     }
   }
   common: {

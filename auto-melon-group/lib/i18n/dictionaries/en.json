@@ -47,6 +47,18 @@
       "contactTeam": "Contact Our Team"
     }
   },
+  "inventory": {
+    "title": "Our Inventory",
+    "subtitle": "Browse our selection of quality used trucks and commercial vehicles",
+    "searchPlaceholder": "Search by make, model, type...",
+    "vehiclesFound": "vehicles found",
+    "noResults": "No vehicles found matching your criteria",
+    "sortBy": "Sort by",
+    "filters": "Filters",
+    "clearAll": "Clear all filters",
+    "viewGrid": "Grid view",
+    "viewList": "List view"
+  },
   "search": {
     "placeholder": "Search by make, model, type...",
     "advancedFilters": "Advanced Filters",
@@ -140,6 +152,7 @@
     "phone": "Phone",
     "email": "Email",
     "whatsapp": "WhatsApp",
+    "chatWithUs": "Chat with us",
     "sendMessage": {
       "title": "Send Us a Message",
       "description": "Fill out the form below and we'll get back to you as soon as possible.",
@@ -152,7 +165,11 @@
       "message": "Message",
       "messagePlaceholder": "Tell us about your requirements...",
       "submit": "Send Message",
-      "sending": "Sending..."
+      "sending": "Sending...",
+      "successTitle": "Thank you!",
+      "successMessage": "We've received your inquiry and will get back to you shortly.",
+      "sendAnother": "Send another message",
+      "interestedInVehicle": "I'm interested in vehicle ID:"
     }
   },
   "common": {
