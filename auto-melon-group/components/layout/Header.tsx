@@ -33,13 +33,20 @@ import {
   Box,
   Container,
   Droplet,
-  Snowflake
+  Snowflake,
+  CarFront
 } from "lucide-react"
 
 const truckCategories = [
   {
-    title: "Popular Vehicles",
+    title: "Most Popular",
     items: [
+      {
+        name: "4x4 Pickups",
+        description: "Off-road capable trucks",
+        href: "/inventory?category=4x4",
+        icon: CarFront,
+      },
       {
         name: "Tractor Units",
         description: "Heavy-duty prime movers",
@@ -47,27 +54,33 @@ const truckCategories = [
         icon: Truck,
       },
       {
-        name: "Box Trucks",
-        description: "Enclosed cargo vehicles",
-        href: "/inventory?category=box-truck",
-        icon: Box,
-      },
-      {
         name: "Tippers",
-        description: "Dump trucks and tippers",
+        description: "Dump trucks",
         href: "/inventory?category=tipper",
         icon: Package,
       },
-    ],
-  },
-  {
-    title: "Specialized Vehicles",
-    items: [
+      {
+        name: "Box Trucks",
+        description: "Enclosed cargo",
+        href: "/inventory?category=box-truck",
+        icon: Box,
+      },
       {
         name: "Refrigerated",
         description: "Temperature controlled",
         href: "/inventory?category=refrigerated",
         icon: Snowflake,
+      },
+    ],
+  },
+  {
+    title: "Other Types",
+    items: [
+      {
+        name: "Flatbed",
+        description: "Open platform trucks",
+        href: "/inventory?category=flatbed",
+        icon: Container,
       },
       {
         name: "Tankers",
@@ -80,6 +93,18 @@ const truckCategories = [
         description: "All trailer types",
         href: "/inventory?category=trailer",
         icon: Container,
+      },
+      {
+        name: "Curtainside",
+        description: "Flexible access",
+        href: "/inventory?category=curtainside",
+        icon: Container,
+      },
+      {
+        name: "Vans",
+        description: "Light commercial",
+        href: "/inventory?category=van",
+        icon: Box,
       },
     ],
   },
@@ -168,7 +193,7 @@ export function Header() {
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="h-11 px-6 py-2.5 text-base font-semibold rounded-lg border-2 border-transparent hover:border-brand-red/20 data-[state=open]:border-brand-red/20">Inventory</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="w-[700px] p-6">
+                    <div className="w-[650px] p-5">
                       <div className="grid grid-cols-2 gap-6">
                         {truckCategories.map((category) => (
                           <div key={category.title} className="space-y-3">

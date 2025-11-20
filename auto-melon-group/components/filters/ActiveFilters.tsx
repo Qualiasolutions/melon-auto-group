@@ -97,29 +97,34 @@ export function ActiveFilters({ filters, onFilterRemove, onClearAll }: ActiveFil
   if (activeFilters.length === 0) return null
 
   return (
-    <div className="flex flex-wrap items-center gap-2 py-4">
-      <span className="text-sm font-medium text-muted-foreground">Active Filters:</span>
+    <div className="flex flex-wrap items-center gap-3 p-5 mb-6 bg-slate-50 rounded-xl border border-slate-200">
+      <span className="text-sm font-semibold text-slate-700">Active Filters:</span>
       {activeFilters.map((filter, index) => (
         <Badge
           key={`${filter.key}-${filter.value || filter.label}-${index}`}
           variant="secondary"
-          className="gap-1 pr-1"
+          className="gap-2 pl-3 pr-2 py-1.5 bg-white border border-slate-200 hover:border-brand-red/50 shadow-sm transition-all"
         >
-          {filter.label}
+          <span className="text-sm font-medium">{filter.label}</span>
           <Button
             variant="ghost"
             size="sm"
-            className="h-4 w-4 p-0 hover:bg-transparent"
+            className="h-5 w-5 p-0 hover:bg-red-50 rounded-full transition-colors"
             onClick={() => onFilterRemove(filter.key, filter.value)}
           >
-            <X className="h-3 w-3" />
+            <X className="h-3.5 w-3.5 text-slate-500 hover:text-brand-red" />
             <span className="sr-only">Remove {filter.label} filter</span>
           </Button>
         </Badge>
       ))}
       {activeFilters.length > 1 && (
-        <Button variant="ghost" size="sm" onClick={onClearAll} className="h-7 text-xs">
-          Clear all
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onClearAll}
+          className="h-8 px-4 text-xs font-semibold text-brand-red border-brand-red/30 hover:bg-red-50 hover:border-brand-red transition-all"
+        >
+          Clear all filters
         </Button>
       )}
     </div>

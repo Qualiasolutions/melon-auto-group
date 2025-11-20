@@ -194,6 +194,12 @@ export default async function VehicleDetailPage({
                     </span>
                     <p className="font-medium capitalize">{vehicle.transmission}</p>
                   </div>
+                  <div>
+                    <span className="text-sm text-muted-foreground">
+                      {locale === 'el' ? 'Κατηγορία' : 'Category'}
+                    </span>
+                    <p className="font-medium capitalize">{vehicle.category?.replace(/-/g, ' ')}</p>
+                  </div>
                   {vehicle.horsepower && (
                     <div>
                       <span className="text-sm text-muted-foreground">

@@ -19,7 +19,7 @@ async function getFeaturedVehicles(): Promise<Vehicle[]> {
     .select('*')
     .eq('available', true)
     .order('created_at', { ascending: false })
-    .limit(18)
+    .limit(21)
 
   if (error) {
     // Log error in development only
