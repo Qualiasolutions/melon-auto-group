@@ -128,15 +128,15 @@ export const greekKeywords = [
 
 // English Metadata
 export const englishMetadata = {
-  title: "Auto Melon Group - Premium Used Trucks & Commercial Vehicles Worldwide",
-  description: "Leading dealer of quality used trucks and commercial vehicles. Specializing in Mercedes-Benz, Scania, Volvo, DAF. EURO 6 certified trucks. Worldwide shipping from Cyprus. Fleet sales available.",
+  title: "Auto Melon Group - UK Used Trucks & Commercial Vehicles | Cyprus Dealer",
+  description: "Cyprus's leading dealer of UK-imported trucks. Mercedes-Benz, Scania, Volvo, DAF. EURO 6 certified. Based in Limassol serving all Cyprus. Worldwide shipping available.",
   keywords: englishKeywords,
 }
 
 // Greek Metadata (Ελληνικά)
 export const greekMetadata = {
-  title: "Auto Melon Group - Μεταχειρισμένα Φορτηγά & Εμπορικά Οχήματα Παγκοσμίως",
-  description: "Κορυφαίος έμπορος ποιοτικών μεταχειρισμένων φορτηγών και εμπορικών οχημάτων. Ειδικευόμαστε σε Mercedes-Benz, Scania, Volvo, DAF. EURO 6 πιστοποιημένα φορτηγά. Παγκόσμια αποστολή από Κύπρο. Διαθέσιμες πωλήσεις στόλου.",
+  title: "Auto Melon Group - Μεταχειρισμένα Φορτηγά από το Ηνωμένο Βασίλειο | Έμπορος Κύπρου",
+  description: "Κορυφαίος έμπορος φορτηγών Κύπρου με εισαγωγές από το Ηνωμένο Βασίλειο. Mercedes-Benz, Scania, Volvo, DAF. EURO 6 πιστοποιημένα. Έδρα στη Λεμεσό εξυπηρετούμε όλη την Κύπρο. Παγκόσμια αποστολή διαθέσιμη.",
   keywords: greekKeywords,
 }
 

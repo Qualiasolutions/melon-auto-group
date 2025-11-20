@@ -187,10 +187,10 @@ export function SearchHeader() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-5xl font-bold text-brand-ink mb-4 tracking-tight">
-              Find Your Perfect <span className="text-brand-red">Commercial Truck</span>
+              Find Quality Used Trucks in <span className="text-brand-red">Cyprus</span> | UK Imports
             </h1>
             <p className="text-lg text-muted-foreground">
-              Use our advanced filters to find your perfect commercial vehicle
+              Quality UK imports - Mercedes-Benz, Scania, Volvo, DAF and more
             </p>
           </div>
 

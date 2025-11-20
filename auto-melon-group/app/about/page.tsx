@@ -12,10 +12,10 @@ export default function AboutPage() {
         <div className="container relative z-10">
           <Badge className="mb-4 bg-brand-red text-white">About Us</Badge>
           <h1 className="text-4xl md:text-5xl font-bold mb-6 max-w-3xl">
-            UK Used Truck Imports
+            UK Used Truck Imports to Cyprus
           </h1>
           <p className="text-xl text-slate-300 max-w-2xl">
-            We specialize in importing quality used commercial vehicles from the UK.
+            Based in Limassol, Cyprus, we specialize in importing quality used commercial vehicles from the UK market.
           </p>
         </div>
       </section>
@@ -27,12 +27,13 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold mb-6">What We Do</h2>
             <div className="space-y-4 text-lg text-muted-foreground">
               <p>
-                We import used trucks and commercial vehicles from the UK market, offering access to
-                well-maintained European brands at competitive prices.
+                Operating from Cyprus, we import used trucks and commercial vehicles from the UK market,
+                offering Cypriot businesses access to well-maintained European brands at competitive prices.
               </p>
               <p>
                 Our inventory includes trucks from leading manufacturers such as Mercedes-Benz, Scania,
-                Volvo, DAF, MAN, and Iveco. Browse our current selection to find vehicles suitable for
+                Volvo, DAF, MAN, and Iveco. All vehicles are EURO 6 certified and suitable for
+                Cyprus registration. Browse our current selection to find vehicles suitable for
                 your business operations.
               </p>
             </div>

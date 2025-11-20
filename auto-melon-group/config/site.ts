@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "Auto Melon Group",
-  description: "Premium Used Trucks & Commercial Vehicles Worldwide | Mercedes, Scania, Volvo, DAF & More",
+  description: "UK Used Trucks & Commercial Vehicles | Cyprus Dealer | Mercedes, Scania, Volvo, DAF & More",
   url: "https://automelongroup.com",
   ogImage: "https://automelongroup.com/og-image.jpg",
   links: {
@@ -12,7 +12,7 @@ export const siteConfig = {
     email: "info@automelongroup.com",
     phone: "+357 99107227",
     whatsapp: "+35799107227",
-    address: "123 Industrial Road, City, Country", // Update with actual address
+    address: "Limassol, Cyprus", // Generic location - update with specific address when available
   },
   languages: {
     en: "English",

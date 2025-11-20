@@ -41,6 +41,12 @@ interface TruckCategory {
 
 const truckCategories: TruckCategory[] = [
   {
+    title: "4x4",
+    imagePath: "/icons/4x4.png",
+    category: "4x4",
+    color: "bg-white hover:bg-slate-50",
+  },
+  {
     title: "Tractor Unit",
     imagePath: "/icons/tractor-unit.png",
     category: "tractor-unit",
@@ -130,12 +136,6 @@ const truckCategories: TruckCategory[] = [
     category: "logging",
     color: "bg-white hover:bg-slate-50",
   },
-  {
-    title: "4x4",
-    imagePath: "/icons/4x4.png",
-    category: "4x4",
-    color: "bg-white hover:bg-slate-50",
-  },
 ]
 
 export default async function Home() {
@@ -160,7 +160,7 @@ export default async function Home() {
               Find Your Perfect Truck
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Explore our comprehensive selection of commercial vehicles
+              Based in Cyprus, serving local businesses with quality UK-imported commercial vehicles
             </p>
           </div>
           <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4 md:gap-5">
@@ -203,9 +203,9 @@ export default async function Home() {
                 Featured Selection
               </p>
               <h2 className="text-4xl md:text-5xl font-bold text-brand-ink mb-3 tracking-tight">
-                Premium Commercial Vehicles
+                Quality Used Trucks in Cyprus
               </h2>
-              <p className="text-lg text-slate-600 font-medium">Handpicked trucks from our exclusive inventory</p>
+              <p className="text-lg text-slate-600 font-medium">UK imported trucks - Mercedes, Scania, Volvo, DAF</p>
             </div>
             <Button asChild size="lg" className="mt-8 md:mt-0 bg-brand-red hover:bg-brand-red-dark text-white shadow-xl hover:shadow-2xl transition-all hover:scale-105 px-8 py-6 text-base font-semibold">
               <Link href="/inventory">
@@ -256,9 +256,9 @@ export default async function Home() {
               <div className="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 text-brand-green mb-6 shadow-lg ring-4 ring-green-50 group-hover:scale-110 transition-transform">
                 <Truck className="h-10 w-10" />
               </div>
-              <h3 className="font-bold text-2xl mb-3 text-brand-ink group-hover:text-brand-green transition-colors">Premium Selection</h3>
+              <h3 className="font-bold text-2xl mb-3 text-brand-ink group-hover:text-brand-green transition-colors">UK Imported Quality</h3>
               <p className="text-slate-600 text-base leading-relaxed">
-                Curated inventory of top-tier commercial vehicles
+                EURO 6 certified trucks from the UK market
               </p>
             </div>
             <div className="text-center p-10 bg-white rounded-2xl border-2 border-slate-100 hover:shadow-2xl hover:border-blue-600/20 transition-all duration-300 group">
@@ -285,7 +285,7 @@ export default async function Home() {
               Trusted Manufacturers
             </p>
             <h2 className="text-3xl md:text-4xl font-bold text-brand-ink mb-2">
-              Premium Brands
+              Top Brands
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               We feature the world's leading commercial vehicle manufacturers
@@ -317,7 +317,7 @@ export default async function Home() {
             Ready to Find Your Perfect Truck?
           </h2>
           <p className="text-xl md:text-2xl mb-12 text-white/95 max-w-3xl mx-auto font-medium leading-relaxed">
-            Browse our extensive inventory of premium commercial vehicles or contact our expert team for personalized assistance
+            Browse our extensive inventory of quality used trucks in Cyprus or contact our expert team for personalized assistance
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Button asChild size="lg" className="bg-white text-brand-red hover:bg-slate-50 hover:text-brand-red-dark shadow-2xl hover:shadow-3xl transition-all text-lg px-10 py-7 font-bold hover:scale-105">
