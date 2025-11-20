@@ -10,6 +10,7 @@ import { Calendar, Gauge, MapPin, Phone, Mail, MessageCircle, ArrowLeft } from "
 import { notFound } from "next/navigation"
 import { siteConfig } from "@/config/site"
 import { Metadata } from "next"
+import { VehicleGallery } from "@/components/sections/VehicleGallery"
 
 async function getVehicle(id: string): Promise<Vehicle | null> {
   const { data: vehicle, error } = await supabase
@@ -95,55 +96,10 @@ export default async function VehicleDetailPage({
           {/* Left Column - Images and Description */}
           <div className="lg:col-span-2 space-y-6">
             {/* Vehicle Gallery */}
-            <div className="relative bg-white rounded-lg overflow-hidden border">
-              {vehicle.images && vehicle.images.length > 0 ? (
-                <div className="aspect-video">
-                  <img
-                    src={vehicle.images[0]}
-                    alt={`${vehicle.make} ${vehicle.model}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="aspect-video bg-slate-200 flex items-center justify-center">
-                  <span className="text-muted-foreground">{dict.vehicle.noImage}</span>
-                </div>
-              )}
-
-              {/* Status Badges */}
-              <div className="absolute top-4 left-4 flex flex-col gap-2">
-                {vehicle.featured && (
-                  <Badge className="bg-brand-red text-white">
-                    {dict.vehicle.featured}
-                  </Badge>
-                )}
-                {vehicle.condition === 'certified' && (
-                  <Badge className="bg-green-600 text-white">
-                    {dict.vehicle.certified}
-                  </Badge>
-                )}
-                {vehicle.condition === 'new' && (
-                  <Badge className="bg-slate-900 text-white">
-                    {dict.vehicle.new}
-                  </Badge>
-                )}
-              </div>
-
-              {/* Additional Images Grid */}
-              {vehicle.images && vehicle.images.length > 1 && (
-                <div className="grid grid-cols-4 gap-2 p-4 bg-slate-50">
-                  {vehicle.images.slice(1, 5).map((image, index) => (
-                    <div key={index} className="aspect-video rounded overflow-hidden">
-                      <img
-                        src={image}
-                        alt={`${vehicle.make} ${vehicle.model} - ${index + 2}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <VehicleGallery
+              images={vehicle.images || []}
+              altText={`${vehicle.make} ${vehicle.model}`}
+            />
 
             {/* Description */}
             <Card>

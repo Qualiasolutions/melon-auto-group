@@ -243,8 +243,8 @@ export function FilterSidebar({ filters, onFiltersChange, onClearFilters }: Filt
               Price Range
             </AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-5 pb-2">
-                <div className="flex items-center justify-between px-1">
+              <div className="space-y-4 pb-2 px-1">
+                <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-slate-700">
                     €{priceRange[0].toLocaleString()}
                   </span>
@@ -261,34 +261,6 @@ export function FilterSidebar({ filters, onFiltersChange, onClearFilters }: Filt
                   onValueChange={handlePriceChange}
                   className="w-full"
                 />
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="price-min" className="text-xs font-medium text-slate-600">
-                      Minimum
-                    </Label>
-                    <Input
-                      id="price-min"
-                      type="number"
-                      value={priceRange[0]}
-                      onChange={(e) => handlePriceChange([parseInt(e.target.value) || 0, priceRange[1]])}
-                      className="h-9 text-sm"
-                      placeholder="0"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="price-max" className="text-xs font-medium text-slate-600">
-                      Maximum
-                    </Label>
-                    <Input
-                      id="price-max"
-                      type="number"
-                      value={priceRange[1]}
-                      onChange={(e) => handlePriceChange([priceRange[0], parseInt(e.target.value) || 150000])}
-                      className="h-9 text-sm"
-                      placeholder="150000"
-                    />
-                  </div>
-                </div>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -299,8 +271,8 @@ export function FilterSidebar({ filters, onFiltersChange, onClearFilters }: Filt
               Year
             </AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-5 pb-2">
-                <div className="flex items-center justify-between px-1">
+              <div className="space-y-4 pb-2 px-1">
+                <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-slate-700">{yearRange[0]}</span>
                   <span className="text-xs text-muted-foreground">to</span>
                   <span className="text-sm font-medium text-slate-700">{yearRange[1]}</span>
@@ -323,8 +295,8 @@ export function FilterSidebar({ filters, onFiltersChange, onClearFilters }: Filt
               Mileage
             </AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-5 pb-2">
-                <div className="flex items-center justify-between px-1">
+              <div className="space-y-4 pb-2 px-1">
+                <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-slate-700">
                     {mileageRange[0].toLocaleString()} km
                   </span>
