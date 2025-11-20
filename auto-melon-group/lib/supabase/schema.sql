@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
   price DECIMAL(12, 2) NOT NULL CHECK (price >= 0),
   currency VARCHAR(3) NOT NULL DEFAULT 'EUR',
   condition VARCHAR(20) NOT NULL CHECK (condition IN ('new', 'used', 'certified')),
-  category VARCHAR(50) NOT NULL CHECK (category IN ('semi-truck', 'dump-truck', 'box-truck', 'flatbed', 'tanker', 'refrigerated', 'other')),
+  category VARCHAR(50) NOT NULL CHECK (category IN ('tractor-unit', 'semi-truck', 'tipper', 'dump-truck', 'box-truck', 'flatbed', 'refrigerated', 'tanker', 'curtainside', 'dropside', 'crane-truck', 'recovery', 'concrete-mixer', 'low-loader', 'trailer', 'pickup', 'van', '4x4', 'construction', 'logging', 'double-deck', 'insulated', 'specialty', 'other')),
   engine_type VARCHAR(20) NOT NULL CHECK (engine_type IN ('diesel', 'electric', 'hybrid', 'gas')),
   transmission VARCHAR(30) NOT NULL CHECK (transmission IN ('manual', 'automatic', 'automated-manual')),
   engine_power INTEGER CHECK (engine_power > 0),

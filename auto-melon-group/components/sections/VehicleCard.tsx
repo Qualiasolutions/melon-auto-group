@@ -87,15 +87,10 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
       <div className="flex-1 flex flex-col p-6">
         {/* Vehicle Title */}
         <Link href={`/inventory/${vehicle.id}`}>
-          <h3 className="text-xl font-bold text-gray-900 mb-1 hover:text-[#D12937] transition-colors line-clamp-1">
+          <h3 className="text-xl font-bold text-gray-900 mb-2 hover:text-[#D12937] transition-colors line-clamp-2">
             {vehicle.make} {vehicle.model}
           </h3>
         </Link>
-
-        {/* Category */}
-        <p className="text-sm text-gray-500 font-medium mb-4 uppercase tracking-wide">
-          {vehicle.category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-        </p>
 
         {/* Price */}
         <div className="mb-6">
@@ -104,108 +99,8 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
           </div>
         </div>
 
-        {/* Specifications Grid */}
-        <div className="grid grid-cols-2 gap-4 mb-6 flex-1">
-          {/* Mileage */}
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-gray-50 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-              <Icon name="speed" className="h-5 w-5 text-gray-600" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Mileage</p>
-              <p className="text-sm font-bold text-gray-900 truncate">{formatMileage(vehicle.mileage)} km</p>
-            </div>
-          </div>
-
-          {/* Power */}
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-gray-50 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-              <Icon name="bolt" className="h-5 w-5 text-gray-600" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Power</p>
-              <p className="text-sm font-bold text-gray-900 truncate">{vehicle.enginePower} HP</p>
-            </div>
-          </div>
-
-          {/* Transmission */}
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-gray-50 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-              <Icon name="settings_suggest" className="h-5 w-5 text-gray-600" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Transmission</p>
-              <p className="text-sm font-bold text-gray-900 capitalize truncate">
-                {vehicle.transmission === 'manual' ? 'Manual' : vehicle.transmission === 'automatic' ? 'Automatic' : 'Auto-Man'}
-              </p>
-            </div>
-          </div>
-
-          {/* Location */}
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-gray-50 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-              <Icon name="location_on" className="h-5 w-5 text-gray-600" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Location</p>
-              <p className="text-sm font-bold text-gray-900 truncate">{vehicle.location}</p>
-            </div>
-          </div>
-
-          {/* Cabin (if available) */}
-          {vehicle.cabin && (
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-gray-50 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Icon name="weekend" className="h-5 w-5 text-gray-600" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Cabin</p>
-                <p className="text-sm font-bold text-gray-900 truncate">
-                  {vehicle.cabin === "1" ? "Single" : vehicle.cabin === "1.5" ? "Extended" : "Double"}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Tons (if available) */}
-          {vehicle.tons && (
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-gray-50 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Icon name="inventory_2" className="h-5 w-5 text-gray-600" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Capacity</p>
-                <p className="text-sm font-bold text-gray-900 truncate">{vehicle.tons}t</p>
-              </div>
-            </div>
-          )}
-
-          {/* Axle Configuration (if available) */}
-          {vehicle.specifications?.axleConfiguration && (
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-gray-50 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Icon name="settings" className="h-5 w-5 text-gray-600" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Axle</p>
-                <p className="text-sm font-bold text-gray-900 truncate">{vehicle.specifications.axleConfiguration}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Emission Standard (if available) */}
-          {vehicle.specifications?.emissionStandard && (
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-gray-50 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Icon name="eco" className="h-5 w-5 text-gray-600" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Emission</p>
-                <p className="text-sm font-bold text-gray-900 truncate">{vehicle.specifications.emissionStandard}</p>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Spacer */}
+        <div className="flex-1"></div>
 
         {/* Action Buttons */}
         <div className="flex gap-3 pt-4 border-t border-gray-100">

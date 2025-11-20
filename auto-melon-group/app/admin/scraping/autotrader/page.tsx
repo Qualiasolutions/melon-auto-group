@@ -6,10 +6,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, Search, Loader2, Facebook, CheckCircle2, XCircle, Download } from "lucide-react"
+import { ArrowLeft, Search, Loader2, Truck, CheckCircle2, XCircle, Download } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase/client"
 
 interface ScrapedVehicle {
   title: string
@@ -28,7 +27,7 @@ interface ScrapedVehicle {
   rawData: any
 }
 
-export default function FacebookMarketplaceScraper() {
+export default function AutoTraderScraper() {
   const router = useRouter()
 
   const [url, setUrl] = useState("")
@@ -36,16 +35,15 @@ export default function FacebookMarketplaceScraper() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [vehicle, setVehicle] = useState<ScrapedVehicle | null>(null)
-  const [runId, setRunId] = useState("")
 
   const handleScrape = async () => {
     if (!url.trim()) {
-      setError("Please enter a Facebook Marketplace URL")
+      setError("Please enter an AutoTrader URL")
       return
     }
 
-    if (!url.includes('facebook.com/marketplace')) {
-      setError("Please enter a valid Facebook Marketplace URL")
+    if (!url.includes('autotrader.co.uk') && !url.includes('autotrader.com')) {
+      setError("Please enter a valid AutoTrader UK or US URL")
       return
     }
 
@@ -66,7 +64,7 @@ export default function FacebookMarketplaceScraper() {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to scrape Facebook Marketplace')
+        throw new Error(data.error || 'Failed to scrape AutoTrader')
       }
 
       // Transform response to match expected format
@@ -82,16 +80,15 @@ export default function FacebookMarketplaceScraper() {
         description: data.description,
         images: data.images || [],
         url: data.listingUrl || url,
-        source: 'Facebook Marketplace',
+        source: 'AutoTrader',
         scrapedAt: data.specifications?.scrapedAt || new Date().toISOString(),
         rawData: data
       })
-      setRunId(data.specifications?.apifyRunId || '')
-      setSuccess(`Successfully scraped vehicle from Facebook Marketplace!`)
+      setSuccess(`Successfully scraped vehicle from AutoTrader!`)
 
     } catch (err: any) {
       console.error('Error scraping:', err)
-      setError(err.message || 'Failed to scrape Facebook Marketplace. Please try again.')
+      setError(err.message || 'Failed to scrape AutoTrader. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -118,7 +115,6 @@ export default function FacebookMarketplaceScraper() {
         source: vehicle.source,
         scrapedAt: vehicle.scrapedAt,
         originalUrl: vehicle.url,
-        apifyRunId: runId,
       }
     }))
 
@@ -130,21 +126,21 @@ export default function FacebookMarketplaceScraper() {
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Premium Header */}
       <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 rounded-3xl blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-orange-500/10 rounded-3xl blur-3xl" />
         <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-8 border border-slate-700 shadow-2xl">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
-                  <Facebook className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-600 to-red-600 flex items-center justify-center shadow-lg">
+                  <Truck className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-white">Facebook Marketplace Scraper</h1>
-                  <p className="text-slate-300 text-sm">Powered by Apify</p>
+                  <h1 className="text-3xl font-bold text-white">AutoTrader Scraper</h1>
+                  <p className="text-slate-300 text-sm">UK Commercial Vehicles</p>
                 </div>
               </div>
               <p className="text-slate-400 mt-4 max-w-2xl">
-                Search and import vehicle listings directly from Facebook Marketplace using advanced web scraping technology.
+                Import commercial vehicle listings from AutoTrader UK with comprehensive details and specifications.
               </p>
             </div>
             <Button variant="outline" size="sm" asChild className="border-slate-600 text-slate-300 hover:text-white hover:border-slate-400">
@@ -161,33 +157,33 @@ export default function FacebookMarketplaceScraper() {
       <Card className="border-2 border-slate-200 shadow-2xl">
         <CardHeader className="bg-gradient-to-r from-slate-50 to-white">
           <CardTitle className="text-2xl flex items-center gap-2">
-            <Facebook className="h-6 w-6 text-blue-600" />
-            Import from Facebook Marketplace
+            <Truck className="h-6 w-6 text-orange-600" />
+            Import from AutoTrader
           </CardTitle>
           <CardDescription className="text-base">
-            Paste a Facebook Marketplace item URL to extract vehicle details
+            Paste an AutoTrader UK vehicle URL to extract vehicle details
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
           <div className="space-y-3">
             <Label htmlFor="url" className="text-base font-semibold text-slate-700">
-              Facebook Marketplace URL *
+              AutoTrader URL *
             </Label>
             <div className="flex gap-3">
               <Input
                 id="url"
                 type="url"
-                placeholder="https://www.facebook.com/marketplace/item/..."
+                placeholder="https://www.autotrader.co.uk/truck-details/..."
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !loading && url.trim() && handleScrape()}
-                className="flex-1 h-14 text-base border-2 border-slate-200 focus:border-blue-600 focus:ring-blue-600 rounded-xl"
+                className="flex-1 h-14 text-base border-2 border-slate-200 focus:border-orange-600 focus:ring-orange-600 rounded-xl"
                 disabled={loading}
               />
               <Button
                 onClick={handleScrape}
                 disabled={loading || !url.trim()}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl min-w-[160px] h-14 text-base font-semibold rounded-xl"
+                className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 shadow-lg hover:shadow-xl min-w-[160px] h-14 text-base font-semibold rounded-xl"
               >
                 {loading ? (
                   <>
@@ -272,9 +268,9 @@ export default function FacebookMarketplaceScraper() {
               </div>
 
               {/* Price */}
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-700 font-medium">Price</p>
-                <p className="text-3xl font-bold text-blue-900">
+              <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-4">
+                <p className="text-sm text-orange-700 font-medium">Price</p>
+                <p className="text-3xl font-bold text-orange-900">
                   {vehicle.currency} {vehicle.price.toLocaleString()}
                 </p>
               </div>
@@ -318,9 +314,9 @@ export default function FacebookMarketplaceScraper() {
                     href={vehicle.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline font-medium"
+                    className="text-orange-600 hover:underline font-medium"
                   >
-                    View Original Listing on Facebook →
+                    View Original Listing on AutoTrader →
                   </a>
                 </div>
               )}
@@ -330,28 +326,28 @@ export default function FacebookMarketplaceScraper() {
       )}
 
       {/* Info Card */}
-      <Card className="border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100/50 shadow-xl">
+      <Card className="border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100/50 shadow-xl">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-purple-900">
-            <span className="w-3 h-3 rounded-full bg-purple-500 animate-pulse"></span>
+          <CardTitle className="flex items-center gap-2 text-orange-900">
+            <span className="w-3 h-3 rounded-full bg-orange-500 animate-pulse"></span>
             How It Works
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 text-sm text-purple-800">
+        <CardContent className="space-y-3 text-sm text-orange-800">
           <p>
-            <strong>1. Find a Listing:</strong> Browse Facebook Marketplace and find a vehicle you want to import.
+            <strong>1. Find a Listing:</strong> Browse AutoTrader UK and find a commercial vehicle you want to import.
           </p>
           <p>
-            <strong>2. Copy URL:</strong> Copy the item's URL from your browser (e.g., https://www.facebook.com/marketplace/item/123...).
+            <strong>2. Copy URL:</strong> Copy the vehicle's URL from your browser (e.g., https://www.autotrader.co.uk/truck-details/...).
           </p>
           <p>
-            <strong>3. Paste & Scrape:</strong> Paste the URL above and click "Scrape Data" - our Apify-powered scraper will extract all vehicle details.
+            <strong>3. Paste & Scrape:</strong> Paste the URL above and click "Scrape Data" - our scraper will extract all vehicle details.
           </p>
           <p>
             <strong>4. Review & Import:</strong> Check the extracted information and click "Import to Form" to add it to your inventory.
           </p>
-          <p className="text-xs text-purple-600 mt-4">
-            <strong>Note:</strong> Scraping takes 20-40 seconds per listing. The data will be pre-filled in the vehicle form where you can review and adjust before saving.
+          <p className="text-xs text-orange-600 mt-4">
+            <strong>Note:</strong> Scraping takes 15-30 seconds per listing. The data will be pre-filled in the vehicle form where you can review and adjust before saving.
           </p>
         </CardContent>
       </Card>

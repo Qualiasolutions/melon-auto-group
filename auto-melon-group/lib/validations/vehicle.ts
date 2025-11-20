@@ -24,13 +24,17 @@ export const vehicleFormSchema = z.object({
   enginePower: z.number()
     .int("Engine power must be a whole number")
     .min(0, "Engine power cannot be negative")
-    .optional(),
+    .optional()
+    .or(z.nan())
+    .transform(val => isNaN(val as number) ? undefined : val),
   engineSize: z.number()
     .positive("Engine size must be greater than 0")
-    .optional(),
+    .optional()
+    .or(z.nan())
+    .transform(val => isNaN(val as number) ? undefined : val),
   cabin: z.enum(["1", "1.5", "2"]).optional(),
   tons: z.enum(["3.5", "7.5", "12", "18"]).optional(),
-  engineType: z.enum(["diesel", "electric", "hybrid", "gas"]),
+  engineType: z.enum(["diesel", "electric", "hybrid", "gas"]).optional(),
   transmission: z.enum(["manual", "automatic", "automated-manual"]),
 
   // Location

@@ -19,7 +19,19 @@ export async function GET(
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ data }, { status: 200 })
+    // Map database field names to TypeScript interface
+    const mappedData = {
+      ...data,
+      sourceUrl: data.source_url,
+      bazarakiUrl: data.bazaraki_url,
+      engineType: data.engine_type,
+      enginePower: data.engine_power,
+      engineSize: data.engine_size,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    }
+
+    return NextResponse.json({ data: mappedData }, { status: 200 })
   } catch (error) {
     console.error('Unexpected error:', error)
     return NextResponse.json(

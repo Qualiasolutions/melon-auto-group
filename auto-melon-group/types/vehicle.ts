@@ -30,19 +30,45 @@ export interface Vehicle {
 }
 
 export interface VehicleSpecifications {
-  axleConfiguration?: string // e.g., "6x4", "4x2"
+  axleConfiguration?: string // e.g., "6x4", "4x2", "4x4"
   gvw?: number // Gross Vehicle Weight in kg
   engineCapacity?: number // in liters
   fuelTankCapacity?: number // in liters
-  cabType?: string // e.g., "Sleeper", "Day Cab"
-  suspension?: string
-  brakes?: string
+  cabType?: string // e.g., "Sleeper", "Day Cab", "Crew Cab"
+  suspension?: string // e.g., "Air Suspension", "Leaf Spring", "Coil Spring"
+  brakes?: string // e.g., "Disc Brakes", "Drum Brakes", "ABS"
   wheelbase?: number // in mm
   length?: number // in mm
   width?: number // in mm
   height?: number // in mm
   emissionStandard?: string // e.g., "Euro 6", "Euro 5"
-  [key: string]: string | number | undefined
+  // 4x4 and off-road specific specifications
+  driveSystem?: string // e.g., "4x2", "4x4", "6x6", "8x8", "AWD"
+  differentialLocks?: boolean // Has differential locks
+  transferCase?: string // e.g., "Manual", "Automatic", "Electronic"
+  groundClearance?: number // in mm
+  approachAngle?: number // in degrees
+  departureAngle?: number // in degrees
+  wadingDepth?: number // in mm
+  winchCapacity?: number // in kg
+  // Payload and towing
+  payloadCapacity?: number // in kg
+  towingCapacity?: number // in kg
+  // Performance specifications
+  maxTorque?: number // in Nm
+  topSpeed?: number // in km/h
+  fuelConsumption?: string // e.g., "35 L/100km"
+  // Interior and comfort
+  seats?: number
+  airConditioning?: boolean
+  cruiseControl?: boolean
+  navigationSystem?: boolean
+  // Safety features
+  airbags?: number
+  esp?: boolean // Electronic Stability Program
+  tractionControl?: boolean
+  hillDescentControl?: boolean
+  [key: string]: string | number | boolean | undefined
 }
 
 export interface VehicleFilters {
@@ -96,8 +122,8 @@ export const conditionTypes = [
 
 export const cabinTypes = [
   { value: "1", label: "Single Cabin" },
-  { value: "1.5", label: "Extended Cabin" },
-  { value: "2", label: "Double/Crew Cabin" },
+  { value: "1.5", label: "1.5" },
+  { value: "2", label: "Double/Crew" },
 ] as const
 
 export const tonsTypes = [

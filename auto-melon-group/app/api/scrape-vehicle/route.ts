@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { scrapeAutotraderVehicles, scrapeAutotraderVehicleDetails } from '@/lib/scraper/autotrader-scraper'
 import { autotraderRateLimiter, generalRateLimiter } from '@/lib/scraper/rate-limiter'
+import { ApifyClient } from 'apify-client'
+import { downloadAndUploadImages } from '@/lib/image-uploader'
 
 export async function POST(request: NextRequest) {
   try {
@@ -121,8 +123,75 @@ export async function POST(request: NextRequest) {
         console.log('🔄 Returning fallback vehicle data for AutoTrader')
         return NextResponse.json(fallbackData)
       }
+    } else if (platform === 'facebook') {
+      // Use Apify for Facebook Marketplace scraping
+      try {
+        console.log('🔍 Using Apify for Facebook Marketplace scraping...')
+
+        const apifyApiToken = process.env.APIFY_API_TOKEN
+
+        if (!apifyApiToken) {
+          return NextResponse.json(
+            { error: 'Apify API token not configured. Please add APIFY_API_TOKEN to your environment variables.' },
+            { status: 500 }
+          )
+        }
+
+        const client = new ApifyClient({
+          token: apifyApiToken,
+        })
+
+        // Prepare input for the Facebook Marketplace scraper
+        const input = {
+          startUrls: [{ url: url }],
+          resultsLimit: 1, // Just get this one item
+        }
+
+        console.log('📋 Apify Actor input:', input)
+
+        // Run the actor
+        const run = await client.actor('apify/facebook-marketplace-scraper').call(input)
+        console.log('✅ Apify run completed:', run.id)
+
+        // Fetch the results
+        const { items } = await client.dataset(run.defaultDatasetId).listItems()
+        console.log(`📦 Found ${items.length} items`)
+
+        if (items.length === 0) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'No data found for this URL. The listing may not exist or is no longer available.',
+            },
+            { status: 404 }
+          )
+        }
+
+        // Transform the Apify data
+        const item = items[0]
+        extractedData = extractFacebookApifyData(item, url, run.id)
+
+        // Download and upload images to Supabase Storage
+        if (extractedData.images && extractedData.images.length > 0) {
+          console.log(`📸 Processing ${extractedData.images.length} images for upload...`)
+          const uploadedImages = await downloadAndUploadImages(extractedData.images)
+
+          if (uploadedImages.length > 0) {
+            extractedData.images = uploadedImages
+            console.log(`✅ ${uploadedImages.length} images uploaded to Supabase Storage`)
+          } else {
+            console.log('⚠️ No images were successfully uploaded, keeping original URLs')
+          }
+        }
+
+        console.log('✅ Facebook scraping successful via Apify')
+
+      } catch (apifyError) {
+        console.error('❌ Apify Facebook scraping failed:', apifyError)
+        throw new Error(`Facebook scraping failed: ${apifyError instanceof Error ? apifyError.message : 'Unknown error'}`)
+      }
     } else {
-      // Use Firecrawl for other platforms (Bazaraki, Facebook)
+      // Use Firecrawl for Bazaraki
       const firecrawlApiKey = process.env.FIRECRAWL_API_KEY
 
       if (!firecrawlApiKey) {
@@ -132,7 +201,9 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Call Firecrawl API with enhanced options for other platforms
+      console.log('🔍 Using Firecrawl for Bazaraki scraping...')
+
+      // Call Firecrawl API
       const response = await fetch('https://api.firecrawl.dev/v1/scrape', {
         method: 'POST',
         headers: {
@@ -166,11 +237,22 @@ export async function POST(request: NextRequest) {
       }
 
       const data = await response.json()
+      extractedData = extractBazarakiData(data)
 
-      // Extract vehicle information based on platform
-      extractedData = platform === 'bazaraki'
-        ? extractBazarakiData(data)
-        : extractFacebookMarketplaceData(data)
+      // Download and upload images to Supabase Storage
+      if (extractedData.images && extractedData.images.length > 0) {
+        console.log(`📸 Processing ${extractedData.images.length} images for upload...`)
+        const uploadedImages = await downloadAndUploadImages(extractedData.images)
+
+        if (uploadedImages.length > 0) {
+          extractedData.images = uploadedImages
+          console.log(`✅ ${uploadedImages.length} images uploaded to Supabase Storage`)
+        } else {
+          console.log('⚠️ No images were successfully uploaded, keeping original URLs')
+        }
+      }
+
+      console.log('✅ Bazaraki scraping successful via Firecrawl')
     }
 
     return NextResponse.json(extractedData)
@@ -651,93 +733,147 @@ function extractAutoTraderDataFromPlaywright(vehicleDetails: any, url: string) {
   }
 }
 
-function extractFacebookMarketplaceData(scrapedData: any) {
-  const content = scrapedData.markdown || scrapedData.html || ''
-  const text = content.toLowerCase()
+// Facebook data extraction from Apify scraper results
+function extractFacebookApifyData(item: any, url: string, runId: string) {
+  console.log('🔍 Processing Facebook Apify data...')
 
-  const extracted: any = {
-    make: '',
-    model: '',
-    year: new Date().getFullYear(),
-    mileage: 0,
-    price: 0,
-    currency: 'EUR',
-    condition: 'used',
-    category: 'box-truck',
-    engineType: 'diesel',
-    transmission: 'manual',
-    enginePower: 0,
-    engineSize: 0,
-    location: 'Cyprus',
-    country: 'Cyprus',
-    description: '',
-    images: [],
-    specifications: {},
-    features: [],
-  }
+  // Helper functions for extraction
+  function extractMake(text: string): string {
+    const makes = [
+      'Mercedes-Benz', 'Mercedes', 'Scania', 'Volvo', 'DAF', 'MAN', 'Iveco',
+      'Renault', 'Mitsubishi', 'Isuzu', 'Hino', 'Fuso', 'UD', 'Nissan',
+      'Toyota', 'Ford', 'Freightliner', 'Kenworth', 'Peterbilt', 'Mack'
+    ]
 
-  // Facebook Marketplace price patterns
-  const priceMatch = content.match(/€(\d{1,3}(?:[,\s]\d{3})*)/i) || content.match(/(\d{4,})\s*EUR/i)
-  if (priceMatch) {
-    extracted.price = parseInt(priceMatch[1].replace(/[,\s]/g, ''))
-  }
-
-  // Extract year
-  const yearMatch = content.match(/\b(19[9]\d|20[0-2]\d)\b/)
-  if (yearMatch) {
-    extracted.year = parseInt(yearMatch[0])
-  }
-
-  // Extract mileage
-  const mileageMatch = content.match(/(\d{1,3}(?:[,\s]\d{3})*)\s*(?:km|kilometers)/i)
-  if (mileageMatch) {
-    extracted.mileage = parseInt(mileageMatch[1].replace(/[,\s]/g, ''))
-  }
-
-  // Extract make and model
-  const truckMakes = [
-    'Mercedes-Benz', 'Mercedes', 'Scania', 'Volvo', 'DAF', 'MAN', 'Iveco',
-    'Renault', 'Ford', 'Isuzu', 'Mitsubishi', 'Fuso', 'Hino', 'Freightliner'
-  ]
-
-  for (const make of truckMakes) {
-    const makeRegex = new RegExp(`\\b${make}\\b`, 'i')
-    if (makeRegex.test(content)) {
-      extracted.make = make === 'Mercedes' ? 'Mercedes-Benz' : make
-
-      const modelMatch = content.match(new RegExp(`${make}\\s+([A-Za-z0-9\\s-]+)`, 'i'))
-      if (modelMatch) {
-        const modelParts = modelMatch[1].trim().split(/[\s,\n]/).filter(p => p.length > 0)
-        extracted.model = modelParts.slice(0, 2).join(' ')
+    for (const make of makes) {
+      if (text.toLowerCase().includes(make.toLowerCase())) {
+        return make === 'Mercedes' ? 'Mercedes-Benz' : make
       }
-      break
     }
+
+    // Try to get the first word as make
+    const firstWord = text.split(/[\s-]/)[0]
+    return firstWord || 'Unknown'
   }
 
-  // Extract description
-  const descMatch = content.match(/Description[:\s]+([^\n]+(?:\n[^\n]+)*)/i)
-  if (descMatch) {
-    extracted.description = descMatch[1].trim().substring(0, 1000)
-  } else {
-    const descLines = content.split('\n').filter(line => line.trim().length > 50)
-    if (descLines.length > 0) {
-      extracted.description = descLines.slice(0, 3).join('\n').substring(0, 1000)
-    }
+  function extractModel(text: string): string {
+    // Remove the make from the title to get the model
+    const make = extractMake(text)
+    let model = text.replace(new RegExp(make, 'i'), '').trim()
+
+    // Clean up common patterns
+    model = model.replace(/^\s*-\s*/, '')
+    model = model.split(/[,\(\)]/)[0].trim()
+
+    return model || 'Unknown'
   }
 
-  // Extract images
-  if (scrapedData.data?.images) {
-    extracted.images = scrapedData.data.images.slice(0, 10)
+  function extractYear(text: string): number {
+    // Look for 4-digit year (1900-2099)
+    const yearMatch = text.match(/\b(19|20)\d{2}\b/)
+    if (yearMatch) {
+      return parseInt(yearMatch[0])
+    }
+    return new Date().getFullYear()
+  }
+
+  function extractMileage(text: string): number {
+    // Look for mileage patterns like "150,000 km" or "150000km"
+    const mileageMatch = text.match(/(\d+[,\s]?\d+)\s*(km|kilometers|miles)/i)
+    if (mileageMatch) {
+      const mileage = parseInt(mileageMatch[1].replace(/[,\s]/g, ''))
+      // Convert miles to km if needed
+      if (mileageMatch[2].toLowerCase().includes('mile')) {
+        return Math.round(mileage * 1.60934)
+      }
+      return mileage
+    }
+    return 0
+  }
+
+  // Extract data from Apify item
+  const title = item.title || item.name || ''
+  const description = item.description || ''
+  const fullText = `${title} ${description}`
+
+  const vehicle = {
+    make: extractMake(title),
+    model: extractModel(title),
+    year: extractYear(fullText),
+    mileage: extractMileage(description),
+    price: parseFloat(item.price?.replace(/[^0-9.]/g, '') || '0'),
+    currency: item.currency || 'EUR',
+    condition: 'used' as const,
+    category: 'box-truck' as const,
+    engineType: 'diesel' as const,
+    transmission: 'manual' as const,
+    enginePower: 150,
+    engineSize: 2.5,
+    location: item.location || 'Cyprus',
+    country: detectCountryFromLocation(item.location || ''),
+    description: description,
+    images: item.images || (item.image ? [item.image] : []),
+    specifications: {
+      source: 'Facebook Marketplace',
+      scrapedAt: new Date().toISOString(),
+      originalUrl: url,
+      apifyRunId: runId,
+    },
+    features: [],
+    listingUrl: item.url || url,
+  }
+
+  // Detect category from title/description
+  const contentLower = fullText.toLowerCase()
+  if (contentLower.includes('pickup') || contentLower.includes('l200') || contentLower.includes('hilux')) {
+    vehicle.category = 'pickup'
+  } else if (contentLower.includes('tipper') || contentLower.includes('dump')) {
+    vehicle.category = 'dump-truck'
+  } else if (contentLower.includes('semi') || contentLower.includes('actros') || contentLower.includes('scania')) {
+    vehicle.category = 'semi-truck'
+  } else if (contentLower.includes('flatbed')) {
+    vehicle.category = 'flatbed'
   }
 
   // Detect condition
-  if (text.includes('new') || text.includes('brand new')) {
-    extracted.condition = 'new'
-  } else if (text.includes('certified')) {
-    extracted.condition = 'certified'
+  if (contentLower.includes('brand new') || contentLower.includes('new truck')) {
+    vehicle.condition = 'new'
+  } else if (contentLower.includes('certified')) {
+    vehicle.condition = 'certified'
   }
 
-  return extracted
+  console.log('📋 Extracted Facebook vehicle:', {
+    make: vehicle.make,
+    model: vehicle.model,
+    year: vehicle.year,
+    price: vehicle.price,
+    mileage: vehicle.mileage,
+    images: vehicle.images.length
+  })
+
+  return vehicle
+}
+
+function detectCountryFromLocation(location: string): string {
+  const locationLower = location.toLowerCase()
+
+  if (locationLower.includes('cyprus') || locationLower.includes('κύπρος') ||
+      locationLower.includes('nicosia') || locationLower.includes('limassol') ||
+      locationLower.includes('larnaca') || locationLower.includes('paphos')) {
+    return 'Cyprus'
+  }
+
+  if (locationLower.includes('uk') || locationLower.includes('united kingdom') ||
+      locationLower.includes('london') || locationLower.includes('manchester')) {
+    return 'United Kingdom'
+  }
+
+  if (locationLower.includes('greece') || locationLower.includes('ελλάδα') ||
+      locationLower.includes('athens') || locationLower.includes('thessaloniki')) {
+    return 'Greece'
+  }
+
+  return 'Cyprus' // Default
 }
 
 function extractAutoTraderData(scrapedData: any) {

@@ -1,0 +1,171 @@
+{
+  "nav": {
+    "home": "Home",
+    "inventory": "Inventory",
+    "about": "About",
+    "contact": "Contact",
+    "customOrder": "Custom Order",
+    "faq": "FAQ"
+  },
+  "home": {
+    "hero": {
+      "title": "Find Quality Used Trucks in Cyprus | UK Imports",
+      "subtitle": "Quality UK imports - Mercedes-Benz, Scania, Volvo, DAF and more",
+      "searchPlaceholder": "Search by make, model, type..."
+    },
+    "categories": {
+      "heading": "Browse by Category",
+      "subheading": "Based in Cyprus, serving local businesses with quality UK-imported commercial vehicles"
+    },
+    "featured": {
+      "heading": "Quality Used Trucks in Cyprus",
+      "subheading": "UK imported trucks - Mercedes, Scania, Volvo, DAF",
+      "viewAll": "View All Inventory"
+    },
+    "trust": {
+      "quality": {
+        "title": "Quality Assured",
+        "description": "Every vehicle thoroughly inspected and certified"
+      },
+      "ukImported": {
+        "title": "UK Imported Quality",
+        "description": "EURO 6 certified trucks from the UK market"
+      },
+      "easySearch": {
+        "title": "Easy Search",
+        "description": "Advanced filtering to find your perfect match"
+      }
+    },
+    "brands": {
+      "heading": "Top Brands",
+      "subheading": "We feature the world's leading commercial vehicle manufacturers"
+    },
+    "cta": {
+      "title": "Ready to Find Your Perfect Truck?",
+      "subtitle": "Browse our extensive inventory of quality used trucks in Cyprus or contact our expert team for personalized assistance",
+      "browseInventory": "Browse Inventory",
+      "contactTeam": "Contact Our Team"
+    }
+  },
+  "search": {
+    "placeholder": "Search by make, model, type...",
+    "advancedFilters": "Advanced Filters",
+    "clearFilters": "Clear Filters",
+    "searchInventory": "Search Inventory",
+    "viewAll": "View All",
+    "vehicleType": "Vehicle Type",
+    "make": "Make",
+    "priceRange": "Price Range",
+    "year": "Year",
+    "condition": "Condition",
+    "allTypes": "All Types",
+    "allMakes": "All Makes",
+    "allPrices": "All Prices",
+    "allYears": "All Years",
+    "allConditions": "All Conditions"
+  },
+  "vehicle": {
+    "viewDetails": "View Details",
+    "enquire": "Enquire",
+    "noImage": "No Image Available",
+    "featured": "Featured",
+    "new": "New",
+    "certified": "Certified",
+    "used": "Used",
+    "price": "Price",
+    "year": "Year",
+    "mileage": "Mileage",
+    "location": "Location",
+    "specifications": "Technical Specifications",
+    "description": "Vehicle Description",
+    "similarTrucks": "Similar Trucks",
+    "whatsappInquiry": "WhatsApp Inquiry",
+    "callUs": "Call Us",
+    "emailInquiry": "Email Inquiry"
+  },
+  "categories": {
+    "4x4": "4x4",
+    "tractor-unit": "Tractor Unit",
+    "tipper": "Tipper",
+    "box-truck": "Box Truck",
+    "flatbed": "Flatbed",
+    "refrigerated": "Refrigerated",
+    "tanker": "Tanker",
+    "trailer": "Trailer",
+    "curtainside": "Curtainside",
+    "crane-truck": "Crane Truck",
+    "van": "Van",
+    "dropside": "Dropside",
+    "recovery": "Recovery",
+    "concrete-mixer": "Concrete Mixer",
+    "low-loader": "Low Loader",
+    "logging": "Logging"
+  },
+  "about": {
+    "badge": "About Us",
+    "hero": {
+      "title": "UK Used Truck Imports to Cyprus",
+      "subtitle": "Based in Limassol, Cyprus, we specialize in importing quality used commercial vehicles from the UK market."
+    },
+    "whatWeDo": {
+      "title": "What We Do",
+      "description1": "Operating from Cyprus, we import used trucks and commercial vehicles from the UK market, offering Cypriot businesses access to well-maintained European brands at competitive prices.",
+      "description2": "Our inventory includes trucks from leading manufacturers such as Mercedes-Benz, Scania, Volvo, DAF, MAN, and Iveco. All vehicles are EURO 6 certified and suitable for Cyprus registration. Browse our current selection to find vehicles suitable for your business operations."
+    },
+    "whyUKImports": {
+      "title": "Why UK Imports",
+      "quality": {
+        "title": "Quality Standards",
+        "description": "UK commercial vehicles are known for high maintenance standards and comprehensive service histories."
+      },
+      "rightHand": {
+        "title": "Right-Hand Drive Options",
+        "description": "Access to right-hand drive vehicles for markets where this configuration is preferred."
+      },
+      "pricing": {
+        "title": "Competitive Pricing",
+        "description": "The UK market offers good value for quality used trucks suitable for various applications."
+      }
+    },
+    "cta": {
+      "title": "Ready to Find Your Next Truck?",
+      "subtitle": "Browse our inventory or get in touch with our team for personalized assistance.",
+      "viewInventory": "View Inventory",
+      "contactUs": "Contact Us"
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Get in touch with our team. We're here to help with all your truck needs.",
+    "phone": "Phone",
+    "email": "Email",
+    "whatsapp": "WhatsApp",
+    "sendMessage": {
+      "title": "Send Us a Message",
+      "description": "Fill out the form below and we'll get back to you as soon as possible.",
+      "name": "Name",
+      "namePlaceholder": "Your full name",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "phone": "Phone",
+      "phonePlaceholder": "+357 99 123456",
+      "message": "Message",
+      "messagePlaceholder": "Tell us about your requirements...",
+      "submit": "Send Message",
+      "sending": "Sending..."
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close"
+  }
+}
