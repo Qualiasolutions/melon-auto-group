@@ -5,7 +5,8 @@ import type { Vehicle } from '@/types/vehicle'
 import Link from 'next/link'
 import { ArrowRight, Search, ShieldCheck, Truck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { LanguageSwitcher } from '@/components/language-switcher'
+import { LocalizedHeader } from '@/components/layout/LocalizedHeader'
+import { LocalizedFooter } from '@/components/layout/LocalizedFooter'
 
 async function getFeaturedVehicles(): Promise<Vehicle[]> {
   const { data: vehicles, error } = await supabase
@@ -36,31 +37,7 @@ export default async function HomePage({
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Simple Header */}
-      <header className="border-b bg-white shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex h-16 items-center justify-between">
-            <Link href={`/${locale}`} className="text-2xl font-bold text-brand-red">
-              Auto Melon Group
-            </Link>
-            <nav className="hidden md:flex items-center gap-6">
-              <Link href={`/${locale}`} className="hover:text-brand-red">
-                {dict.nav.home}
-              </Link>
-              <Link href={`/${locale}/inventory`} className="hover:text-brand-red">
-                {dict.nav.inventory}
-              </Link>
-              <Link href={`/${locale}/about`} className="hover:text-brand-red">
-                {dict.nav.about}
-              </Link>
-              <Link href={`/${locale}/contact`} className="hover:text-brand-red">
-                {dict.nav.contact}
-              </Link>
-            </nav>
-            <LanguageSwitcher currentLocale={locale} />
-          </div>
-        </div>
-      </header>
+      <LocalizedHeader locale={locale} dict={dict} />
 
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-b from-white to-slate-50">
@@ -199,63 +176,7 @@ export default async function HomePage({
         </div>
       </section>
 
-      {/* Simple Footer */}
-      <footer className="bg-slate-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h3 className="font-bold text-lg mb-4">Auto Melon Group</h3>
-              <p className="text-slate-400">
-                {locale === 'el'
-                  ? 'Ποιοτικά μεταχειρισμένα φορτηγά στην Κύπρο'
-                  : 'Quality used trucks in Cyprus'}
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">{locale === 'el' ? 'Σύνδεσμοι' : 'Links'}</h4>
-              <ul className="space-y-2 text-slate-400">
-                <li>
-                  <Link href={`/${locale}`} className="hover:text-white">
-                    {dict.nav.home}
-                  </Link>
-                </li>
-                <li>
-                  <Link href={`/${locale}/inventory`} className="hover:text-white">
-                    {dict.nav.inventory}
-                  </Link>
-                </li>
-                <li>
-                  <Link href={`/${locale}/about`} className="hover:text-white">
-                    {dict.nav.about}
-                  </Link>
-                </li>
-                <li>
-                  <Link href={`/${locale}/contact`} className="hover:text-white">
-                    {dict.nav.contact}
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">{dict.contact.title}</h4>
-              <ul className="space-y-2 text-slate-400">
-                <li>+357 99107227</li>
-                <li>info@automelongroup.com</li>
-                <li>{locale === 'el' ? 'Λεμεσός, Κύπρος' : 'Limassol, Cyprus'}</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">
-                {locale === 'el' ? 'Γλώσσα' : 'Language'}
-              </h4>
-              <LanguageSwitcher currentLocale={locale} />
-            </div>
-          </div>
-          <div className="border-t border-slate-800 pt-8 text-center text-slate-400">
-            <p>© 2024 Auto Melon Group. {locale === 'el' ? 'Όλα τα δικαιώματα διατηρούνται.' : 'All rights reserved.'}</p>
-          </div>
-        </div>
-      </footer>
+      <LocalizedFooter locale={locale} dict={dict} />
     </div>
   )
 }

@@ -10,8 +10,16 @@ import type { Locale } from "@/types/i18n"
 import { useState, Suspense, use } from "react"
 import { useSearchParams } from "next/navigation"
 import { Phone, Mail, MessageCircle } from "lucide-react"
+import { LocalizedHeader } from "@/components/layout/LocalizedHeader"
+import { LocalizedFooter } from "@/components/layout/LocalizedFooter"
 
-function ContactForm({ dict }: { dict: Awaited<ReturnType<typeof getDictionary>> }) {
+function ContactForm({
+  dict,
+  locale
+}: {
+  dict: Awaited<ReturnType<typeof getDictionary>>
+  locale: Locale
+}) {
   const searchParams = useSearchParams()
   const vehicleId = searchParams.get('vehicle')
 
@@ -54,8 +62,10 @@ function ContactForm({ dict }: { dict: Awaited<ReturnType<typeof getDictionary>>
   }
 
   return (
-    <div className="container py-8 max-w-4xl mx-auto">
-      <h1 className="text-4xl font-bold tracking-tight mb-2">{dict.contact.title}</h1>
+    <>
+      <LocalizedHeader locale={locale} dict={dict} />
+      <div className="container py-8 max-w-4xl mx-auto flex-1">
+        <h1 className="text-4xl font-bold tracking-tight mb-2">{dict.contact.title}</h1>
       <p className="text-muted-foreground mb-8">{dict.contact.subtitle}</p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -206,8 +216,15 @@ function ContactForm({ dict }: { dict: Awaited<ReturnType<typeof getDictionary>>
           )}
         </CardContent>
       </Card>
-    </div>
+      </div>
+      <LocalizedFooter locale={locale} dict={dict} />
+    </>
   )
+}
+
+function getLocaleFromDict(dict: any): Locale {
+  // Infer locale from dictionary content
+  return dict.nav.home === 'Home' ? 'en' : 'el'
 }
 
 export default function ContactPage({
@@ -220,14 +237,16 @@ export default function ContactPage({
   const dict = use(dictPromise)
 
   return (
-    <Suspense
-      fallback={
-        <div className="container py-8 max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold tracking-tight mb-2">{dict.common.loading}</h1>
-        </div>
-      }
-    >
-      <ContactForm dict={dict} />
-    </Suspense>
+    <div className="min-h-screen flex flex-col">
+      <Suspense
+        fallback={
+          <div className="container py-8 max-w-4xl mx-auto flex-1">
+            <h1 className="text-4xl font-bold tracking-tight mb-2">Loading...</h1>
+          </div>
+        }
+      >
+        <ContactForm dict={dict} locale={locale} />
+      </Suspense>
+    </div>
   )
 }

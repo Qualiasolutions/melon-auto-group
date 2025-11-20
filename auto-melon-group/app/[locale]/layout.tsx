@@ -61,10 +61,15 @@ export default async function LocaleLayout({
   params: Promise<{ locale: Locale }>
 }) {
   const { locale } = await params
+  const dict = await getDictionary(locale)
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="flex min-h-screen flex-col">
+          {children}
+        </div>
+      </body>
     </html>
   )
 }

@@ -4,6 +4,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { CheckCircle } from 'lucide-react'
+import { LocalizedHeader } from '@/components/layout/LocalizedHeader'
+import { LocalizedFooter } from '@/components/layout/LocalizedFooter'
 
 export default async function AboutPage({
   params,
@@ -14,7 +16,9 @@ export default async function AboutPage({
   const dict = await getDictionary(locale)
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
+      <LocalizedHeader locale={locale} dict={dict} />
+
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-20">
         <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:32px_32px]" />
@@ -123,6 +127,8 @@ export default async function AboutPage({
           </div>
         </div>
       </section>
+
+      <LocalizedFooter locale={locale} dict={dict} />
     </div>
   )
 }
