@@ -4,6 +4,92 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { CheckCircle } from 'lucide-react'
+import { Metadata } from 'next'
+import { siteConfig } from '@/config/site'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>
+}): Promise<Metadata> {
+  const { locale } = await params
+
+  const isGreek = locale === 'el'
+
+  const metadata = {
+    en: {
+      title: "About Us | Leading Used Truck Dealer in Cyprus - Nicosia, Limassol, Larnaca",
+      description: "Auto Melon Group is Cyprus's trusted used truck dealer since years. We import quality UK trucks to Nicosia, Limassol & Larnaca. Specialists in Mercedes-Benz, Scania, Volvo, DAF commercial vehicles. EURO 6 certified.",
+      keywords: [
+        "used truck dealer cyprus",
+        "about auto melon group",
+        "truck dealer nicosia",
+        "truck dealer limassol",
+        "truck dealer larnaca",
+        "UK truck importer cyprus",
+        "commercial vehicle specialist cyprus",
+        "trusted truck dealer cyprus",
+      ]
+    },
+    el: {
+      title: "Σχετικά με Εμάς | Κορυφαίος Έμπορος Μεταχειρισμένων Φορτηγών στην Κύπρο - Λευκωσία, Λεμεσός, Λάρνακα",
+      description: "Η Auto Melon Group είναι ο αξιόπιστος έμπορος μεταχειρισμένων φορτηγών της Κύπρου. Εισάγουμε ποιοτικά φορτηγά από UK στη Λευκωσία, Λεμεσό & Λάρνακα. Ειδικοί σε Mercedes-Benz, Scania, Volvo, DAF εμπορικά οχήματα. EURO 6 πιστοποιημένα.",
+      keywords: [
+        "έμπορος μεταχειρισμένων φορτηγών κύπρος",
+        "σχετικά auto melon group",
+        "έμπορος φορτηγών λευκωσία",
+        "έμπορος φορτηγών λεμεσός",
+        "έμπορος φορτηγών λάρνακα",
+        "εισαγωγέας φορτηγών UK κύπρος",
+        "ειδικός εμπορικών οχημάτων κύπρος",
+        "αξιόπιστος έμπορος φορτηγών κύπρος",
+      ]
+    }
+  }
+
+  const content = isGreek ? metadata.el : metadata.en
+  const canonical = `${siteConfig.url}/${locale}/about`
+
+  return {
+    title: content.title,
+    description: content.description,
+    keywords: content.keywords,
+    alternates: {
+      canonical,
+      languages: {
+        'en': `${siteConfig.url}/en/about`,
+        'el': `${siteConfig.url}/el/about`,
+        'el-CY': `${siteConfig.url}/el/about`,
+        'x-default': `${siteConfig.url}/en/about`,
+      },
+    },
+    openGraph: {
+      title: content.title,
+      description: content.description,
+      url: canonical,
+      type: 'website',
+      locale: isGreek ? 'el_CY' : 'en_US',
+      alternateLocale: isGreek ? ['en_US'] : ['el_CY', 'el_GR'],
+      siteName: siteConfig.name,
+      images: [
+        {
+          url: `${siteConfig.url}/og-image.jpg`,
+          width: 1200,
+          height: 630,
+          alt: `${siteConfig.name} - About`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: content.title,
+      description: content.description,
+      images: [`${siteConfig.url}/og-image.jpg`],
+      creator: '@automelongroup',
+      site: '@automelongroup',
+    },
+  }
+}
 
 export default async function AboutPage({
   params,

@@ -1,12 +1,13 @@
 {
-  "name": "Auto Melon Group - Premium Trucks & Commercial Vehicles",
-  "short_name": "Auto Melon",
-  "description": "Premium Used Trucks & Commercial Vehicles Worldwide | Mercedes, Scania, Volvo, DAF & More",
+  "name": "Auto Melon Group - Used Trucks Cyprus | Nicosia, Limassol, Larnaca",
+  "short_name": "Auto Melon Cyprus",
+  "description": "Leading used truck dealer in Cyprus. Buy quality UK-imported Mercedes, Scania, Volvo, DAF commercial vehicles in Nicosia, Limassol & Larnaca. EURO 6 certified trucks.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ea580c",
   "orientation": "portrait-primary",
+  "scope": "/",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -33,7 +34,9 @@
       "purpose": "any"
     }
   ],
-  "categories": ["business", "automotive"],
+  "categories": ["business", "automotive", "shopping"],
   "lang": "en",
-  "dir": "ltr"
+  "dir": "ltr",
+  "related_applications": [],
+  "prefer_related_applications": false
 }

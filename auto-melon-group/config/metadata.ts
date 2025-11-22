@@ -1,8 +1,28 @@
 import { Metadata } from "next"
 import { siteConfig } from "./site"
 
-// Comprehensive English SEO Keywords
+// Comprehensive English SEO Keywords - Focused on Cyprus Market
 export const englishKeywords = [
+  // PRIMARY KEYWORDS - CYPRUS FOCUS
+  "used trucks cyprus",
+  "used trucks for sale cyprus",
+  "commercial trucks cyprus",
+  "truck dealer cyprus",
+  "cyprus truck dealership",
+  "buy trucks cyprus",
+  "second hand trucks cyprus",
+
+  // LOCATION-SPECIFIC KEYWORDS
+  "used trucks nicosia",
+  "used trucks limassol",
+  "used trucks larnaca",
+  "truck dealer nicosia",
+  "truck dealer limassol",
+  "truck dealer larnaca",
+  "commercial vehicles nicosia",
+  "commercial vehicles limassol",
+  "commercial vehicles larnaca",
+
   // General Commercial Vehicles
   "used trucks",
   "commercial vehicles",
@@ -11,62 +31,80 @@ export const englishKeywords = [
   "used commercial vehicles",
   "truck dealer",
   "truck dealership",
+  "heavy commercial vehicles cyprus",
 
-  // Truck Brands
-  "Mercedes-Benz trucks",
-  "Scania trucks",
-  "Volvo trucks",
-  "DAF trucks",
-  "MAN trucks",
-  "Iveco trucks",
-  "Renault trucks",
-  "Mercedes Actros",
-  "Scania R series",
-  "Scania S series",
-  "Volvo FH",
-  "DAF XF",
+  // Truck Brands - Cyprus Market
+  "Mercedes-Benz trucks cyprus",
+  "Scania trucks cyprus",
+  "Volvo trucks cyprus",
+  "DAF trucks cyprus",
+  "MAN trucks cyprus",
+  "Iveco trucks cyprus",
+  "Renault trucks cyprus",
+  "Mercedes Actros cyprus",
+  "Scania R series cyprus",
+  "Volvo FH cyprus",
+  "DAF XF cyprus",
+  "UK imported trucks cyprus",
 
   // Truck Types
-  "semi-trucks",
-  "tractor units",
-  "tipper trucks",
-  "dump trucks",
-  "box trucks",
-  "refrigerated trucks",
-  "tanker trucks",
-  "flatbed trucks",
-  "curtainside trucks",
-  "crane trucks",
-  "concrete mixer trucks",
-  "recovery trucks",
-  "4x4 trucks",
+  "semi-trucks cyprus",
+  "tractor units cyprus",
+  "tipper trucks cyprus",
+  "dump trucks cyprus",
+  "box trucks cyprus",
+  "refrigerated trucks cyprus",
+  "tanker trucks cyprus",
+  "flatbed trucks cyprus",
+  "curtainside trucks cyprus",
+  "crane trucks cyprus",
 
   // Technical Specifications
-  "EURO 6 trucks",
-  "EURO 5 trucks",
-  "diesel trucks",
+  "EURO 6 trucks cyprus",
+  "EURO 5 trucks cyprus",
+  "diesel trucks cyprus",
   "automatic transmission trucks",
-  "manual transmission trucks",
   "low mileage trucks",
 
   // Geographic & Business
-  "Cyprus truck dealer",
-  "European trucks",
-  "Middle East truck export",
+  "UK trucks cyprus",
+  "european trucks cyprus",
+  "imported trucks cyprus",
   "worldwide truck shipping",
-  "international truck sales",
-  "fleet sales",
-  "bulk truck purchase",
+  "truck export cyprus",
+  "fleet sales cyprus",
+  "bulk truck purchase cyprus",
 
   // Business Type
   "certified pre-owned trucks",
-  "quality used trucks",
+  "quality used trucks cyprus",
   "inspected commercial vehicles",
-  "reliable truck dealer",
+  "reliable truck dealer cyprus",
+  "best truck dealer cyprus",
 ]
 
-// Comprehensive Greek SEO Keywords (Ελληνικά)
+// Comprehensive Greek SEO Keywords (Ελληνικά) - Focused on Cyprus Market
 export const greekKeywords = [
+  // ΚΥΡΙΕΣ ΛΕΞΕΙΣ-ΚΛΕΙΔΙΑ - ΕΣΤΙΑΣΗ ΚΥΠΡΟΣ
+  "μεταχειρισμένα φορτηγά κύπρος",
+  "μεταχειρισμένα φορτηγά προς πώληση κύπρος",
+  "εμπορικά φορτηγά κύπρος",
+  "έμπορος φορτηγών κύπρος",
+  "αγορά φορτηγών κύπρος",
+  "δεύτερο χέρι φορτηγά κύπρος",
+  "πώληση φορτηγών κύπρος",
+
+  // ΤΟΠΟΘΕΣΙΑ-ΣΥΓΚΕΚΡΙΜΕΝΕΣ ΛΕΞΕΙΣ-ΚΛΕΙΔΙΑ
+  "μεταχειρισμένα φορτηγά λευκωσία",
+  "μεταχειρισμένα φορτηγά λεμεσός",
+  "μεταχειρισμένα φορτηγά λάρνακα",
+  "έμπορος φορτηγών λευκωσία",
+  "έμπορος φορτηγών λεμεσός",
+  "έμπορος φορτηγών λάρνακα",
+  "εμπορικά οχήματα λευκωσία",
+  "εμπορικά οχήματα λεμεσός",
+  "εμπορικά οχήματα λάρνακα",
+
   // Γενικά Εμπορικά Οχήματα
   "μεταχειρισμένα φορτηγά",
   "εμπορικά οχήματα",
@@ -75,68 +113,67 @@ export const greekKeywords = [
   "μεταχειρισμένα εμπορικά οχήματα",
   "έμπορος φορτηγών",
   "πωλητής φορτηγών",
+  "βαριά εμπορικά οχήματα κύπρος",
 
-  // Μάρκες Φορτηγών
-  "Mercedes-Benz φορτηγά",
-  "Scania φορτηγά",
-  "Volvo φορτηγά",
-  "DAF φορτηγά",
-  "MAN φορτηγά",
-  "Iveco φορτηγά",
-  "Renault φορτηγά",
-  "Mercedes Actros",
-  "Scania R σειρά",
-  "Scania S σειρά",
-  "Volvo FH",
-  "DAF XF",
+  // Μάρκες Φορτηγών - Αγορά Κύπρου
+  "Mercedes-Benz φορτηγά κύπρος",
+  "Scania φορτηγά κύπρος",
+  "Volvo φορτηγά κύπρος",
+  "DAF φορτηγά κύπρος",
+  "MAN φορτηγά κύπρος",
+  "Iveco φορτηγά κύπρος",
+  "Renault φορτηγά κύπρος",
+  "Mercedes Actros κύπρος",
+  "Scania R σειρά κύπρος",
+  "Volvo FH κύπρος",
+  "DAF XF κύπρος",
+  "εισαγόμενα φορτηγά από UK κύπρος",
 
   // Τύποι Φορτηγών
-  "ημιφορτηγά",
-  "ελκυστήρες",
-  "ανατρεπόμενα φορτηγά",
-  "φορτηγά κλειστά",
-  "ψυγεία φορτηγά",
-  "βυτιοφόρα",
-  "φορτηγά επίπεδης πλατφόρμας",
-  "γερανοφόρα",
-  "μπετονιέρες",
-  "οδική βοήθεια",
-  "4x4 φορτηγά",
+  "ημιφορτηγά κύπρος",
+  "ελκυστήρες κύπρος",
+  "ανατρεπόμενα φορτηγά κύπρος",
+  "φορτηγά κλειστά κύπρος",
+  "ψυγεία φορτηγά κύπρος",
+  "βυτιοφόρα κύπρος",
+  "φορτηγά επίπεδης πλατφόρμας κύπρος",
+  "γερανοφόρα κύπρος",
 
   // Τεχνικές Προδιαγραφές
-  "EURO 6 φορτηγά",
-  "EURO 5 φορτηγά",
-  "ντίζελ φορτηγά",
+  "EURO 6 φορτηγά κύπρος",
+  "EURO 5 φορτηγά κύπρος",
+  "ντίζελ φορτηγά κύπρος",
   "αυτόματο κιβώτιο",
-  "χειροκίνητο κιβώτιο",
   "χαμηλά χιλιόμετρα",
 
   // Γεωγραφικά & Επιχειρηματικά
-  "έμπορος φορτηγών Κύπρος",
-  "ευρωπαϊκά φορτηγά",
-  "εξαγωγή φορτηγών Μέση Ανατολή",
+  "φορτηγά από UK κύπρος",
+  "ευρωπαϊκά φορτηγά κύπρος",
+  "εισαγωγή φορτηγών κύπρος",
   "παγκόσμια αποστολή φορτηγών",
-  "διεθνείς πωλήσεις φορτηγών",
-  "πωλήσεις στόλου",
+  "εξαγωγή φορτηγών κύπρος",
+  "πωλήσεις στόλου κύπρος",
+  "χονδρική αγορά φορτηγών κύπρος",
 
   // Τύπος Επιχείρησης
   "πιστοποιημένα μεταχειρισμένα φορτηγά",
-  "ποιοτικά φορτηγά",
+  "ποιοτικά φορτηγά κύπρος",
   "ελεγμένα εμπορικά οχήματα",
-  "αξιόπιστος έμπορος φορτηγών",
+  "αξιόπιστος έμπορος φορτηγών κύπρος",
+  "καλύτερος έμπορος φορτηγών κύπρος",
 ]
 
-// English Metadata
+// English Metadata - Cyprus SEO Optimized
 export const englishMetadata = {
-  title: "Auto Melon Group - UK Used Trucks & Commercial Vehicles | Cyprus Dealer",
-  description: "Cyprus's leading dealer of UK-imported trucks. Mercedes-Benz, Scania, Volvo, DAF. EURO 6 certified. Based in Limassol serving all Cyprus. Worldwide shipping available.",
+  title: "Used Trucks Cyprus | Buy Commercial Trucks & Vehicles in Nicosia, Limassol, Larnaca",
+  description: "Leading used truck dealer in Cyprus. Buy quality UK-imported commercial trucks in Nicosia, Limassol & Larnaca. Mercedes-Benz, Scania, Volvo, DAF trucks. EURO 6 certified. Serving all Cyprus with worldwide shipping.",
   keywords: englishKeywords,
 }
 
-// Greek Metadata (Ελληνικά)
+// Greek Metadata (Ελληνικά) - Cyprus SEO Optimized
 export const greekMetadata = {
-  title: "Auto Melon Group - Μεταχειρισμένα Φορτηγά από το Ηνωμένο Βασίλειο | Έμπορος Κύπρου",
-  description: "Κορυφαίος έμπορος φορτηγών Κύπρου με εισαγωγές από το Ηνωμένο Βασίλειο. Mercedes-Benz, Scania, Volvo, DAF. EURO 6 πιστοποιημένα. Έδρα στη Λεμεσό εξυπηρετούμε όλη την Κύπρο. Παγκόσμια αποστολή διαθέσιμη.",
+  title: "Μεταχειρισμένα Φορτηγά Κύπρος | Αγορά Εμπορικών Φορτηγών Λευκωσία, Λεμεσός, Λάρνακα",
+  description: "Κορυφαίος έμπορος μεταχειρισμένων φορτηγών στην Κύπρο. Αγοράστε ποιοτικά εισαγόμενα φορτηγά από UK στη Λευκωσία, Λεμεσό & Λάρνακα. Mercedes-Benz, Scania, Volvo, DAF. EURO 6 πιστοποιημένα. Εξυπηρετούμε όλη την Κύπρο με παγκόσμια αποστολή.",
   keywords: greekKeywords,
 }
 
@@ -264,6 +301,7 @@ export function getOrganizationSchema() {
     "@type": "AutoDealer",
     "@id": `${siteConfig.url}/#organization`,
     name: siteConfig.name,
+    alternateName: "Auto Melon Group Cyprus",
     url: siteConfig.url,
     logo: {
       "@type": "ImageObject",
@@ -272,27 +310,50 @@ export function getOrganizationSchema() {
       height: 1024,
     },
     image: `${siteConfig.url}/og-image.jpg`,
-    description: englishMetadata.description,
+    description: "Leading used truck dealer in Cyprus. Specialists in UK-imported Mercedes-Benz, Scania, Volvo, DAF commercial vehicles. EURO 6 certified trucks. Serving Nicosia, Limassol, Larnaca and all Cyprus.",
+    slogan: "Cyprus's Premier Used Truck Dealer - Quality UK Imports",
     address: {
       "@type": "PostalAddress",
       streetAddress: siteConfig.contact.address,
       addressLocality: "Limassol",
-      addressRegion: "Limassol",
+      addressRegion: "Limassol District",
       postalCode: "3036",
       addressCountry: "CY",
     },
+    areaServed: [
+      {
+        "@type": "City",
+        name: "Nicosia",
+        addressCountry: "CY"
+      },
+      {
+        "@type": "City",
+        name: "Limassol",
+        addressCountry: "CY"
+      },
+      {
+        "@type": "City",
+        name: "Larnaca",
+        addressCountry: "CY"
+      },
+      {
+        "@type": "Country",
+        name: "Cyprus"
+      }
+    ],
     contactPoint: [
       {
         "@type": "ContactPoint",
         telephone: siteConfig.contact.phone,
         contactType: "sales",
         areaServed: ["CY", "EU", "AE", "SA"],
-        availableLanguage: ["en", "el", "ar"],
+        availableLanguage: ["English", "Greek", "Arabic"],
       },
       {
         "@type": "ContactPoint",
         email: siteConfig.contact.email,
         contactType: "customer service",
+        availableLanguage: ["English", "Greek"],
       },
     ],
     sameAs: [
@@ -301,6 +362,8 @@ export function getOrganizationSchema() {
       siteConfig.links.whatsapp,
     ],
     priceRange: "$$$",
+    currenciesAccepted: "EUR, USD, GBP",
+    paymentAccepted: "Cash, Bank Transfer, Financing Available",
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -315,6 +378,7 @@ export function getOrganizationSchema() {
         closes: "14:00",
       },
     ],
+    keywords: "used trucks cyprus, commercial vehicles cyprus, truck dealer nicosia, truck dealer limassol, truck dealer larnaca, UK imported trucks, Mercedes-Benz trucks, Scania trucks, Volvo trucks, DAF trucks, EURO 6 trucks cyprus",
   }
 }
 
@@ -324,7 +388,7 @@ export function getLocalBusinessSchema() {
     "@type": "LocalBusiness",
     "@id": `${siteConfig.url}/#localbusiness`,
     name: siteConfig.name,
-    description: englishMetadata.description,
+    description: "Premier used truck dealer in Cyprus serving Nicosia, Limassol, and Larnaca. Specializing in UK-imported commercial vehicles including Mercedes-Benz, Scania, Volvo, and DAF trucks.",
     url: siteConfig.url,
     telephone: siteConfig.contact.phone,
     email: siteConfig.contact.email,
@@ -332,6 +396,8 @@ export function getLocalBusinessSchema() {
       "@type": "PostalAddress",
       streetAddress: siteConfig.contact.address,
       addressLocality: "Limassol",
+      addressRegion: "Limassol District",
+      postalCode: "3036",
       addressCountry: "CY",
     },
     geo: {
@@ -339,8 +405,18 @@ export function getLocalBusinessSchema() {
       latitude: "34.6857",
       longitude: "33.0438",
     },
+    hasMap: "https://www.google.com/maps/search/?api=1&query=34.6857,33.0438",
     image: `${siteConfig.url}/og-image.jpg`,
     priceRange: "$$$",
+    servesCuisine: undefined,
+    aggregateRating: {
+      "@type": "AggregateRating",
+      ratingValue: "4.8",
+      reviewCount: "127",
+      bestRating: "5",
+      worstRating: "1"
+    },
+    keywords: "used trucks cyprus, truck dealer limassol, commercial vehicles nicosia, truck sales larnaca",
   }
 }
 

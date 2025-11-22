@@ -11,6 +11,8 @@ import { notFound } from "next/navigation"
 import { siteConfig } from "@/config/site"
 import { Metadata } from "next"
 import { VehicleGallery } from "@/components/sections/VehicleGallery"
+import { getBreadcrumbSchema, getVehicleSchema } from "@/config/metadata"
+import { StructuredData } from "@/components/StructuredData"
 
 async function getVehicle(id: string): Promise<Vehicle | null> {
   const { data: vehicle, error } = await supabase
@@ -45,23 +47,84 @@ export async function generateMetadata({
     }
   }
 
-  const title = locale === 'el'
-    ? `${vehicle.make} ${vehicle.model} ${vehicle.year} - ${vehicle.condition} Φορτηγό προς Πώληση`
-    : `${vehicle.make} ${vehicle.model} ${vehicle.year} - ${vehicle.condition} Truck for Sale`
+  const isGreek = locale === 'el'
 
-  const description = locale === 'el'
-    ? `${vehicle.year} ${vehicle.make} ${vehicle.model} προς πώληση. ${vehicle.mileage.toLocaleString()} km, €${vehicle.price.toLocaleString()}. Βρίσκεται στην Κύπρο.`
-    : `${vehicle.year} ${vehicle.make} ${vehicle.model} for sale. ${vehicle.mileage.toLocaleString()} km, €${vehicle.price.toLocaleString()}. Located in Cyprus.`
+  const title = isGreek
+    ? `${vehicle.make} ${vehicle.model} ${vehicle.year} - Μεταχειρισμένο Φορτηγό Κύπρος | Auto Melon Group`
+    : `${vehicle.make} ${vehicle.model} ${vehicle.year} - Used Truck Cyprus | Auto Melon Group`
+
+  const description = isGreek
+    ? `${vehicle.year} ${vehicle.make} ${vehicle.model} προς πώληση στην Κύπρο. ${vehicle.mileage.toLocaleString()} χλμ, €${vehicle.price.toLocaleString()}. ${vehicle.engineType}, ${vehicle.transmission}. EURO ${vehicle.specifications?.emissionStandard || '6'}. Διαθέσιμο στη Λεμεσό, εξυπηρετούμε Λευκωσία & Λάρνακα.`
+    : `${vehicle.year} ${vehicle.make} ${vehicle.model} for sale in Cyprus. ${vehicle.mileage.toLocaleString()} km, €${vehicle.price.toLocaleString()}. ${vehicle.engineType}, ${vehicle.transmission}. EURO ${vehicle.specifications?.emissionStandard || '6'}. Available in Limassol, serving Nicosia & Larnaca.`
+
+  const keywords = isGreek
+    ? [
+        `${vehicle.make} ${vehicle.model} κύπρος`,
+        `${vehicle.make} φορτηγό κύπρος`,
+        `μεταχειρισμένο ${vehicle.make} ${vehicle.year}`,
+        `${vehicle.category} κύπρος`,
+        "μεταχειρισμένα φορτηγά κύπρος",
+        "φορτηγά προς πώληση λεμεσός",
+        "εμπορικά οχήματα κύπρος",
+      ]
+    : [
+        `${vehicle.make} ${vehicle.model} cyprus`,
+        `${vehicle.make} truck cyprus`,
+        `used ${vehicle.make} ${vehicle.year}`,
+        `${vehicle.category} cyprus`,
+        "used trucks cyprus",
+        "trucks for sale limassol",
+        "commercial vehicles cyprus",
+      ]
+
+  const canonical = `${siteConfig.url}/${locale}/inventory/${vehicle.id}`
 
   return {
     title,
     description,
+    keywords,
     alternates: {
-      canonical: `${siteConfig.url}/${locale}/inventory/${vehicle.id}`,
+      canonical,
       languages: {
         en: `${siteConfig.url}/en/inventory/${vehicle.id}`,
         el: `${siteConfig.url}/el/inventory/${vehicle.id}`,
+        'el-CY': `${siteConfig.url}/el/inventory/${vehicle.id}`,
+        'x-default': `${siteConfig.url}/en/inventory/${vehicle.id}`,
       },
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      type: 'website',
+      locale: isGreek ? 'el_CY' : 'en_US',
+      alternateLocale: isGreek ? ['en_US'] : ['el_CY', 'el_GR'],
+      siteName: siteConfig.name,
+      images: vehicle.images && vehicle.images.length > 0
+        ? [
+            {
+              url: vehicle.images[0],
+              width: 1200,
+              height: 630,
+              alt: `${vehicle.make} ${vehicle.model} ${vehicle.year}`,
+            },
+          ]
+        : [
+            {
+              url: `${siteConfig.url}/og-image.jpg`,
+              width: 1200,
+              height: 630,
+              alt: siteConfig.name,
+            },
+          ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: vehicle.images && vehicle.images.length > 0 ? [vehicle.images[0]] : [`${siteConfig.url}/og-image.jpg`],
+      creator: '@automelongroup',
+      site: '@automelongroup',
     },
   }
 }
@@ -79,8 +142,28 @@ export default async function VehicleDetailPage({
     notFound()
   }
 
+  // Generate breadcrumb schema
+  const breadcrumbItems = locale === 'el'
+    ? [
+        { name: 'Αρχική', url: `/${locale}` },
+        { name: 'Απόθεμα', url: `/${locale}/inventory` },
+        { name: `${vehicle.make} ${vehicle.model} ${vehicle.year}`, url: `/${locale}/inventory/${vehicle.id}` },
+      ]
+    : [
+        { name: 'Home', url: `/${locale}` },
+        { name: 'Inventory', url: `/${locale}/inventory` },
+        { name: `${vehicle.make} ${vehicle.model} ${vehicle.year}`, url: `/${locale}/inventory/${vehicle.id}` },
+      ]
+
+  const breadcrumbSchema = getBreadcrumbSchema(breadcrumbItems)
+  const vehicleSchema = getVehicleSchema(vehicle)
+
   return (
-    <>      <div className="container py-8 max-w-7xl flex-1">
+    <>
+      {/* Structured Data */}
+      <StructuredData data={[breadcrumbSchema, vehicleSchema]} />
+
+      <div className="container py-8 max-w-7xl flex-1">
         {/* Breadcrumb */}
         <div className="mb-6">
           <Link
