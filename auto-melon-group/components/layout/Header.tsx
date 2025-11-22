@@ -142,7 +142,6 @@ export function Header() {
               </a>
             </div>
             <div className="ml-auto flex items-center gap-4">
-              <span className="hidden sm:inline text-slate-600 font-medium">Export Desk Available</span>
               <span className="text-brand-green font-bold px-3 py-1 bg-green-50 rounded-full">Mon-Fri 8AM-6PM</span>
               <LanguageSwitcher currentLocale={currentLocale} />
             </div>
@@ -311,7 +310,7 @@ export function Header() {
             </Button>
             <Button
               size="default"
-              className="bg-gradient-to-r from-brand-red to-red-600 hover:from-brand-red-dark hover:to-red-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105"
+              className="bg-brand-red hover:bg-brand-red-dark text-white font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105"
               asChild
             >
               <a href={siteConfig.links.whatsapp} target="_blank" rel="noopener noreferrer">
