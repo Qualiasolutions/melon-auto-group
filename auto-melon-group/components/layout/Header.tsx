@@ -190,7 +190,11 @@ export function Header() {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="h-11 px-6 py-2.5 text-base font-semibold rounded-lg border-2 border-transparent hover:border-brand-red/20 data-[state=open]:border-brand-red/20">Inventory</NavigationMenuTrigger>
+                  <Link href={`/${currentLocale}/inventory`} legacyBehavior passHref>
+                    <NavigationMenuTrigger className="h-11 px-6 py-2.5 text-base font-semibold rounded-lg border-2 border-transparent hover:border-brand-red/20 data-[state=open]:border-brand-red/20">
+                      Inventory
+                    </NavigationMenuTrigger>
+                  </Link>
                   <NavigationMenuContent>
                     <div className="w-[650px] p-5">
                       <div className="grid grid-cols-2 gap-6">

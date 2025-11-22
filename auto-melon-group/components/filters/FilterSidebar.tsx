@@ -165,8 +165,8 @@ export function FilterSidebar({ filters, onFiltersChange, onClearFilters }: Filt
       </div>
 
       {/* Scrollable Filters Area */}
-      <ScrollArea className="flex-1 -mx-6 px-6">
-        <Accordion type="multiple" defaultValue={["price", "year"]} className="w-full pt-4">
+      <ScrollArea className="flex-1 -mx-6 px-6 overflow-y-auto max-h-[calc(100vh-200px)]">
+        <Accordion type="multiple" defaultValue={["price", "year"]} className="w-full pt-4 pb-6">
           {/* Make/Brand Filter */}
           <AccordionItem value="make" className="border-b">
             <AccordionTrigger className="text-sm font-semibold hover:no-underline py-4">

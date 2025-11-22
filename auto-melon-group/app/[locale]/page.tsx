@@ -1,6 +1,7 @@
 import { VehicleCard } from "@/components/sections/VehicleCard"
 import { SearchHeader } from "@/components/sections/SearchHeader"
 import { Button } from "@/components/ui/button"
+import { ScrollReveal } from "@/components/ui/scroll-reveal"
 import { supabase } from "@/lib/supabase/client"
 import { Vehicle } from "@/types/vehicle"
 import Link from "next/link"
@@ -225,8 +226,10 @@ export default async function HomePage({
 
           {featuredVehicles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredVehicles.map((vehicle) => (
-                <VehicleCard key={vehicle.id} vehicle={vehicle} />
+              {featuredVehicles.map((vehicle, index) => (
+                <ScrollReveal key={vehicle.id} animation="fade-up" delay={index * 100}>
+                  <VehicleCard vehicle={vehicle} />
+                </ScrollReveal>
               ))}
             </div>
           ) : (

@@ -111,36 +111,32 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
             </div>
           </div>
 
-          {/* Engine */}
+          {/* Transmission */}
           <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50">
             <Icon name="settings" className="h-5 w-5 text-brand-red flex-shrink-0" />
             <div className="flex flex-col min-w-0">
-              <span className="text-xs text-slate-500 font-medium">Engine</span>
-              <span className="text-sm font-bold text-slate-900 capitalize truncate">{vehicle.engineType}</span>
+              <span className="text-xs text-slate-500 font-medium">Transmission</span>
+              <span className="text-sm font-bold text-slate-900 capitalize truncate">{vehicle.transmission || 'Manual'}</span>
             </div>
           </div>
 
-          {/* Transmission */}
-          {vehicle.transmission && (
-            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50">
-              <Icon name="settings" className="h-5 w-5 text-brand-red flex-shrink-0" />
-              <div className="flex flex-col min-w-0">
-                <span className="text-xs text-slate-500 font-medium">Transmission</span>
-                <span className="text-sm font-bold text-slate-900 capitalize truncate">{vehicle.transmission}</span>
-              </div>
+          {/* Location */}
+          <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50">
+            <Icon name="location_on" className="h-5 w-5 text-brand-red flex-shrink-0" />
+            <div className="flex flex-col min-w-0">
+              <span className="text-xs text-slate-500 font-medium">Location</span>
+              <span className="text-sm font-bold text-slate-900 truncate">{vehicle.location || vehicle.country}</span>
             </div>
-          )}
+          </div>
 
-          {/* Horsepower */}
-          {vehicle.horsepower && (
-            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50">
-              <Icon name="bolt" className="h-5 w-5 text-brand-red flex-shrink-0" />
-              <div className="flex flex-col min-w-0">
-                <span className="text-xs text-slate-500 font-medium">Power</span>
-                <span className="text-sm font-bold text-slate-900 truncate">{vehicle.horsepower} HP</span>
-              </div>
+          {/* Condition */}
+          <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50">
+            <Icon name="verified_user" className="h-5 w-5 text-brand-red flex-shrink-0" />
+            <div className="flex flex-col min-w-0">
+              <span className="text-xs text-slate-500 font-medium">Condition</span>
+              <span className="text-sm font-bold text-slate-900 capitalize truncate">{vehicle.condition}</span>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Divider */}
