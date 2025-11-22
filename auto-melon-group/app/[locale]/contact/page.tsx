@@ -213,7 +213,6 @@ function ContactForm({
         </CardContent>
       </Card>
       </div>
-      <LocalizedFooter locale={locale} dict={dict} />
     </>
   )
 }
