@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Vehicle } from "@/types/vehicle"
-import { Icon } from "@/components/ui/icon"
+import { Truck, Gauge, Settings, MapPin, ShieldCheck } from "lucide-react"
 import { usePathname } from "next/navigation"
 
 interface VehicleCardProps {
@@ -54,7 +54,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
           style={{ display: vehicle.images && vehicle.images.length > 0 ? 'none' : 'flex' }}
         >
           <div className="text-center">
-            <Icon name="directions_truck_filled" className="h-16 w-16 mx-auto text-slate-300 mb-2" />
+            <Truck className="h-16 w-16 mx-auto text-slate-300 mb-2" />
             <p className="text-sm font-medium text-slate-400">No Image Available</p>
           </div>
         </div>
@@ -104,7 +104,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
         <div className="grid grid-cols-2 gap-3 mb-5">
           {/* Mileage */}
           <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50">
-            <Icon name="speed" className="h-5 w-5 text-brand-red flex-shrink-0" />
+            <Gauge className="h-5 w-5 text-brand-red flex-shrink-0" />
             <div className="flex flex-col min-w-0">
               <span className="text-xs text-slate-500 font-medium">Mileage</span>
               <span className="text-sm font-bold text-slate-900 truncate">{formatMileage(vehicle.mileage)} km</span>
@@ -113,7 +113,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
 
           {/* Transmission */}
           <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50">
-            <Icon name="settings" className="h-5 w-5 text-brand-red flex-shrink-0" />
+            <Settings className="h-5 w-5 text-brand-red flex-shrink-0" />
             <div className="flex flex-col min-w-0">
               <span className="text-xs text-slate-500 font-medium">Transmission</span>
               <span className="text-sm font-bold text-slate-900 capitalize truncate">{vehicle.transmission || 'Manual'}</span>
@@ -122,7 +122,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
 
           {/* Location */}
           <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50">
-            <Icon name="location_on" className="h-5 w-5 text-brand-red flex-shrink-0" />
+            <MapPin className="h-5 w-5 text-brand-red flex-shrink-0" />
             <div className="flex flex-col min-w-0">
               <span className="text-xs text-slate-500 font-medium">Location</span>
               <span className="text-sm font-bold text-slate-900 truncate">{vehicle.location || vehicle.country}</span>
@@ -131,7 +131,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
 
           {/* Condition */}
           <div className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50">
-            <Icon name="verified_user" className="h-5 w-5 text-brand-red flex-shrink-0" />
+            <ShieldCheck className="h-5 w-5 text-brand-red flex-shrink-0" />
             <div className="flex flex-col min-w-0">
               <span className="text-xs text-slate-500 font-medium">Condition</span>
               <span className="text-sm font-bold text-slate-900 capitalize truncate">{vehicle.condition}</span>
