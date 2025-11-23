@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { Edit, Trash2, Search, Plus, Eye, ExternalLink } from "lucide-react"
+import { Edit, Trash2, Search, Plus, Eye, ExternalLink, Image } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -115,12 +115,20 @@ export default function VehiclesPage() {
           <h1 className="text-2xl font-semibold text-gray-900">Vehicle Management</h1>
           <p className="text-gray-600 mt-1">{vehicles.length} total vehicles</p>
         </div>
-        <Button asChild className="bg-red-600 hover:bg-red-700 text-white">
-          <Link href="/admin/vehicles/new">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Vehicle
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline" className="border-gray-300">
+            <Link href="/admin/vehicles/bulk-images">
+              <Image className="h-4 w-4 mr-2" />
+              Bulk Images
+            </Link>
+          </Button>
+          <Button asChild className="bg-red-600 hover:bg-red-700 text-white">
+            <Link href="/admin/vehicles/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Vehicle
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
