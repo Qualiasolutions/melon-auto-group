@@ -10,9 +10,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { vehicleMakes, vehicleCategories, engineTypes, transmissionTypes, conditionTypes, cabinTypes, tonsTypes } from "@/types/vehicle"
-import { X, Save, ArrowLeft, Plus, Loader2, ImageIcon, AlertCircle, PlusCircle } from "lucide-react"
+import { X, Save, ArrowLeft, Plus, Loader2, ImageIcon, AlertCircle, PlusCircle, Upload, Link as LinkIcon } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
 import { getAllVehicleMakes, addCustomMake } from "@/lib/custom-makes"
@@ -21,7 +22,9 @@ export default function NewVehiclePage() {
   const router = useRouter()
   const [imageUrls, setImageUrls] = useState<string[]>([])
   const [imageInput, setImageInput] = useState("")
+  const [bulkUrlInput, setBulkUrlInput] = useState("")
   const [imageError, setImageError] = useState("")
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null)
   const [specifications, setSpecifications] = useState<Record<string, string | number>>({})
   const [features, setFeatures] = useState<string[]>([])
   const [featureInput, setFeatureInput] = useState("")
@@ -175,6 +178,92 @@ export default function NewVehiclePage() {
   const handleImageUrlRemove = (index: number) => {
     setImageUrls(prev => prev.filter((_, i) => i !== index))
     toast.info("Image removed")
+  }
+
+  const handleBulkUrlAdd = () => {
+    try {
+      setImageError("")
+      const urls = bulkUrlInput
+        .split("\n")
+        .map(url => url.trim())
+        .filter(url => url.length > 0)
+
+      if (urls.length === 0) {
+        setImageError("Please enter at least one URL")
+        return
+      }
+
+      const validUrls: string[] = []
+      const invalidUrls: string[] = []
+
+      urls.forEach(url => {
+        try {
+          imageUrlSchema.parse(url)
+          if (!imageUrls.includes(url)) {
+            validUrls.push(url)
+          }
+        } catch {
+          invalidUrls.push(url)
+        }
+      })
+
+      if (validUrls.length > 0) {
+        setImageUrls(prev => [...prev, ...validUrls])
+        setBulkUrlInput("")
+        toast.success(`Added ${validUrls.length} image(s)`)
+      }
+
+      if (invalidUrls.length > 0) {
+        setImageError(`${invalidUrls.length} invalid URL(s) skipped`)
+      }
+    } catch (error) {
+      setImageError("Error processing URLs")
+    }
+  }
+
+  const handleFileUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) {
+      toast.error("No files selected")
+      return
+    }
+
+    setImageError("")
+    const newImageUrls: string[] = []
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+
+      if (!file.type.startsWith("image/")) {
+        toast.error(`${file.name} is not an image`)
+        continue
+      }
+
+      try {
+        // Convert to base64 data URL for preview
+        const reader = new FileReader()
+        await new Promise((resolve, reject) => {
+          reader.onload = () => {
+            if (reader.result) {
+              newImageUrls.push(reader.result as string)
+            }
+            resolve(null)
+          }
+          reader.onerror = reject
+          reader.readAsDataURL(file)
+        })
+      } catch (error) {
+        console.error("Error reading file:", file.name, error)
+      }
+    }
+
+    if (newImageUrls.length > 0) {
+      setImageUrls(prev => [...prev, ...newImageUrls])
+      setSelectedFiles(null)
+      toast.success(`Added ${newImageUrls.length} image(s)`)
+      // Reset file input
+      const fileInput = document.getElementById("file-upload") as HTMLInputElement
+      if (fileInput) fileInput.value = ""
+    }
   }
 
   const handleFeatureAdd = () => {
@@ -712,24 +801,72 @@ export default function NewVehiclePage() {
                 </div>
                 <div>
                   <CardTitle className="text-lg font-semibold text-slate-900">Vehicle Images</CardTitle>
-                  <CardDescription className="text-sm">Add images via URL</CardDescription>
+                  <CardDescription className="text-sm">Add images via URL or file upload</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
-              <div className="flex gap-2">
-                <Input
-                  value={imageInput}
-                  onChange={(e) => setImageInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleImageUrlAdd())}
-                  placeholder="https://example.com/image.jpg"
-                  className={imageError ? "border-red-500" : ""}
-                />
-                <Button type="button" onClick={handleImageUrlAdd} size="sm">
-                  <Plus className="h-4 w-4 mr-1" />
-                  Add
-                </Button>
-              </div>
+              <Tabs defaultValue="single" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="single">Single URL</TabsTrigger>
+                  <TabsTrigger value="bulk">Bulk URLs</TabsTrigger>
+                  <TabsTrigger value="files">File Upload</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="single" className="space-y-4 mt-4">
+                  <div className="flex gap-2">
+                    <Input
+                      value={imageInput}
+                      onChange={(e) => setImageInput(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleImageUrlAdd())}
+                      placeholder="https://example.com/image.jpg"
+                      className={imageError ? "border-red-500" : ""}
+                    />
+                    <Button type="button" onClick={handleImageUrlAdd} size="sm">
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add
+                    </Button>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="bulk" className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label>Paste multiple URLs (one per line)</Label>
+                    <Textarea
+                      value={bulkUrlInput}
+                      onChange={(e) => setBulkUrlInput(e.target.value)}
+                      placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
+                      rows={6}
+                      className="font-mono text-sm"
+                    />
+                    <p className="text-xs text-slate-500">
+                      {bulkUrlInput.split("\n").filter(url => url.trim()).length} URL(s) entered
+                    </p>
+                  </div>
+                  <Button type="button" onClick={handleBulkUrlAdd} size="sm" className="w-full">
+                    <LinkIcon className="h-4 w-4 mr-2" />
+                    Add All URLs
+                  </Button>
+                </TabsContent>
+
+                <TabsContent value="files" className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="file-upload">Select image files</Label>
+                    <Input
+                      id="file-upload"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => handleFileUpload(e.target.files)}
+                      className="cursor-pointer"
+                    />
+                    <p className="text-xs text-slate-500">
+                      Select multiple images to upload at once
+                    </p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+
               {imageError && (
                 <p className="text-xs text-red-500 flex items-center gap-1">
                   <AlertCircle className="h-3 w-3" />

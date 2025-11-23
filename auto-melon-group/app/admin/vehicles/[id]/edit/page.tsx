@@ -9,10 +9,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Vehicle, vehicleMakes, vehicleCategories, engineTypes, transmissionTypes, conditionTypes, cabinTypes, tonsTypes } from "@/types/vehicle"
-import { Upload, X, Save, ArrowLeft, ExternalLink, Loader2 } from "lucide-react"
+import { Upload, X, Save, ArrowLeft, ExternalLink, Loader2, Link as LinkIcon } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { getAllVehicleMakes, addCustomMake } from "@/lib/custom-makes"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { toast } from "sonner"
 
 export default function EditVehiclePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -24,6 +26,8 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
   const [customMake, setCustomMake] = useState<string>("")
   const [vehicleMakesList, setVehicleMakesList] = useState<string[]>(vehicleMakes as string[])
   const [isLoadingMakes, setIsLoadingMakes] = useState(false)
+  const [bulkUrlInput, setBulkUrlInput] = useState("")
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null)
   const [formData, setFormData] = useState({
     make: '',
     model: '',
@@ -157,6 +161,76 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
 
   const handleImageUrlRemove = (index: number) => {
     setImageUrls(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const handleBulkUrlAdd = () => {
+    const urls = bulkUrlInput
+      .split("\n")
+      .map(url => url.trim())
+      .filter(url => url.length > 0)
+
+    const validUrls: string[] = []
+    const invalidUrls: string[] = []
+
+    urls.forEach(url => {
+      try {
+        new URL(url)
+        if (!imageUrls.includes(url)) {
+          validUrls.push(url)
+        }
+      } catch {
+        invalidUrls.push(url)
+      }
+    })
+
+    if (validUrls.length > 0) {
+      setImageUrls(prev => [...prev, ...validUrls])
+      toast.success(`Added ${validUrls.length} image(s)`)
+      setBulkUrlInput("")
+    }
+
+    if (invalidUrls.length > 0) {
+      toast.error(`Skipped ${invalidUrls.length} invalid URL(s)`)
+    }
+  }
+
+  const handleFileUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return
+
+    const newImageUrls: string[] = []
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+
+      if (!file.type.startsWith("image/")) {
+        toast.error(`Skipped non-image file: ${file.name}`)
+        continue
+      }
+
+      try {
+        const reader = new FileReader()
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          reader.onload = () => resolve(reader.result as string)
+          reader.onerror = reject
+          reader.readAsDataURL(file)
+        })
+
+        newImageUrls.push(dataUrl)
+      } catch (error) {
+        console.error(`Error reading file ${file.name}:`, error)
+        toast.error(`Failed to read ${file.name}`)
+      }
+    }
+
+    if (newImageUrls.length > 0) {
+      setImageUrls(prev => [...prev, ...newImageUrls])
+      toast.success(`Added ${newImageUrls.length} image(s)`)
+      setSelectedFiles(null)
+
+      // Reset file input
+      const fileInput = document.getElementById("file-upload-edit") as HTMLInputElement
+      if (fileInput) fileInput.value = ""
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -521,32 +595,93 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
             <CardTitle>Images</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button type="button" onClick={handleImageUrlAdd} variant="outline" className="w-full">
-              <Upload className="h-4 w-4 mr-2" />
-              Add Image URL
-            </Button>
+            <Tabs defaultValue="single" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="single">Single URL</TabsTrigger>
+                <TabsTrigger value="bulk">Bulk URLs</TabsTrigger>
+                <TabsTrigger value="files">File Upload</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="single" className="space-y-4">
+                <Button type="button" onClick={handleImageUrlAdd} variant="outline" className="w-full">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Add Image URL
+                </Button>
+              </TabsContent>
+
+              <TabsContent value="bulk" className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Paste multiple image URLs (one per line)</Label>
+                  <Textarea
+                    value={bulkUrlInput}
+                    onChange={(e) => setBulkUrlInput(e.target.value)}
+                    placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg&#10;https://example.com/image3.jpg"
+                    rows={6}
+                    className="font-mono text-sm"
+                  />
+                  <p className="text-sm text-slate-500">
+                    {bulkUrlInput.split("\n").filter(url => url.trim()).length} URLs entered
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  onClick={handleBulkUrlAdd}
+                  disabled={!bulkUrlInput.trim()}
+                  className="w-full"
+                >
+                  <LinkIcon className="h-4 w-4 mr-2" />
+                  Add All URLs
+                </Button>
+              </TabsContent>
+
+              <TabsContent value="files" className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="file-upload-edit">Select multiple images</Label>
+                  <Input
+                    id="file-upload-edit"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      setSelectedFiles(e.target.files)
+                      handleFileUpload(e.target.files)
+                    }}
+                    className="cursor-pointer"
+                  />
+                  <p className="text-sm text-slate-500">
+                    {selectedFiles ? `${selectedFiles.length} file(s) selected` : "No files selected"}
+                  </p>
+                </div>
+              </TabsContent>
+            </Tabs>
+
             {imageUrls.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {imageUrls.map((url, index) => (
-                  <div key={index} className="relative group">
-                    <Image
-                      src={url}
-                      alt={`Vehicle ${index + 1}`}
-                      width={300}
-                      height={128}
-                      className="w-full h-32 object-cover rounded-lg border-2 border-slate-200"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => handleImageUrlRemove(index)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
+              <div className="pt-4 border-t">
+                <p className="text-sm font-medium text-slate-700 mb-3">
+                  {imageUrls.length} image(s) added
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {imageUrls.map((url, index) => (
+                    <div key={index} className="relative group">
+                      <Image
+                        src={url}
+                        alt={`Vehicle ${index + 1}`}
+                        width={300}
+                        height={128}
+                        className="w-full h-32 object-cover rounded-lg border-2 border-slate-200"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => handleImageUrlRemove(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </CardContent>
