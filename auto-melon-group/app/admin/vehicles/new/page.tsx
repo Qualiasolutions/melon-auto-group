@@ -31,6 +31,7 @@ export default function NewVehiclePage() {
   const [customMake, setCustomMake] = useState("")
   const [vehicleMakesList, setVehicleMakesList] = useState<string[]>(vehicleMakes as string[])
   const [isLoadingMakes, setIsLoadingMakes] = useState(false)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
 
   const {
     register,
@@ -178,6 +179,27 @@ export default function NewVehiclePage() {
   const handleImageUrlRemove = (index: number) => {
     setImageUrls(prev => prev.filter((_, i) => i !== index))
     toast.info("Image removed")
+  }
+
+  // Drag and drop handlers for image reordering
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index)
+  }
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault()
+    if (draggedIndex === null || draggedIndex === index) return
+
+    const newImageUrls = [...imageUrls]
+    const draggedImage = newImageUrls[draggedIndex]
+    newImageUrls.splice(draggedIndex, 1)
+    newImageUrls.splice(index, 0, draggedImage)
+    setImageUrls(newImageUrls)
+    setDraggedIndex(index)
+  }
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null)
   }
 
   const handleBulkUrlAdd = () => {
@@ -873,14 +895,31 @@ export default function NewVehiclePage() {
                   {imageError}
                 </p>
               )}
+              {imageUrls.length > 0 && (
+                <p className="text-xs text-slate-500 italic mb-3">
+                  💡 Drag images to reorder • First image is primary
+                </p>
+              )}
               {imageUrls.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {imageUrls.map((url, index) => (
-                    <div key={index} className="relative group">
+                    <div
+                      key={index}
+                      draggable
+                      onDragStart={() => handleDragStart(index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragEnd={handleDragEnd}
+                      className={`relative group cursor-move transition-all ${
+                        draggedIndex === index ? 'opacity-50 scale-95' : ''
+                      }`}
+                    >
+                      <div className="absolute top-1 left-1 bg-black/70 text-white text-xs font-bold px-2 py-1 rounded z-10">
+                        {index + 1}
+                      </div>
                       <img
                         src={url}
                         alt={`Vehicle ${index + 1}`}
-                        className="w-full h-24 object-cover rounded-lg border border-slate-200"
+                        className="w-full h-24 object-cover rounded-lg border border-slate-200 pointer-events-none"
                         onError={(e) => {
                           e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23ddd" width="100" height="100"/%3E%3Ctext fill="%23999" x="50%" y="50%" text-anchor="middle" dy=".3em"%3EError%3C/text%3E%3C/svg%3E'
                         }}
@@ -889,7 +928,7 @@ export default function NewVehiclePage() {
                         type="button"
                         variant="destructive"
                         size="icon"
-                        className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                         onClick={() => handleImageUrlRemove(index)}
                       >
                         <X className="h-3 w-3" />

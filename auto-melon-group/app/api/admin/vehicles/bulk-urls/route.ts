@@ -1,16 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
+import { supabaseAdmin } from "@/lib/supabase/admin"
+import { withAdminAuth } from "@/lib/auth/admin-middleware"
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error("Missing Supabase environment variables")
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey)
-
-export async function POST(request: NextRequest) {
+export const POST = withAdminAuth(async (request: NextRequest) => {
   try {
     const body = await request.json()
     const { vehicleId, urls } = body
@@ -40,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get current vehicle data
-    const { data: vehicle, error: fetchError } = await supabase
+    const { data: vehicle, error: fetchError } = await supabaseAdmin
       .from("vehicles")
       .select("id, make, model, year, images")
       .eq("id", vehicleId)
@@ -58,7 +50,7 @@ export async function POST(request: NextRequest) {
     const newImages = [...currentImages, ...validUrls]
 
     // Update vehicle with new images
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("vehicles")
       .update({
         images: newImages,
@@ -95,4 +87,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

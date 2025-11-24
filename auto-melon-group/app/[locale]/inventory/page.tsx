@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect, use, Suspense } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
 import { getDictionary } from "@/lib/i18n/get-dictionary"
 import type { Locale } from "@/types/i18n"
@@ -14,14 +15,14 @@ import { FilterSidebar } from "@/components/filters/FilterSidebar"
 import { ActiveFilters } from "@/components/filters/ActiveFilters"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-export default function InventoryPage({
-  params,
+function InventoryContent({
+  locale,
 }: {
-  params: Promise<{ locale: Locale }>
+  locale: Locale
 }) {
-  const { locale } = use(params)
   const dictPromise = getDictionary(locale)
   const dict = use(dictPromise)
+  const searchParams = useSearchParams()
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([])
@@ -29,6 +30,28 @@ export default function InventoryPage({
   const [searchQuery, setSearchQuery] = useState("")
   const [filters, setFilters] = useState<VehicleFilters>({})
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+
+  // Initialize filters from URL parameters
+  useEffect(() => {
+    const initialFilters: VehicleFilters = {}
+
+    // Handle category filter from URL
+    const categoryParam = searchParams.get('category')
+    if (categoryParam) {
+      initialFilters.category = [categoryParam]
+    }
+
+    // Handle make filter from URL
+    const makeParam = searchParams.get('make')
+    if (makeParam) {
+      initialFilters.make = [makeParam]
+    }
+
+    // Only set filters if we have URL params
+    if (Object.keys(initialFilters).length > 0) {
+      setFilters(initialFilters)
+    }
+  }, [searchParams])
 
   // Fetch vehicles
   useEffect(() => {
@@ -124,21 +147,68 @@ export default function InventoryPage({
     fetchVehicles()
   }, [filters])
 
-  // Filter vehicles based on search query
+  // Filter vehicles based on search query - ENHANCED to search ALL fields
   useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredVehicles(vehicles)
       return
     }
 
-    const query = searchQuery.toLowerCase()
+    // Normalize search query: remove spaces, convert to lowercase
+    const query = searchQuery.toLowerCase().trim()
+    const queryNoSpaces = query.replace(/\s+/g, '')
+
     const filtered = vehicles.filter((vehicle) => {
-      return (
-        vehicle.make.toLowerCase().includes(query) ||
-        vehicle.model.toLowerCase().includes(query) ||
-        vehicle.category.toLowerCase().includes(query) ||
-        (vehicle.description && vehicle.description.toLowerCase().includes(query))
-      )
+      // Normalize vehicle fields for comparison
+      const makeNorm = vehicle.make.toLowerCase()
+      const modelNorm = vehicle.model.toLowerCase()
+      const categoryNorm = vehicle.category.toLowerCase()
+      const categoryNoSpaces = categoryNorm.replace(/\s+/g, '')
+      const locationNorm = vehicle.location.toLowerCase()
+      const countryNorm = vehicle.country.toLowerCase()
+      const vinNorm = vehicle.vin.toLowerCase()
+      const conditionNorm = vehicle.condition.toLowerCase()
+      const engineTypeNorm = vehicle.engineType.toLowerCase()
+      const transmissionNorm = vehicle.transmission.toLowerCase()
+      const descriptionNorm = vehicle.description ? vehicle.description.toLowerCase() : ''
+
+      // Search in main text fields (with and without spaces)
+      const textMatch =
+        makeNorm.includes(query) ||
+        modelNorm.includes(query) ||
+        categoryNorm.includes(query) ||
+        categoryNoSpaces.includes(queryNoSpaces) || // Match "4x4" even if user types "4 x 4"
+        locationNorm.includes(query) ||
+        countryNorm.includes(query) ||
+        vinNorm.includes(query) ||
+        conditionNorm.includes(query) ||
+        engineTypeNorm.includes(query) ||
+        transmissionNorm.includes(query) ||
+        descriptionNorm.includes(query)
+
+      // Search in year (support partial year search like "202" matches "2020", "2021", etc.)
+      const yearMatch = vehicle.year.toString().includes(query)
+
+      // Search in features array
+      const featuresMatch = vehicle.features?.some(feature =>
+        feature.toLowerCase().includes(query) ||
+        feature.toLowerCase().replace(/\s+/g, '').includes(queryNoSpaces)
+      ) || false
+
+      // Search in specifications object (including axle configuration like "4x4", cabin type, emission standard, etc.)
+      const specsMatch = Object.values(vehicle.specifications || {}).some(value => {
+        if (typeof value === 'string') {
+          const valueNorm = value.toLowerCase()
+          const valueNoSpaces = valueNorm.replace(/\s+/g, '')
+          return valueNorm.includes(query) || valueNoSpaces.includes(queryNoSpaces)
+        }
+        if (typeof value === 'number') {
+          return value.toString().includes(query)
+        }
+        return false
+      })
+
+      return textMatch || yearMatch || featuresMatch || specsMatch
     })
 
     setFilteredVehicles(filtered)
@@ -396,5 +466,24 @@ export default function InventoryPage({
         </div>
       </section>
     </>
+  )
+}
+
+// Wrapper component with Suspense to handle useSearchParams
+export default function InventoryPage({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>
+}) {
+  const { locale } = use(params)
+
+  return (
+    <Suspense fallback={
+      <div className="container py-20 text-center">
+        <p className="text-muted-foreground">Loading inventory...</p>
+      </div>
+    }>
+      <InventoryContent locale={locale} />
+    </Suspense>
   )
 }

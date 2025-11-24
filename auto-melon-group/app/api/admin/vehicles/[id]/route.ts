@@ -1,13 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { withAdminAuth } from '@/lib/auth/admin-middleware'
+
+// Helper function to convert camelCase to snake_case
+function toSnakeCase(obj: Record<string, any>): Record<string, any> {
+  const result: Record<string, any> = {}
+  for (const [key, value] of Object.entries(obj)) {
+    const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+    result[snakeKey] = value
+  }
+  return result
+}
+
+// Helper function to convert snake_case to camelCase
+function toCamelCase(obj: Record<string, any>): Record<string, any> {
+  const result: Record<string, any> = {}
+  for (const [key, value] of Object.entries(obj)) {
+    const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase())
+    result[camelKey] = value
+  }
+  return result
+}
 
 // GET - Get single vehicle
-export async function GET(
+export const GET = withAdminAuth(async (
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  user: any,
+  context?: { params: Promise<{ id: string }> }
+) => {
   try {
+    // Handle params from context (Next.js 15+ pattern)
+    const params = context?.params || (request as any).params
     const { id } = await params
+
     const { data, error } = await supabaseAdmin
       .from('vehicles')
       .select('*')
@@ -19,17 +44,8 @@ export async function GET(
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    // Map database field names to TypeScript interface
-    const mappedData = {
-      ...data,
-      sourceUrl: data.source_url,
-      bazarakiUrl: data.bazaraki_url,
-      engineType: data.engine_type,
-      enginePower: data.engine_power,
-      engineSize: data.engine_size,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
-    }
+    // Convert snake_case to camelCase
+    const mappedData = toCamelCase(data)
 
     return NextResponse.json({ data: mappedData }, { status: 200 })
   } catch (error) {
@@ -39,20 +55,26 @@ export async function GET(
       { status: 500 }
     )
   }
-}
+})
 
 // PATCH - Update vehicle
-export async function PATCH(
+export const PATCH = withAdminAuth(async (
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  user: any,
+  context?: { params: Promise<{ id: string }> }
+) => {
   try {
+    // Handle params from context (Next.js 15+ pattern)
+    const params = context?.params || (request as any).params
     const { id } = await params
     const body = await request.json()
 
+    // Convert camelCase to snake_case for database
+    const dbData = toSnakeCase(body)
+
     const { data, error } = await supabaseAdmin
       .from('vehicles')
-      .update(body)
+      .update(dbData)
       .eq('id', id)
       .select()
       .single()
@@ -70,15 +92,19 @@ export async function PATCH(
       { status: 500 }
     )
   }
-}
+})
 
 // DELETE - Delete vehicle
-export async function DELETE(
+export const DELETE = withAdminAuth(async (
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  user: any,
+  context?: { params: Promise<{ id: string }> }
+) => {
   try {
+    // Handle params from context (Next.js 15+ pattern)
+    const params = context?.params || (request as any).params
     const { id } = await params
+
     const { error } = await supabaseAdmin
       .from('vehicles')
       .delete()
@@ -97,4 +123,4 @@ export async function DELETE(
       { status: 500 }
     )
   }
-}
+})

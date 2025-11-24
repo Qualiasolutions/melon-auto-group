@@ -1,17 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
-import { writeFile, mkdir } from "fs/promises"
-import path from "path"
-import { existsSync } from "fs"
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error("Missing Supabase environment variables")
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey)
+import { supabaseAdmin } from "@/lib/supabase/admin"
+import { withAdminAuth } from "@/lib/auth/admin-middleware"
 
 // Helper function to generate a URL-safe filename
 function generateFileName(make: string, model: string, index: number, extension: string): string {
@@ -23,7 +12,7 @@ function generateFileName(make: string, model: string, index: number, extension:
   return `${slug}-${Date.now()}-${index}.${extension}`
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withAdminAuth(async (request: NextRequest) => {
   try {
     const formData = await request.formData()
     const vehicleId = formData.get("vehicleId") as string
@@ -44,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get current vehicle data
-    const { data: vehicle, error: fetchError } = await supabase
+    const { data: vehicle, error: fetchError } = await supabaseAdmin
       .from("vehicles")
       .select("id, make, model, year, images")
       .eq("id", vehicleId)
@@ -57,14 +46,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Ensure upload directory exists
-    const uploadDir = path.join(process.cwd(), "public", "images", "vehicles")
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true })
-    }
-
-    // Process each file
-    const uploadedPaths: string[] = []
+    // Process each file and upload to Supabase Storage
+    const uploadedUrls: string[] = []
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
@@ -80,22 +63,39 @@ export async function POST(request: NextRequest) {
 
       // Generate unique filename
       const fileName = generateFileName(vehicle.make, vehicle.model, i + 1, extension)
-      const filePath = path.join(uploadDir, fileName)
+      const storagePath = `${vehicleId}/${fileName}`
 
       try {
-        // Convert file to buffer and save
+        // Convert file to buffer
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
-        await writeFile(filePath, buffer)
 
-        // Store the public URL path
-        uploadedPaths.push(`/images/vehicles/${fileName}`)
+        // Upload to Supabase Storage
+        const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+          .from('vehicle-images')
+          .upload(storagePath, buffer, {
+            contentType: file.type,
+            cacheControl: '3600',
+            upsert: false
+          })
+
+        if (uploadError) {
+          console.error(`Error uploading file ${file.name}:`, uploadError)
+          continue
+        }
+
+        // Get the public URL
+        const { data: { publicUrl } } = supabaseAdmin.storage
+          .from('vehicle-images')
+          .getPublicUrl(uploadData.path)
+
+        uploadedUrls.push(publicUrl)
       } catch (fileError) {
-        console.error(`Error saving file ${file.name}:`, fileError)
+        console.error(`Error processing file ${file.name}:`, fileError)
       }
     }
 
-    if (uploadedPaths.length === 0) {
+    if (uploadedUrls.length === 0) {
       return NextResponse.json(
         { error: "No files were successfully uploaded" },
         { status: 500 }
@@ -104,10 +104,10 @@ export async function POST(request: NextRequest) {
 
     // Combine existing images with new uploads
     const currentImages = vehicle.images || []
-    const newImages = [...currentImages, ...uploadedPaths]
+    const newImages = [...currentImages, ...uploadedUrls]
 
     // Update vehicle with new images
-    const { error: updateError } = await supabase
+    const { error: updateError } = await supabaseAdmin
       .from("vehicles")
       .update({
         images: newImages,
@@ -131,9 +131,9 @@ export async function POST(request: NextRequest) {
         model: vehicle.model,
         year: vehicle.year,
       },
-      uploadedCount: uploadedPaths.length,
+      uploadedCount: uploadedUrls.length,
       totalImages: newImages.length,
-      uploadedPaths,
+      uploadedUrls,
     })
   } catch (error) {
     console.error("Bulk file upload error:", error)
@@ -145,4 +145,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

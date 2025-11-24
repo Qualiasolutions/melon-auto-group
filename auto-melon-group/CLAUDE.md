@@ -14,8 +14,9 @@ Auto Melon Group is a professional truck dealership website built with Next.js 1
 - **Database**: Supabase (PostgreSQL)
 - **UI Components**: Radix UI primitives via shadcn/ui
 - **Forms**: React Hook Form + Zod validation
-- **Icons**: Lucide React
+- **Icons**: Lucide React (migrated from Material Symbols)
 - **Animation**: Framer Motion
+- **Internationalization**: Custom i18n implementation with locale routing
 - **Deployment**: Vercel (configured)
 
 ## Development Commands
@@ -50,6 +51,10 @@ tsx scripts/update-to-local-images.ts   # Switch to local image storage
 
 # Add new shadcn/ui component
 npx shadcn@latest add [component-name]
+
+# Additional admin scripts
+npm run scrape-autotrader         # Scrape AutoTrader listings
+npm run playwright:install        # Install Playwright browser for scraping
 ```
 
 ## Database Setup
@@ -105,24 +110,35 @@ The `scripts/` directory also contains:
 ```
 app/                    # Next.js App Router pages
 ├── layout.tsx          # Root layout with Header/Footer
-├── page.tsx            # Homepage (server component)
-├── inventory/
-│   ├── page.tsx        # Inventory listing (client component with Suspense)
-│   └── [id]/page.tsx   # Vehicle detail page
-├── contact/page.tsx    # Contact page
-├── about/page.tsx      # About page
-├── faq/page.tsx        # FAQ page
-├── custom-order/page.tsx # Custom order request page
+├── page.tsx            # Homepage (server component) - redirects to locale
+├── [locale]/           # Localized routes (en, el)
+│   ├── page.tsx        # Localized homepage
+│   ├── inventory/
+│   │   ├── page.tsx        # Inventory listing (client component with Suspense)
+│   │   └── [id]/page.tsx   # Vehicle detail page
+│   ├── contact/page.tsx    # Contact page
+│   ├── about/page.tsx      # About page
+│   ├── faq/page.tsx        # FAQ page
+│   └── custom-order/page.tsx # Custom order request page
+├── inventory/          # Legacy routes (still present)
+│   ├── page.tsx
+│   └── [id]/page.tsx
 ├── loading.tsx         # Global loading state
 ├── not-found.tsx       # 404 page
-└── admin/              # Admin dashboard (protected routes)
+└── admin/              # Admin dashboard (NOT locale-prefixed)
     ├── layout.tsx      # Admin layout wrapper
+    ├── login/page.tsx  # Admin authentication
     ├── dashboard/page.tsx    # Admin overview
     ├── vehicles/
     │   ├── page.tsx          # Vehicle management list
     │   ├── new/page.tsx      # Add new vehicle form
     │   ├── [id]/edit/page.tsx # Edit vehicle form
-    │   └── import/page.tsx   # Bulk import interface
+    │   ├── import/page.tsx   # Bulk import interface
+    │   └── bulk-images/page.tsx # Bulk image upload
+    ├── scraping/       # Web scraping interfaces
+    │   ├── bazaraki/page.tsx    # Bazaraki scraper
+    │   ├── autotrader/page.tsx  # AutoTrader scraper
+    │   └── facebook/page.tsx    # Facebook scraper
     └── settings/page.tsx     # Admin settings
 
 components/
@@ -145,7 +161,16 @@ types/
 └── database.ts         # Supabase database types
 
 config/
-└── site.ts             # Site-wide configuration (contact, links, metadata)
+├── site.ts             # Site-wide configuration (contact, links, metadata)
+└── i18n.ts             # i18n configuration (supported locales, default locale)
+
+lib/i18n/
+├── dictionaries/       # Translation JSON files
+│   ├── en.json         # English translations
+│   └── el.json         # Greek translations
+└── locale-detector.ts  # Browser/cookie-based locale detection
+
+middleware.ts           # Next.js middleware for locale routing and Supabase session
 
 scripts/                # Data management and utility scripts
 ├── check-setup.ts           # Environment verification
@@ -202,18 +227,34 @@ scripts/                # Data management and utility scripts
 - Filter components are pure - receive filters/onChange props
 - Complex filter logic: ranges (price, year, mileage), arrays (make, category), booleans (featured, certified)
 
-**5. Component Organization**
+**5. Internationalization (i18n)**
+- Custom i18n implementation with locale routing (`/en/`, `/el/`)
+- Middleware (`middleware.ts`) redirects root paths to locale-prefixed URLs
+- Locale detection: Browser Accept-Language header → cookies → default to English
+- Translation files: `lib/i18n/dictionaries/en.json`, `lib/i18n/dictionaries/el.json`
+- Configuration: `config/i18n.ts` defines supported locales (`en`, `el`)
+- Locale cookie: `NEXT_LOCALE` stored for 1 year
+- Admin routes bypass locale routing (no `/[locale]/admin/`)
+- Pattern for accessing translations in Server Components:
+  ```typescript
+  import { getDictionary } from '@/lib/i18n/get-dictionary'
+  const dict = await getDictionary(locale)
+  // Use: dict.nav.home, dict.inventory.filters.make, etc.
+  ```
+
+**6. Component Organization**
 - `components/ui/`: Atomic shadcn/ui components (button, card, input, etc.)
 - `components/sections/`: Composite UI sections (Hero, VehicleCard)
 - `components/layout/`: Layout wrappers (Header with navigation, Footer)
 - `components/filters/`: Filter-specific components (sidebar, active filter chips)
 
-**6. Styling Strategy**
+**7. Styling Strategy**
 - Tailwind utility-first classes
 - CSS variables for theming (defined in `app/globals.css`)
 - Brand colors: Orange-600 primary (`#ea580c`), neutral grays
 - Responsive breakpoints: mobile-first, `md:`, `lg:`, `xl:`
 - Use `cn()` utility from `lib/utils.ts` for conditional class merging
+- **Icons**: Lucide React library (project migrated from Material Symbols in Nov 2024)
 
 ## Working with Vehicle Data
 
@@ -279,11 +320,21 @@ Components are copied into the project (not npm packages) for full customization
 ## Common Development Tasks
 
 ### Adding a New Page
-1. Create file in `app/` directory (e.g., `app/services/page.tsx`)
-2. Use Server Component by default, add `"use client"` if needed
-3. If using `useSearchParams`, wrap in Suspense (see `app/inventory/page.tsx` pattern)
-4. Update Header navigation in `components/layout/Header.tsx`
-5. Add to sitemap if implementing SEO
+1. Create file in `app/[locale]/` directory for localized pages (e.g., `app/[locale]/services/page.tsx`)
+2. For admin pages, create in `app/admin/` (no locale prefix)
+3. Use Server Component by default, add `"use client"` if needed
+4. If using `useSearchParams`, wrap in Suspense (see `app/[locale]/inventory/page.tsx` pattern)
+5. Accept `params` prop with `locale` for i18n:
+   ```typescript
+   export default async function Page({ params }: { params: Promise<{ locale: Locale }> }) {
+     const { locale } = await params
+     const dict = await getDictionary(locale)
+     // ...
+   }
+   ```
+6. Update Header navigation in `components/layout/Header.tsx`
+7. Add translations to `lib/i18n/dictionaries/en.json` and `el.json`
+8. Add to sitemap if implementing SEO
 
 ### Adding a New Filter
 1. Update `VehicleFilters` type in `types/vehicle.ts`
@@ -323,6 +374,35 @@ npx shadcn@latest add carousel
 # Import and use: import { Carousel } from "@/components/ui/carousel"
 ```
 
+### Working with Translations
+1. **Adding new translations**:
+   - Edit `lib/i18n/dictionaries/en.json` for English text
+   - Edit `lib/i18n/dictionaries/el.json` for Greek text
+   - Keep structure identical in both files
+   - Use nested objects for organization: `"inventory.filters.make"`
+
+2. **Using translations in Server Components**:
+   ```typescript
+   import { getDictionary } from '@/lib/i18n/get-dictionary'
+   import type { Locale } from '@/types/i18n'
+
+   export default async function Page({ params }: { params: Promise<{ locale: Locale }> }) {
+     const { locale } = await params
+     const dict = await getDictionary(locale)
+     return <h1>{dict.page.title}</h1>
+   }
+   ```
+
+3. **Using translations in Client Components**:
+   - Pass translations as props from parent Server Component
+   - Or use React Context for deeply nested components
+   - Dictionary loading must happen in Server Component
+
+4. **Locale switching**:
+   - User selects locale from language switcher in Header
+   - Middleware sets `NEXT_LOCALE` cookie
+   - Next navigation updates URL with new locale prefix
+
 ## Configuration Files
 
 **Site-wide settings** (`config/site.ts`):
@@ -358,7 +438,15 @@ Edit `config/site.ts` - values used in Header, Footer, and metadata.
 
 9. **Form Validation**: Use Zod schemas from `lib/validations/` with React Hook Form. Define schema, use `zodResolver`, and handle form submission with proper error handling.
 
-10. **Admin Dashboard**: Admin routes in `app/admin/` are currently unprotected. Implement authentication before deploying. Structure is in place for vehicle management, bulk import, and settings.
+10. **Admin Dashboard**: Admin routes in `app/admin/` include authentication via `/admin/login`. Structure includes vehicle management, bulk import, bulk image upload, web scraping interfaces (Bazaraki, AutoTrader, Facebook), and settings.
+
+11. **Internationalization**: All public pages support English (`/en/`) and Greek (`/el/`) locales. Admin pages are NOT localized. When adding new pages, create them in `app/[locale]/` and add translations to both `en.json` and `el.json`.
+
+12. **Icon System**: Project uses Lucide React icons exclusively. Do not import from Material Symbols or other icon libraries. All icons should be imported from `lucide-react`.
+
+13. **Bulk Image Upload**: Admin panel at `/admin/vehicles/bulk-images` supports uploading multiple images at once and associating them with vehicles. Recent feature added November 2024.
+
+14. **Web Scraping**: Admin interfaces at `/admin/scraping/` allow scraping vehicle listings from Bazaraki, AutoTrader, and Facebook. Requires Playwright for browser automation (`npm run playwright:install`).
 
 ## Debugging and Troubleshooting
 
@@ -427,6 +515,15 @@ Set in Vercel dashboard under Settings → Environment Variables:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `NEXT_PUBLIC_SITE_URL`
+
+**Quick deployment via CLI:**
+```bash
+# Install Vercel CLI if not already installed
+npm i -g vercel
+
+# Deploy to production
+vercel --prod
+```
 
 See `VERCEL_SETUP.md` and `DEPLOYMENT_SUCCESS.md` for detailed deployment docs.
 

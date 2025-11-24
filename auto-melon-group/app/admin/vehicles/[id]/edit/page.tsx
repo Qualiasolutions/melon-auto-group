@@ -28,6 +28,7 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
   const [isLoadingMakes, setIsLoadingMakes] = useState(false)
   const [bulkUrlInput, setBulkUrlInput] = useState("")
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [formData, setFormData] = useState({
     make: '',
     model: '',
@@ -161,6 +162,27 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
 
   const handleImageUrlRemove = (index: number) => {
     setImageUrls(prev => prev.filter((_, i) => i !== index))
+  }
+
+  // Drag and drop handlers for image reordering
+  const handleDragStart = (index: number) => {
+    setDraggedIndex(index)
+  }
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault()
+    if (draggedIndex === null || draggedIndex === index) return
+
+    const newImageUrls = [...imageUrls]
+    const draggedImage = newImageUrls[draggedIndex]
+    newImageUrls.splice(draggedIndex, 1)
+    newImageUrls.splice(index, 0, draggedImage)
+    setImageUrls(newImageUrls)
+    setDraggedIndex(index)
+  }
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null)
   }
 
   const handleBulkUrlAdd = () => {
@@ -657,24 +679,41 @@ export default function EditVehiclePage({ params }: { params: Promise<{ id: stri
 
             {imageUrls.length > 0 && (
               <div className="pt-4 border-t">
-                <p className="text-sm font-medium text-slate-700 mb-3">
-                  {imageUrls.length} image(s) added
-                </p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm font-medium text-slate-700">
+                    {imageUrls.length} image(s) added
+                  </p>
+                  <p className="text-xs text-slate-500 italic">
+                    💡 Drag images to reorder • First image is primary
+                  </p>
+                </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {imageUrls.map((url, index) => (
-                    <div key={index} className="relative group">
+                    <div
+                      key={index}
+                      draggable
+                      onDragStart={() => handleDragStart(index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragEnd={handleDragEnd}
+                      className={`relative group cursor-move transition-all ${
+                        draggedIndex === index ? 'opacity-50 scale-95' : ''
+                      }`}
+                    >
+                      <div className="absolute top-2 left-2 bg-black/70 text-white text-xs font-bold px-2 py-1 rounded z-10">
+                        {index + 1}
+                      </div>
                       <Image
                         src={url}
                         alt={`Vehicle ${index + 1}`}
                         width={300}
                         height={128}
-                        className="w-full h-32 object-cover rounded-lg border-2 border-slate-200"
+                        className="w-full h-32 object-cover rounded-lg border-2 border-slate-200 pointer-events-none"
                       />
                       <Button
                         type="button"
                         variant="destructive"
                         size="sm"
-                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                         onClick={() => handleImageUrlRemove(index)}
                       >
                         <X className="h-4 w-4" />

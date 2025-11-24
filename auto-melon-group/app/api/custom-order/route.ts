@@ -30,9 +30,12 @@ export async function POST(request: NextRequest) {
       : '<p style="color: #666;">No special features requested</p>'
 
     // Send email using Resend
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Auto Melon Group <onboarding@resend.dev>'
+    const toEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'info@melonautogroup.com'
+
     const { data, error } = await resend.emails.send({
-      from: 'Auto Melon Group <onboarding@resend.dev>', // Change this to your verified domain
-      to: ['info@melonautogroup.com'],
+      from: fromEmail,
+      to: [toEmail],
       replyTo: body.email,
       subject: `New Custom Truck Order from ${body.fullName}`,
       html: `
