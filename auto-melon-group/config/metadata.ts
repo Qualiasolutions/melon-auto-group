@@ -81,6 +81,44 @@ export const englishKeywords = [
   "inspected commercial vehicles",
   "reliable truck dealer cyprus",
   "best truck dealer cyprus",
+
+  // 4X4 AND PICKUP KEYWORDS - HIGH VALUE CYPRUS MARKET
+  "4x4 for sale cyprus",
+  "used 4x4 cyprus",
+  "4x4 pickup cyprus",
+  "pickup truck cyprus",
+  "double cab pickup cyprus",
+  "used pickup trucks nicosia",
+  "4x4 vehicles limassol",
+  "off-road vehicles cyprus",
+  "used pickups larnaca",
+  "4x4 dealer cyprus",
+  "pickup dealer cyprus",
+
+  // Popular 4x4 Brands Cyprus
+  "Toyota Hilux cyprus",
+  "Isuzu D-Max cyprus",
+  "Nissan Navara cyprus",
+  "Mitsubishi L200 cyprus",
+  "Ford Ranger cyprus",
+  "Isuzu Rodeo cyprus",
+  "Toyota Land Cruiser cyprus",
+  "Nissan Patrol cyprus",
+  "used Toyota Hilux for sale cyprus",
+  "used Isuzu D-Max for sale cyprus",
+  "used Nissan Navara for sale cyprus",
+  "used Mitsubishi L200 for sale cyprus",
+
+  // 4x4 Types
+  "double cab 4x4 cyprus",
+  "single cab pickup cyprus",
+  "crew cab truck cyprus",
+  "4 wheel drive cyprus",
+  "AWD vehicles cyprus",
+  "off road truck cyprus",
+  "diesel pickup cyprus",
+  "work truck cyprus",
+  "utility vehicle cyprus",
 ]
 
 // Comprehensive Greek SEO Keywords (Ελληνικά) - Focused on Cyprus Market
@@ -161,19 +199,54 @@ export const greekKeywords = [
   "ελεγμένα εμπορικά οχήματα",
   "αξιόπιστος έμπορος φορτηγών κύπρος",
   "καλύτερος έμπορος φορτηγών κύπρος",
+
+  // 4X4 ΚΑΙ PICKUP - ΑΓΟΡΑ ΚΥΠΡΟΥ
+  "4x4 προς πώληση κύπρος",
+  "μεταχειρισμένα 4x4 κύπρος",
+  "pickup κύπρος",
+  "αγροτικά κύπρος",
+  "διπλοκάμπινα κύπρος",
+  "μεταχειρισμένα pickup λευκωσία",
+  "4x4 οχήματα λεμεσός",
+  "off-road οχήματα κύπρος",
+  "μεταχειρισμένα pickup λάρνακα",
+  "έμπορος 4x4 κύπρος",
+  "έμπορος pickup κύπρος",
+
+  // Δημοφιλείς Μάρκες 4x4 Κύπρος
+  "Toyota Hilux κύπρος",
+  "Isuzu D-Max κύπρος",
+  "Nissan Navara κύπρος",
+  "Mitsubishi L200 κύπρος",
+  "Ford Ranger κύπρος",
+  "Isuzu Rodeo κύπρος",
+  "Toyota Land Cruiser κύπρος",
+  "Nissan Patrol κύπρος",
+  "μεταχειρισμένο Toyota Hilux κύπρος",
+  "μεταχειρισμένο Isuzu D-Max κύπρος",
+  "μεταχειρισμένο Nissan Navara κύπρος",
+  "μεταχειρισμένο Mitsubishi L200 κύπρος",
+
+  // Τύποι 4x4
+  "διπλοκάμπινο 4x4 κύπρος",
+  "μονοκάμπινο pickup κύπρος",
+  "τετρακίνητο κύπρος",
+  "AWD οχήματα κύπρος",
+  "ντίζελ pickup κύπρος",
+  "επαγγελματικό pickup κύπρος",
 ]
 
 // English Metadata - Cyprus SEO Optimized
 export const englishMetadata = {
-  title: "Used Trucks Cyprus | Buy Commercial Trucks & Vehicles in Nicosia, Limassol, Larnaca",
-  description: "Leading used truck dealer in Cyprus. Buy quality UK-imported commercial trucks in Nicosia, Limassol & Larnaca. Mercedes-Benz, Scania, Volvo, DAF trucks. EURO 6 certified. Serving all Cyprus with worldwide shipping.",
+  title: "Used Trucks & 4x4 Cyprus | Commercial Vehicles, Pickup Trucks | Nicosia, Limassol, Larnaca",
+  description: "Cyprus's leading dealer for used trucks, 4x4 pickups & commercial vehicles. Quality UK-imported Toyota Hilux, Isuzu D-Max, Nissan Navara, Mercedes-Benz trucks in Nicosia, Limassol & Larnaca. EURO certified. Worldwide shipping.",
   keywords: englishKeywords,
 }
 
 // Greek Metadata (Ελληνικά) - Cyprus SEO Optimized
 export const greekMetadata = {
-  title: "Μεταχειρισμένα Φορτηγά Κύπρος | Αγορά Εμπορικών Φορτηγών Λευκωσία, Λεμεσός, Λάρνακα",
-  description: "Κορυφαίος έμπορος μεταχειρισμένων φορτηγών στην Κύπρο. Αγοράστε ποιοτικά εισαγόμενα φορτηγά από UK στη Λευκωσία, Λεμεσό & Λάρνακα. Mercedes-Benz, Scania, Volvo, DAF. EURO 6 πιστοποιημένα. Εξυπηρετούμε όλη την Κύπρο με παγκόσμια αποστολή.",
+  title: "Μεταχειρισμένα Φορτηγά & 4x4 Κύπρος | Εμπορικά Οχήματα, Pickup | Λευκωσία, Λεμεσός, Λάρνακα",
+  description: "Κορυφαίος έμπορος μεταχειρισμένων φορτηγών και 4x4 στην Κύπρο. Toyota Hilux, Isuzu D-Max, Nissan Navara, Mercedes-Benz στη Λευκωσία, Λεμεσό & Λάρνακα. EURO πιστοποιημένα. Παγκόσμια αποστολή.",
   keywords: greekKeywords,
 }
 
@@ -242,10 +315,16 @@ export const baseMetadata: Metadata = {
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+      { url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+      { url: "/icon.svg", type: "image/svg+xml" },
     ],
     shortcut: "/favicon.ico",
-    apple: "/apple-icon.png",
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
   manifest: "/manifest.json",
   verification: {
@@ -453,6 +532,62 @@ export function getBreadcrumbSchema(items: Array<{ name: string; url: string }>)
       name: item.name,
       item: `${siteConfig.url}${item.url}`,
     })),
+  }
+}
+
+// FAQ Schema for FAQ Page
+export function getFAQSchema(faqs: Array<{ question: string; answer: string }>) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  }
+}
+
+// Blog Post Schema
+export function getBlogPostingSchema(post: {
+  title: string
+  description: string
+  url: string
+  image: string
+  datePublished: string
+  dateModified: string
+  author: string
+  keywords?: string[]
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    image: post.image,
+    author: {
+      "@type": "Organization",
+      name: post.author,
+      url: siteConfig.url,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteConfig.url}/melon-logo.png`,
+      },
+    },
+    datePublished: post.datePublished,
+    dateModified: post.dateModified,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": post.url,
+    },
+    keywords: post.keywords?.join(", "),
   }
 }
 

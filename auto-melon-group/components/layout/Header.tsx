@@ -266,7 +266,7 @@ export function Header() {
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
                     <Link
-                      href="/about"
+                      href={`/${currentLocale}/about`}
                       className="group inline-flex h-11 w-max items-center justify-center rounded-lg px-6 py-2.5 text-base font-semibold transition-all hover:bg-brand-red/5 hover:text-brand-red focus:bg-brand-red/5 focus:text-brand-red focus:outline-none border-2 border-transparent hover:border-brand-red/20"
                     >
                       About
@@ -277,7 +277,18 @@ export function Header() {
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
                     <Link
-                      href="/custom-order"
+                      href={`/${currentLocale}/blog`}
+                      className="group inline-flex h-11 w-max items-center justify-center rounded-lg px-6 py-2.5 text-base font-semibold transition-all hover:bg-brand-red/5 hover:text-brand-red focus:bg-brand-red/5 focus:text-brand-red focus:outline-none border-2 border-transparent hover:border-brand-red/20"
+                    >
+                      Blog
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href={`/${currentLocale}/custom-order`}
                       className="group inline-flex h-11 w-max items-center justify-center rounded-lg px-6 py-2.5 text-base font-semibold transition-all hover:bg-orange-600/10 hover:text-orange-600 focus:bg-orange-600/10 focus:text-orange-600 focus:outline-none border-2 border-transparent hover:border-orange-600/20"
                     >
                       Custom Order
@@ -288,7 +299,7 @@ export function Header() {
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
                     <Link
-                      href="/contact"
+                      href={`/${currentLocale}/contact`}
                       className="group inline-flex h-11 w-max items-center justify-center rounded-lg px-6 py-2.5 text-base font-semibold transition-all hover:bg-brand-red/5 hover:text-brand-red focus:bg-brand-red/5 focus:text-brand-red focus:outline-none border-2 border-transparent hover:border-brand-red/20"
                     >
                       Contact
@@ -367,21 +378,28 @@ export function Header() {
                     </div>
                   </div>
                   <Link
-                    href="/about"
+                    href={`/${currentLocale}/about`}
                     className="flex items-center px-4 py-3 hover:bg-accent rounded-lg transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <span className="font-medium">About</span>
                   </Link>
                   <Link
-                    href="/custom-order"
+                    href={`/${currentLocale}/blog`}
+                    className="flex items-center px-4 py-3 hover:bg-accent rounded-lg transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="font-medium">Blog</span>
+                  </Link>
+                  <Link
+                    href={`/${currentLocale}/custom-order`}
                     className="flex items-center px-4 py-3 hover:bg-orange-50 rounded-lg transition-colors border-2 border-orange-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <span className="font-medium text-orange-600">Custom Order</span>
                   </Link>
                   <Link
-                    href="/contact"
+                    href={`/${currentLocale}/contact`}
                     className="flex items-center px-4 py-3 hover:bg-accent rounded-lg transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >

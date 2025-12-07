@@ -31,9 +31,15 @@ function InventoryContent({
   const [filters, setFilters] = useState<VehicleFilters>({})
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
-  // Initialize filters from URL parameters
+  // Initialize filters and search from URL parameters
   useEffect(() => {
     const initialFilters: VehicleFilters = {}
+
+    // Handle search query from URL (from homepage search)
+    const searchParam = searchParams.get('search')
+    if (searchParam) {
+      setSearchQuery(searchParam)
+    }
 
     // Handle category filter from URL
     const categoryParam = searchParams.get('category')
@@ -45,6 +51,32 @@ function InventoryContent({
     const makeParam = searchParams.get('make')
     if (makeParam) {
       initialFilters.make = [makeParam]
+    }
+
+    // Handle condition filter from URL
+    const conditionParam = searchParams.get('condition')
+    if (conditionParam) {
+      initialFilters.condition = [conditionParam]
+    }
+
+    // Handle price filters from URL
+    const priceMinParam = searchParams.get('priceMin')
+    if (priceMinParam) {
+      initialFilters.priceMin = parseInt(priceMinParam)
+    }
+    const priceMaxParam = searchParams.get('priceMax')
+    if (priceMaxParam) {
+      initialFilters.priceMax = parseInt(priceMaxParam)
+    }
+
+    // Handle year filters from URL
+    const yearMinParam = searchParams.get('yearMin')
+    if (yearMinParam) {
+      initialFilters.yearMin = parseInt(yearMinParam)
+    }
+    const yearMaxParam = searchParams.get('yearMax')
+    if (yearMaxParam) {
+      initialFilters.yearMax = parseInt(yearMaxParam)
     }
 
     // Only set filters if we have URL params
@@ -159,18 +191,18 @@ function InventoryContent({
     const queryNoSpaces = query.replace(/\s+/g, '')
 
     const filtered = vehicles.filter((vehicle) => {
-      // Normalize vehicle fields for comparison
-      const makeNorm = vehicle.make.toLowerCase()
-      const modelNorm = vehicle.model.toLowerCase()
-      const categoryNorm = vehicle.category.toLowerCase()
+      // Normalize vehicle fields for comparison (null-safe)
+      const makeNorm = (vehicle.make ?? '').toLowerCase()
+      const modelNorm = (vehicle.model ?? '').toLowerCase()
+      const categoryNorm = (vehicle.category ?? '').toLowerCase()
       const categoryNoSpaces = categoryNorm.replace(/\s+/g, '')
-      const locationNorm = vehicle.location.toLowerCase()
-      const countryNorm = vehicle.country.toLowerCase()
-      const vinNorm = vehicle.vin.toLowerCase()
-      const conditionNorm = vehicle.condition.toLowerCase()
-      const engineTypeNorm = vehicle.engineType.toLowerCase()
-      const transmissionNorm = vehicle.transmission.toLowerCase()
-      const descriptionNorm = vehicle.description ? vehicle.description.toLowerCase() : ''
+      const locationNorm = (vehicle.location ?? '').toLowerCase()
+      const countryNorm = (vehicle.country ?? '').toLowerCase()
+      const vinNorm = (vehicle.vin ?? '').toLowerCase()
+      const conditionNorm = (vehicle.condition ?? '').toLowerCase()
+      const engineTypeNorm = (vehicle.engineType ?? '').toLowerCase()
+      const transmissionNorm = (vehicle.transmission ?? '').toLowerCase()
+      const descriptionNorm = (vehicle.description ?? '').toLowerCase()
 
       // Search in main text fields (with and without spaces)
       const textMatch =
@@ -189,10 +221,12 @@ function InventoryContent({
       // Search in year (support partial year search like "202" matches "2020", "2021", etc.)
       const yearMatch = vehicle.year.toString().includes(query)
 
-      // Search in features array
+      // Search in features array (null-safe)
       const featuresMatch = vehicle.features?.some(feature =>
-        feature.toLowerCase().includes(query) ||
-        feature.toLowerCase().replace(/\s+/g, '').includes(queryNoSpaces)
+        feature && (
+          feature.toLowerCase().includes(query) ||
+          feature.toLowerCase().replace(/\s+/g, '').includes(queryNoSpaces)
+        )
       ) || false
 
       // Search in specifications object (including axle configuration like "4x4", cabin type, emission standard, etc.)
@@ -219,11 +253,34 @@ function InventoryContent({
   }
 
   const handleClearFilters = () => {
-    setFilters({})
+    // Preserve URL-based filters when clearing
+    const urlFilters: VehicleFilters = {}
+    const categoryParam = searchParams.get('category')
+    if (categoryParam) {
+      urlFilters.category = [categoryParam]
+    }
+    const makeParam = searchParams.get('make')
+    if (makeParam) {
+      urlFilters.make = [makeParam]
+    }
+    setFilters(urlFilters)
     setSearchQuery("")
   }
 
   const handleFilterRemove = (key: keyof VehicleFilters, value?: string) => {
+    // Don't allow removing filters that come from URL params
+    const categoryFromUrl = searchParams.get('category')
+    const makeFromUrl = searchParams.get('make')
+
+    if (key === 'category' && value === categoryFromUrl) {
+      // Don't remove category filter if it's from URL
+      return
+    }
+    if (key === 'make' && value === makeFromUrl) {
+      // Don't remove make filter if it's from URL
+      return
+    }
+
     const newFilters = { ...filters }
 
     if (value && Array.isArray(newFilters[key])) {

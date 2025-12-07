@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { siteConfig } from '@/config/site'
 import { supabase } from '@/lib/supabase/client'
+import { getAllBlogPosts } from '@/lib/blog/posts'
 
 export const revalidate = 3600 // Revalidate every hour
 
@@ -9,6 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Static pages with both English and Greek versions
   const staticPages: MetadataRoute.Sitemap = [
+    // Homepage
     {
       url: `${baseUrl}/en`,
       lastModified: new Date(),
@@ -35,6 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       },
     },
+    // Inventory
     {
       url: `${baseUrl}/en/inventory`,
       lastModified: new Date(),
@@ -59,6 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       },
     },
+    // About
     {
       url: `${baseUrl}/en/about`,
       lastModified: new Date(),
@@ -83,6 +87,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       },
     },
+    // Contact
     {
       url: `${baseUrl}/en/contact`,
       lastModified: new Date(),
@@ -107,7 +112,111 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       },
     },
+    // FAQ
+    {
+      url: `${baseUrl}/en/faq`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/en/faq`,
+          el: `${baseUrl}/el/faq`,
+        },
+      },
+    },
+    {
+      url: `${baseUrl}/el/faq`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/en/faq`,
+          el: `${baseUrl}/el/faq`,
+        },
+      },
+    },
+    // Custom Order
+    {
+      url: `${baseUrl}/en/custom-order`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/en/custom-order`,
+          el: `${baseUrl}/el/custom-order`,
+        },
+      },
+    },
+    {
+      url: `${baseUrl}/el/custom-order`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/en/custom-order`,
+          el: `${baseUrl}/el/custom-order`,
+        },
+      },
+    },
+    // Blog Index
+    {
+      url: `${baseUrl}/en/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/en/blog`,
+          el: `${baseUrl}/el/blog`,
+        },
+      },
+    },
+    {
+      url: `${baseUrl}/el/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/en/blog`,
+          el: `${baseUrl}/el/blog`,
+        },
+      },
+    },
   ]
+
+  // Blog posts
+  const blogPosts = getAllBlogPosts()
+  const blogPages: MetadataRoute.Sitemap = blogPosts.flatMap((post) => [
+    {
+      url: `${baseUrl}/en/blog/${post.slug}`,
+      lastModified: new Date(post.updatedAt),
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/en/blog/${post.slug}`,
+          el: `${baseUrl}/el/blog/${post.slug}`,
+        },
+      },
+    },
+    {
+      url: `${baseUrl}/el/blog/${post.slug}`,
+      lastModified: new Date(post.updatedAt),
+      changeFrequency: 'weekly' as const,
+      priority: 0.75,
+      alternates: {
+        languages: {
+          en: `${baseUrl}/en/blog/${post.slug}`,
+          el: `${baseUrl}/el/blog/${post.slug}`,
+        },
+      },
+    },
+  ])
 
   // Fetch all available vehicles for dynamic pages
   let vehiclePages: MetadataRoute.Sitemap = []
@@ -151,5 +260,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('Error fetching vehicles for sitemap:', error)
   }
 
-  return [...staticPages, ...vehiclePages]
+  return [...staticPages, ...blogPages, ...vehiclePages]
 }
